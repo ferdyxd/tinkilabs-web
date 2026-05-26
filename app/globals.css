@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ocultar scrollbar pero mantener funcionalidad */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Gradientes de marca */
+@layer components {
+  .gradient-brand {
+    @apply bg-gradient-to-br from-tinki-orange to-tinki-orange-dark;
+  }
+  .gradient-dark {
+    @apply bg-gradient-to-b from-tinki-dark to-[#0F0F23];
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-tinki-orange to-tinki-orange-light bg-clip-text text-transparent;
+  }
+}
+
+/* ============================================================
+   Concepto A — Caja 3D giratoria
+   ============================================================ */
+
+@keyframes rotateBox {
+  from {
+    transform: rotateY(0deg) rotateX(8deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(8deg);
+  }
+}
+
+@keyframes pulseText {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.count-digit {
+  animation: countUp 0.3s ease-out forwards;
+}
+
+/* ============================================================
+   Concepto B — Taller cinemático (scroll storytelling)
+   ============================================================ */
+
+/* Snap scroll en desktop */
+@media (min-width: 768px) {
+  .snap-story {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+  }
+  .snap-story > section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+/* Animaciones de piezas */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-80px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(80px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes gearSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes springBounce {
+  0%, 100% { transform: scaleY(1); }
+  30% { transform: scaleY(0.6); }
+  60% { transform: scaleY(1.3); }
+  80% { transform: scaleY(0.85); }
+}
+
+@keyframes lidOpen {
+  from { transform: rotateX(0deg); }
+  to { transform: rotateX(-130deg); }
+}
+
+@keyframes discFly {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(20%, -80%) scale(1.2) rotate(180deg);
+  }
+  to {
+    opacity: 1;
+    transform: translate(80%, 20%) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.3); }
+  50% { box-shadow: 0 0 60px rgba(255, 107, 53, 0.6); }
+}
+
+/* Utilidades de animación para Concepto B */
+.anim-rise {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.anim-rise.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.anim-scale {
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.anim-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.anim-left {
+  opacity: 0;
+  transform: translateX(-80px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.anim-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.anim-right {
+  opacity: 0;
+  transform: translateX(80px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.anim-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}

@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+/.pnp
+.pnp.js
+
+# Next.js
+/.next/
+/out/
+
+# Producción
+/build
+
+# Variables de entorno (¡IMPORTANTE! Contiene contraseñas)
+.env
+.env.local
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Sistema
+.DS_Store
+*.pem
+Thumbs.db

@@ -1,0 +1,75 @@
+'use client';
+
+import { useState } from 'react';
+
+export function EmailForm() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async () => {
+    if (!email || !email.includes('@')) {
+      setStatus('error');
+      setMessage('Oye, ese email no parece válido. Revísalo.');
+      return;
+    }
+
+    setStatus('loading');
+    setMessage('');
+
+    // Simulación de envío — conectar con Brevo API más adelante
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      setStatus('success');
+      setMessage('¡Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
+      setEmail('');
+    } catch {
+      setStatus('error');
+      setMessage('Ups, algo falló. Prueba de nuevo en un momento.');
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (status === 'error') setStatus('idle');
+          }}
+          placeholder="tu@email.com"
+          className="flex-1 rounded-xl border-2 border-white/20 bg-white/10 px-5 py-4 text-white placeholder:text-white/50 backdrop-blur-sm transition-all focus:border-tinki-orange focus:outline-none focus:ring-2 focus:ring-tinki-orange/30"
+          disabled={status === 'loading' || status === 'success'}
+          aria-label="Tu dirección de email"
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={status === 'loading' || status === 'success'}
+          className="rounded-xl bg-tinki-orange px-8 py-4 font-bold text-white transition-all hover:bg-tinki-orange-dark active:scale-95 disabled:opacity-70"
+        >
+          {status === 'loading' ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              Enviando...
+            </span>
+          ) : status === 'success' ? (
+            '¡Apuntado!'
+          ) : (
+            'Me apunto'
+          )}
+        </button>
+      </div>
+      {message && (
+        <p
+          className={`mt-3 text-center text-sm ${
+            status === 'success' ? 'text-green-300' : 'text-red-300'
+          }`}
+        >
+          {message}
+        </p>
+      )}
+    </div>
+  );
+}
