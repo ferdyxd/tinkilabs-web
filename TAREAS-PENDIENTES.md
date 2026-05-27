@@ -354,7 +354,18 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 
 ---
 
-### 11. Páginas legales
+### 12. Repositorio interno de desarrollo
+
+- [ ] Crear repo `tinkilabs-web-dev` separado del de producción
+- [ ] Conectar a Vercel con dominio `dev.tinkilabs.com` (o `tinkilabs-dev.vercel.app`)
+- [ ] Ambos repos comparten misma estructura pero:
+  - `tinkilabs-web` → producción, solo cambios revisados, despliegue automático desde main
+  - `tinkilabs-web-dev` → desarrollo interno, pruebas de diseño, preview para Alby
+- [ ] Flujo: desarrollar en dev → probar → PR a producción → merge
+
+---
+
+### 13. Páginas legales
 
 - [ ] Términos y condiciones (`/terminos`)
 - [ ] Política de privacidad (`/privacidad`)
@@ -375,3 +386,5 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 - [x] API de autenticación con registro de accesos en logs
 - [x] 20 imágenes de producto extraídas de referencias originales
 - [x] Deploy en Vercel conectado a GitHub
+- [x] Sistema de theming centralizado (lib/theme.ts + CSS vars) — 4 paletas: Tinkilabs, Ocean, Forest, Sunset
+- [x] Tailwind conectado al fichero de tema central

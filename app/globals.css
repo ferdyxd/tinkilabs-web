@@ -2,11 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Variables de diseño (desde lib/theme.ts)
+   ============================================================ */
+
+:root {
+  --color-primary: #FF6B35;
+  --color-primary-light: #FF8C5A;
+  --color-primary-dark: #E55A2B;
+  --color-background: #FAFAFA;
+  --color-background-alt: #08080F;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A2E;
+  --color-text-muted: #6B7280;
+  --color-border: rgba(255,255,255,0.05);
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --font-sans: 'Inter', 'Geist Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-display: 'Geist Sans', 'Inter', system-ui, sans-serif;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+  --motion-fast: 150ms;
+  --motion-normal: 300ms;
+  --motion-slow: 500ms;
+}
+
+/* ─── Para probar otras paletas, cambiar data-theme en <html> ─── */
+
+[data-theme="ocean"] {
+  --color-primary: #0EA5E9;
+  --color-primary-light: #38BDF8;
+  --color-primary-dark: #0284C7;
+  --color-background: #F8FAFC;
+  --color-background-alt: #0F172A;
+  --color-text: #0F172A;
+  --color-text-muted: #64748B;
+}
+
+[data-theme="forest"] {
+  --color-primary: #22C55E;
+  --color-primary-light: #4ADE80;
+  --color-primary-dark: #16A34A;
+  --color-background: #F5F5F0;
+  --color-background-alt: #1A2E1A;
+  --color-text: #1A2E1A;
+  --color-text-muted: #6B7280;
+}
+
+[data-theme="sunset"] {
+  --color-primary: #F59E0B;
+  --color-primary-light: #FBBF24;
+  --color-primary-dark: #D97706;
+  --color-background: #FFFBEB;
+  --color-background-alt: #1C1917;
+  --color-text: #1C1917;
+  --color-text-muted: #78716C;
+}
+
+/* ─── Scroll ─── */
+
 html {
   scroll-behavior: smooth;
 }
 
-/* Ocultar scrollbar pero mantener funcionalidad */
+/* ─── Utilidades ─── */
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -17,7 +81,8 @@ html {
   }
 }
 
-/* Gradientes de marca */
+/* ─── Gradientes de marca ─── */
+
 @layer components {
   .gradient-brand {
     @apply bg-gradient-to-br from-tinki-orange to-tinki-orange-dark;
@@ -30,35 +95,21 @@ html {
   }
 }
 
-/* ============================================================
-   Concepto A — Caja 3D giratoria
-   ============================================================ */
+/* ─── Animaciones ─── */
 
 @keyframes rotateBox {
-  from {
-    transform: rotateY(0deg) rotateX(8deg);
-  }
-  to {
-    transform: rotateY(360deg) rotateX(8deg);
-  }
+  from { transform: rotateY(0deg) rotateX(8deg); }
+  to { transform: rotateY(360deg) rotateX(8deg); }
 }
 
 @keyframes pulseText {
-  0%, 100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-16px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
 }
 
 @keyframes countUp {
@@ -70,11 +121,8 @@ html {
   animation: countUp 0.3s ease-out forwards;
 }
 
-/* ============================================================
-   Concepto B — Taller cinemático (scroll storytelling)
-   ============================================================ */
+/* ─── Scroll storytelling (Concepto B) ─── */
 
-/* Snap scroll en desktop */
 @media (min-width: 768px) {
   .snap-story {
     scroll-snap-type: y mandatory;
@@ -87,49 +135,24 @@ html {
   }
 }
 
-/* Animaciones de piezas */
 @keyframes riseIn {
-  from {
-    opacity: 0;
-    transform: translateY(60px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(60px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleReveal {
-  from {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-80px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-80px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(80px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(80px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes gearSpin {
@@ -150,18 +173,9 @@ html {
 }
 
 @keyframes discFly {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(20%, -80%) scale(1.2) rotate(180deg);
-  }
-  to {
-    opacity: 1;
-    transform: translate(80%, 20%) scale(1) rotate(360deg);
-  }
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: translate(20%, -80%) scale(1.2) rotate(180deg); }
+  to { opacity: 1; transform: translate(80%, 20%) scale(1) rotate(360deg); }
 }
 
 @keyframes glowPulse {
@@ -169,7 +183,8 @@ html {
   50% { box-shadow: 0 0 60px rgba(255, 107, 53, 0.6); }
 }
 
-/* Utilidades de animación para Concepto B */
+/* ─── Utilidades animación Concepto B ─── */
+
 .anim-rise {
   opacity: 0;
   transform: translateY(60px);
