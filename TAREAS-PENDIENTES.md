@@ -140,6 +140,159 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
+### 7. FAQ y Help Center
+
+**Inspiración:** CrunchLabs Help Center (crunchlabshelp.zendesk.com)
+
+**Canales de soporte que tiene CrunchLabs:**
+- Help Center con artículos por categoría (Zendesk)
+- Email: help@crunchlabs.com
+- Teléfono: 650-267-2473
+- Formulario de contacto en la web
+- Chat en vivo (posiblemente Zendesk Chat)
+
+**Estructura típica del Help Center:**
+```
+/ayuda
+├── Primeros pasos
+│   ├── ¿Qué incluye cada caja?
+│   ├── ¿Cuánto tarda el primer envío?
+│   └── ¿Cómo empiezo?
+├── Suscripción
+│   ├── ¿Cómo gestiono mi suscripción?
+│   ├── ¿Puedo saltarme un mes?
+│   ├── ¿Cómo cancelo?
+│   ├── ¿Cómo cambio de plan?
+│   └── ¿Se renueva automáticamente?
+├── Envíos
+│   ├── ¿A qué países enviáis?
+│   ├── ¿Cuánto tardan los envíos?
+│   ├── ¿Cuánto cuesta el envío?
+│   └── Seguimiento del pedido
+├── Pagos
+│   ├── ¿Qué métodos de pago aceptáis?
+│   ├── ¿Cuándo se me cobra?
+│   └── Facturas y recibos
+├── Devoluciones y reembolsos
+│   ├── Política de devolución
+│   └── ¿Cómo solicito un reembolso?
+├── Piezas y repuestos
+│   ├── ¿Falta una pieza? Repuestos gratis
+│   ├── ¿Pieza rota? Cómo pedir recambio
+│   └── ¿Cuánto tardan los repuestos?
+└── Regalo
+    ├── ¿Cómo funcionan los Gift Certificates?
+    ├── ¿Cómo canjeo un certificado de regalo?
+    └── ¿Puedo regalar una sola caja?
+```
+
+**Lo que hay que implementar:**
+
+- [ ] **7a. Sistema de FAQ**
+  - Ruta: `/ayuda` o `/faq`
+  - Categorías colapsables (acordeón)
+  - Buscador de preguntas
+  - Datos desde un JSON o CMS para poder editar sin deploy
+  - Esquema FAQ JSON-LD para rich snippets en Google
+
+- [ ] **7b. Página de contacto**
+  - Ruta: `/ayuda/contacto`
+  - Formulario: nombre, email, asunto, mensaje, categoría
+  - Enviar a email de soporte (Brevo transactional email)
+  - Guardar consulta en BD para seguimiento
+
+- [ ] **7c. Centro de ayuda con artículos**
+  - Ruta: `/ayuda/[slug]`
+  - Artículos individuales con texto e imágenes
+  - Sidebar con categorías
+  - Sistema simple: Markdown en repo o CMS headless
+
+---
+
+### 8. Gestión de suscripción (Portal del cliente)
+
+**Estudio de CrunchLabs — "My Account":**
+
+CrunchLabs permite gestionar TODO desde el panel de cuenta:
+
+| Acción | Cómo funciona en CrunchLabs |
+|--------|--------------------------|
+| **Pausar** | Hasta 3 meses. Botón en "My Account" o email a help@crunchlabs.com |
+| **Cancelar** | Desactivar auto-renewal desde "My Account". Ojo: algunos planes tienen permanencia 12 meses con penalización (~$60) |
+| **Saltar mes** | Similar a pausa — te saltas un envío sin perder la suscripción |
+| **Cambiar plan** | Cambiar de Build Box a Hack Pack, etc. — contactando a soporte |
+| **Cambiar dirección** | Desde "My Account" antes de que se procese el siguiente envío |
+| **Auto-renovación** | Activada por defecto. El cliente debe desactivarla manualmente |
+| **Eliminar método de pago** | No se puede fácilmente — CrunchLabs lo retiene |
+
+**Lo que hay que implementar:**
+
+- [ ] **8a. Página "Mi Cuenta"**
+  - Datos del suscriptor: nombre, email, dirección
+  - Plan activo, fecha de próximo cobro y envío
+  - Historial de cajas recibidas
+
+- [ ] **8b. Pausar / Reanudar suscripción**
+  - Botón "Pausar suscripción" (máx 3 meses)
+  - Indicar hasta qué fecha está pausada
+  - Botón "Reanudar" para reactivar antes
+  - Lógica en backend: Stripe pause/resume
+
+- [ ] **8c. Cancelar suscripción**
+  - Botón "Cancelar suscripción" con confirmación
+  - Preguntar motivo (encuesta opcional: muy caro, no le gusta al niño, etc.)
+  - Si hay permanencia → mostrar penalización
+  - Webhook de Stripe para gestionar el fin de ciclo
+
+- [ ] **8d. Saltar un mes**
+  - Botón "Saltar este mes" en el panel
+  - El próximo envío se retrasa 1 mes
+  - La fecha de renovación se ajusta automáticamente
+
+---
+
+### 9. Repuestos gratis
+
+**Estudio de CrunchLabs — Free Replacement Parts:**
+
+- Si falta una pieza o viene rota → repuesto **gratis** (incluyendo envío)
+- Se solicita desde "My Account" o email a help@crunchlabs.com
+- El equipo de soporte lo gestiona manualmente
+- No hay coste para el cliente NUNCA
+
+**Lo que hay que implementar:**
+
+- [ ] **9a. Formulario de solicitud de repuestos**
+  - Ruta: `/mi-cuenta/repuestos` o dentro de "Mi Cuenta"
+  - Selector de caja (de las recibidas por el cliente)
+  - Campo: ¿qué pieza? (selector con imagen del inventario o texto libre)
+  - Campo: ¿falta o está rota?
+  - Foto opcional de la pieza rota
+  - Enviar solicitud → se crea ticket en backend
+
+- [ ] **9b. Backend de repuestos**
+  - Tabla `replacement_requests`: id, user_id, box_id, part_name, reason, status, created_at
+  - Notificar al equipo de logística (email o webhook a n8n)
+  - Estados: pending → approved → shipped → delivered
+  - El cliente ve el estado desde "Mi Cuenta"
+
+- [ ] **9c. Inventario de piezas por caja**
+  - Cada caja tiene su BOM (bill of materials) con lista de piezas
+  - Relacionado con la base de datos de producto
+  - Permite al cliente seleccionar la pieza exacta del despiece
+
+---
+
+### 10. Páginas legales
+
+- [ ] Términos y condiciones (`/terminos`)
+- [ ] Política de privacidad (`/privacidad`)
+- [ ] Política de devoluciones (`/devoluciones`)
+- [ ] Política de envíos (`/envios`)
+- [ ] Aviso legal (`/aviso-legal`)
+
+---
+
 ## 🟢 Completadas
 
 - [x] Landing page con lista de espera
