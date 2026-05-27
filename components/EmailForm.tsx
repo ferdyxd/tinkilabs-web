@@ -17,12 +17,23 @@ export function EmailForm() {
     setStatus('loading');
     setMessage('');
 
-    // Simulación de envío — conectar con Brevo API más adelante
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      setStatus('success');
-      setMessage('¡Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
-      setEmail('');
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus('success');
+        setMessage(data.message || '¡Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.error || 'Ups, algo falló. Prueba de nuevo en un momento.');
+      }
     } catch {
       setStatus('error');
       setMessage('Ups, algo falló. Prueba de nuevo en un momento.');
