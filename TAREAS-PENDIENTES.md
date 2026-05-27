@@ -140,7 +140,78 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
-### 7. FAQ y Help Center
+### 7. Menú de navegación general (Header/Navbar)
+
+**Inspiración:** CrunchLabs.com — estructura exacta del header
+
+**Estructura en desktop:**
+
+```
+[Suscripciones ▼]  [Comprar más ▼]  [Nosotros ▼]   [LOGO]   [Eventos ✨]  [👤]  [🛒 0]
+```
+
+**Estructura en móvil:**
+- Logo visible + iconos cuenta/carrito fijos
+- Hamburguesa despliega panel vertical con TODO lo mismo secuencialmente
+- Los submenús no son hover, se muestran expandidos en el panel
+
+**Dropdowns detallados:**
+
+**1. Suscripciones ▼** — cards visuales con imagen + texto:
+- "Tinki Cajas" — suscripción mensual de kits STEM (activa) → `/suscribete`
+- "Tinki City" — ciudad modular por meses (en construcción) → badge "Próximamente" → sin link o a lista de espera
+
+**2. Comprar más ▼** — lista de texto (igual que CrunchLabs "Shop More"):
+- "Certificados de Regalo" → `/regalo`
+- "Merch y Extras" → `/tienda` (placeholder)
+- "Repuestos" → `/repuestos`
+
+**3. Nosotros ▼** — lista de texto (igual que CrunchLabs "Our Company"):
+- "Sobre nosotros" → `/nosotros`
+- "FAQ y Ayuda" → `/ayuda`
+- "Reseñas" → `/resenas` (placeholder)
+
+**Derecha del logo:**
+- **Eventos especiales** — badge temporal (ej. "Campamento Verano 🏕️", "Día del Padre 🤖"). Igual que CrunchLabs pone "Dad's Day 🤖" y "Summer Camp 🏕️"
+- **Icono cuenta** → `/mi-cuenta` o `/acceso`
+- **Carrito** con contador → `/cart`
+
+**Lo que hay que implementar:**
+
+- [ ] **7a. Componente Navbar**
+  - Fixed/sticky en top con backdrop-blur (fondo semi-transparente)
+  - Tres dropdowns a la izquierda del logo con hover/click
+  - Logo centrado (SVG Tinkilabs + Tinki)
+  - Iconos cuenta + carrito a la derecha
+  - Badge de "evento especial" entre logo e iconos (dinámico, configurable desde CMS o env var)
+  - En móvil: hamburguesa animada que despliega panel full-screen
+
+- [ ] **7b. Dropdown de Suscripciones**
+  - Cards con imagen de cada línea de suscripción
+  - Tinki Cajas: link activo a `/suscribete`
+  - Tinki City: badge "En construcción" sin link
+  - Animación de entrada (fade + slide)
+
+- [ ] **7c. Dropdown Comprar más**
+  - Lista de texto simple con hover naranja
+  - 3 enlaces (gift, merch, repuestos)
+
+- [ ] **7d. Dropdown Nosotros**
+  - Lista de texto con 3 enlaces (about, FAQ, reseñas)
+  - Opcional: card promocional pequeña con ilustración de Tinki (como hace CrunchLabs con Mark Rober)
+
+- [ ] **7e. Integración con autenticación**
+  - Si el usuario está logueado → icono cuenta va a `/mi-cuenta`
+  - Si no → icono cuenta va a `/acceso`
+  - Leer cookie `tinkilabs_auth` para saber estado
+
+- [ ] **7f. Carrito fantasma**
+  - Por ahora solo icono visual con contador "0"
+  - La funcionalidad real del carrito se implementa más adelante
+
+---
+
+### 8. FAQ y Help Center
 
 **Inspiración:** CrunchLabs Help Center (crunchlabshelp.zendesk.com)
 
@@ -209,7 +280,7 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
-### 8. Gestión de suscripción (Portal del cliente)
+### 9. Gestión de suscripción (Portal del cliente)
 
 **Estudio de CrunchLabs — "My Account":**
 
@@ -251,7 +322,7 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 
 ---
 
-### 9. Repuestos gratis
+### 10. Repuestos gratis
 
 **Estudio de CrunchLabs — Free Replacement Parts:**
 
@@ -283,7 +354,7 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 
 ---
 
-### 10. Páginas legales
+### 11. Páginas legales
 
 - [ ] Términos y condiciones (`/terminos`)
 - [ ] Política de privacidad (`/privacidad`)
