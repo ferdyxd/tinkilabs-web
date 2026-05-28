@@ -92,9 +92,9 @@ export const palette = palettes[activePalette];
 // ─── Tipografía ─────────────────────────────────────────────
 
 export const typography = {
-  fontSans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'] as const,
-  fontMono: ['JetBrains Mono', 'Fira Code', 'monospace'] as const,
-  fontDisplay: ['Geist Sans', 'Inter', 'system-ui', 'sans-serif'] as const,
+  fontSans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'],
+  fontMono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+  fontDisplay: ['Geist Sans', 'Inter', 'system-ui', 'sans-serif'],
 
   // Pesos
   weights: {
