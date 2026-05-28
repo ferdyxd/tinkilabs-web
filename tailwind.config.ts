@@ -1,5 +1,7 @@
 import type { Config } from 'tailwindcss';
-import { palette, typography, shapes, motion } from './lib/theme';
+
+// ⚠️ Los valores aquí deben coincidir con lib/theme.ts (paleta "tinkilabs").
+// Para cambiar de paleta, editar ambos ficheros o usar CSS vars (data-theme).
 
 const config: Config = {
   content: [
@@ -11,50 +13,23 @@ const config: Config = {
     extend: {
       colors: {
         tinki: {
-          orange: palette.primary,
-          dark: palette.backgroundAlt,
-          light: palette.background,
-          'orange-light': palette.primaryLight,
-          'orange-dark': palette.primaryDark,
-        },
-        brand: {
-          primary: palette.primary,
-          'primary-light': palette.primaryLight,
-          'primary-dark': palette.primaryDark,
-          bg: palette.background,
-          'bg-alt': palette.backgroundAlt,
-          surface: palette.surface,
-          text: palette.text,
-          'text-muted': palette.textMuted,
-          border: palette.border,
-          success: palette.success,
-          error: palette.error,
+          orange: '#FF6B35',
+          dark: '#08080F',
+          light: '#FAFAFA',
+          'orange-light': '#FF8C5A',
+          'orange-dark': '#E55A2B',
         },
       },
       fontFamily: {
-        sans: typography.fontSans,
-        mono: typography.fontMono,
-        display: typography.fontDisplay,
+        sans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        display: ['Geist Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
-      fontWeight: typography.weights,
-      fontSize: typography.scale,
       borderRadius: {
-        sm: shapes.radius.sm,
-        md: shapes.radius.md,
-        lg: shapes.radius.lg,
-        xl: shapes.radius.xl,
-        full: shapes.radius.full,
-      },
-      boxShadow: {
-        'brand-sm': shapes.shadows.sm,
-        'brand-md': shapes.shadows.md,
-        'brand-lg': shapes.shadows.lg,
-        'brand-glow': shapes.shadows.glow(palette.primary),
-      },
-      transitionDuration: {
-        fast: motion.duration.fast,
-        normal: motion.duration.normal,
-        slow: motion.duration.slow,
+        sm: '0.5rem',
+        md: '0.75rem',
+        lg: '1rem',
+        xl: '1.5rem',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
