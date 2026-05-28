@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-// ─── Datos de los dropdowns ──────────────────────────────────
+// ─── Datos ──────────────────────────────────────────────────
 
 const suscripciones = [
-  { nombre: 'Tinki Cajas', desc: 'Suscripción mensual de kits STEM', link: '/suscribete', activo: true, icon: '📦' },
-  { nombre: 'Tinki City', desc: 'Ciudad modular por meses', link: '', activo: false, icon: '🏙️' },
+  { nombre: 'Tinki Cajas', edad: '6-14 años', subtitulo: 'Kits STEM mensuales', link: '/suscribete', activo: true, icon: '📦' },
+  { nombre: 'Tinki City', edad: 'Próximamente', subtitulo: 'Ciudad modular por meses', link: '', activo: false, icon: '🏙️' },
 ];
 
 const comprarMas = [
@@ -22,15 +22,13 @@ const nosotros = [
   { nombre: 'Reseñas', link: '/resenas' },
 ];
 
-const eventoEspecial = { nombre: 'Verano 🏕️', link: '/campamento' };
-
-// ─── Iconos SVG inline ─────────────────────────────────────
+// ─── Iconos SVG (18px, finos) ───────────────────────────────
 
 function UserIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4.5" />
+      <path d="M4 21v-1.5a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5V21" />
     </svg>
   );
 }
@@ -38,13 +36,13 @@ function UserIcon() {
 function CartIcon({ count }: { count: number }) {
   return (
     <div className="relative">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="9" cy="20" r="1.5" />
-        <circle cx="18" cy="20" r="1.5" />
-        <path d="M3 3h2l1.5 12h11l1.5-9H6" />
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="20" r="1" />
+        <circle cx="18" cy="20" r="1" />
+        <path d="M3 3h2.5l1.6 11.7h10.4L20 6H5.5" />
       </svg>
       {count > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--color-primary)] text-[10px] font-bold text-white">
+        <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--color-primary)] text-[9px] font-bold text-white leading-none">
           {count}
         </span>
       )}
@@ -54,15 +52,15 @@ function CartIcon({ count }: { count: number }) {
 
 function Hamburger({ open }: { open: boolean }) {
   return (
-    <div className="flex h-5 w-5 flex-col items-center justify-center gap-1">
-      <span className={`block h-[1.5px] w-4 rounded bg-current transition-all ${open ? 'translate-y-[3px] rotate-45' : ''}`} />
-      <span className={`block h-[1.5px] w-4 rounded bg-current transition-all ${open ? 'opacity-0' : ''}`} />
-      <span className={`block h-[1.5px] w-4 rounded bg-current transition-all ${open ? '-translate-y-[3px] -rotate-45' : ''}`} />
+    <div className="flex h-4 w-4 flex-col items-center justify-center gap-[3px]">
+      <span className={`block h-px w-4 rounded bg-current transition-all origin-center ${open ? 'translate-y-[2px] rotate-45' : ''}`} />
+      <span className={`block h-px w-4 rounded bg-current transition-all ${open ? 'opacity-0' : ''}`} />
+      <span className={`block h-px w-4 rounded bg-current transition-all origin-center ${open ? '-translate-y-[2px] -rotate-45' : ''}`} />
     </div>
   );
 }
 
-// ─── Componente principal ───────────────────────────────────
+// ─── Navbar ─────────────────────────────────────────────────
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -71,14 +69,12 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Detectar scroll para backdrop
   useEffect(() => {
-    const cb = () => setScrolled(window.scrollY > 10);
+    const cb = () => setScrolled(window.scrollY > 8);
     window.addEventListener('scroll', cb, { passive: true });
     return () => window.removeEventListener('scroll', cb);
   }, []);
 
-  // Cargar usuario autenticado
   useEffect(() => {
     fetch('/api/auth/me')
       .then(r => r.ok ? r.json() : null)
@@ -86,7 +82,6 @@ export function Navbar() {
       .catch(() => {});
   }, []);
 
-  // Bloquear scroll cuando menú móvil abierto
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -98,106 +93,94 @@ export function Navbar() {
   };
 
   const handleLeave = () => {
-    closeTimer.current = setTimeout(() => setDropdown(null), 150);
+    closeTimer.current = setTimeout(() => setDropdown(null), 120);
   };
 
   const hasBg = scrolled || open;
-  const navColor = hasBg ? 'var(--color-text)' : '#ffffff';
+  const navTextColor = hasBg ? 'var(--color-text)' : '#ffffff';
 
   return (
     <>
+      {/* ─── Navbar ─────────────────────────────────────── */}
       <nav
-        className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-          hasBg
-            ? 'border-b shadow-sm backdrop-blur-xl'
-            : ''
-        }`}
+        className="fixed top-0 z-50 w-full transition-all duration-300"
         style={{
           background: hasBg ? 'var(--color-background)' : 'transparent',
-          borderColor: 'var(--color-border)',
-          color: navColor,
+          borderBottom: hasBg ? '1px solid var(--color-border)' : '1px solid transparent',
+          color: navTextColor,
         }}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-6">
-          {/* Hamburguesa (móvil) */}
-          <button
-            className="lg:hidden"
-            onClick={() => setOpen(!open)}
-            aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
-          >
+        <div className="mx-auto flex h-[58px] max-w-7xl items-center gap-5 px-5">
+          {/* Hamburguesa móvil */}
+          <button className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menú">
             <Hamburger open={open} />
           </button>
 
-          {/* Izquierda: dropdowns (desktop) */}
-          <div className="hidden lg:flex items-center gap-1">
+          {/* ─── Izquierda: dropdowns ─────────────────── */}
+          <div className="hidden lg:flex items-center gap-0.5">
             {/* Suscripciones */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleEnter('subs')}
-              onMouseLeave={handleLeave}
-            >
+            <div className="relative" onMouseEnter={() => handleEnter('subs')} onMouseLeave={handleLeave}>
               <button
                 onClick={() => setDropdown(dropdown === 'subs' ? null : 'subs')}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  dropdown === 'subs' ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                  dropdown === 'subs' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
                 }`}
               >
                 Suscripciones
               </button>
               {dropdown === 'subs' && (
                 <div
-                  className="absolute left-0 top-full mt-1 w-72 rounded-2xl border p-3 shadow-xl backdrop-blur-xl"
+                  className="absolute left-0 top-full mt-0.5 w-[440px] rounded-xl border p-3 shadow-xl"
                   style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
                 >
-                  {suscripciones.map(s => (
-                    <div key={s.nombre} className="mb-1 last:mb-0">
-                      {s.activo ? (
-                        <Link
-                          href={s.link}
-                          onClick={() => setDropdown(null)}
-                          className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-[var(--color-primary)]/5"
-                        >
-                          <span className="text-2xl">{s.icon}</span>
-                          <div>
-                            <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{s.nombre}</p>
-                            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.desc}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {suscripciones.map(s => (
+                      <div key={s.nombre}>
+                        {s.activo ? (
+                          <Link
+                            href={s.link}
+                            onClick={() => setDropdown(null)}
+                            className="flex items-start gap-2.5 rounded-lg p-2.5 transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
+                          >
+                            <span className="mt-0.5 text-xl leading-none">{s.icon}</span>
+                            <div className="min-w-0">
+                              <p className="text-[13px] font-semibold leading-tight" style={{ color: 'var(--color-text)' }}>{s.nombre}</p>
+                              <p className="text-[11px] leading-tight mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.subtitulo}</p>
+                              <p className="text-[10px] mt-1" style={{ color: 'var(--color-text-muted)' }}>{s.edad}</p>
+                            </div>
+                          </Link>
+                        ) : (
+                          <div className="flex items-start gap-2.5 rounded-lg p-2.5 opacity-45 cursor-not-allowed">
+                            <span className="mt-0.5 text-xl leading-none">{s.icon}</span>
+                            <div className="min-w-0">
+                              <p className="text-[13px] font-semibold leading-tight" style={{ color: 'var(--color-text)' }}>{s.nombre}</p>
+                              <p className="text-[11px] leading-tight mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.subtitulo}</p>
+                              <span className="inline-block mt-1 rounded-md bg-[var(--color-primary)]/10 px-1.5 py-0.5 text-[10px] font-semibold" style={{ color: 'var(--color-primary)' }}>
+                                Próximamente
+                              </span>
+                            </div>
                           </div>
-                        </Link>
-                      ) : (
-                        <div className="flex items-start gap-3 rounded-xl p-3 opacity-50 cursor-not-allowed">
-                          <span className="text-2xl">{s.icon}</span>
-                          <div>
-                            <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{s.nombre}</p>
-                            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.desc}</p>
-                            <span className="mt-1 inline-block rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-[10px] font-semibold" style={{ color: 'var(--color-primary)' }}>
-                              Próximamente
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Comprar más */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleEnter('shop')}
-              onMouseLeave={handleLeave}
-            >
+            <div className="relative" onMouseEnter={() => handleEnter('shop')} onMouseLeave={handleLeave}>
               <button
                 onClick={() => setDropdown(dropdown === 'shop' ? null : 'shop')}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  dropdown === 'shop' ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                  dropdown === 'shop' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
                 }`}
               >
                 Comprar más
               </button>
               {dropdown === 'shop' && (
                 <div
-                  className="absolute left-0 top-full mt-1 w-52 rounded-2xl border py-2 shadow-xl backdrop-blur-xl"
+                  className="absolute left-0 top-full mt-0.5 w-48 rounded-xl border py-1.5 shadow-xl"
                   style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
                 >
                   {comprarMas.map(item => (
@@ -205,7 +188,7 @@ export function Navbar() {
                       key={item.nombre}
                       href={item.link}
                       onClick={() => setDropdown(null)}
-                      className="block px-4 py-2.5 text-sm transition-colors hover:bg-[var(--color-primary)]/5"
+                      className="block px-3.5 py-2 text-[13px] transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
                       style={{ color: 'var(--color-text)' }}
                     >
                       {item.nombre}
@@ -216,22 +199,18 @@ export function Navbar() {
             </div>
 
             {/* Nosotros */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleEnter('about')}
-              onMouseLeave={handleLeave}
-            >
+            <div className="relative" onMouseEnter={() => handleEnter('about')} onMouseLeave={handleLeave}>
               <button
                 onClick={() => setDropdown(dropdown === 'about' ? null : 'about')}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  dropdown === 'about' ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                  dropdown === 'about' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
                 }`}
               >
                 Nosotros
               </button>
               {dropdown === 'about' && (
                 <div
-                  className="absolute left-0 top-full mt-1 w-52 rounded-2xl border py-2 shadow-xl backdrop-blur-xl"
+                  className="absolute left-0 top-full mt-0.5 w-48 rounded-xl border py-1.5 shadow-xl"
                   style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
                 >
                   {nosotros.map(item => (
@@ -239,7 +218,7 @@ export function Navbar() {
                       key={item.nombre}
                       href={item.link}
                       onClick={() => setDropdown(null)}
-                      className="block px-4 py-2.5 text-sm transition-colors hover:bg-[var(--color-primary)]/5"
+                      className="block px-3.5 py-2 text-[13px] transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
                       style={{ color: 'var(--color-text)' }}
                     >
                       {item.nombre}
@@ -250,31 +229,29 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Logo (centrado en desktop) */}
-          <div className="flex-1 text-center lg:flex-none lg:mx-auto">
-            <Link href="/" className="text-lg font-bold tracking-tight transition-colors hover:opacity-70" style={{ color: 'var(--color-text)' }}>
+          {/* ─── Logo ────────────────────────────────────── */}
+          <div className="flex-1 lg:flex-none lg:mx-auto text-center lg:text-left">
+            <Link href="/" className="text-base font-bold tracking-tight transition-colors hover:opacity-70" style={{ color: navTextColor }}>
               Tinkilabs
             </Link>
           </div>
 
-          {/* Derecha: evento + cuenta + carrito */}
-          <div className="flex items-center gap-3">
-            {/* Evento especial */}
-            {eventoEspecial && (
-              <Link
-                href={eventoEspecial.link}
-                className="hidden sm:inline-block rounded-full border px-3 py-1.5 text-xs font-medium transition-all hover:border-[var(--color-primary)]/30"
-                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
-              >
-                {eventoEspecial.nombre}
-              </Link>
-            )}
+          {/* ─── Derecha ─────────────────────────────────── */}
+          <div className="flex items-center gap-2.5">
+            {/* Badge evento */}
+            <Link
+              href="/campamento"
+              className="hidden sm:inline-block rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all hover:bg-white/10"
+              style={{ color: navTextColor, opacity: hasBg ? 0.65 : 0.85 }}
+            >
+              Verano 🏕️
+            </Link>
 
             {/* Cuenta */}
             <Link
               href={userName ? '/mi-cuenta' : '/acceso'}
-              className="rounded-lg p-1.5 transition-colors hover:opacity-70"
-              style={{ color: 'var(--color-text)' }}
+              className="rounded-md p-1 transition-colors hover:opacity-60"
+              style={{ color: navTextColor }}
               title={userName || 'Acceder'}
             >
               <UserIcon />
@@ -283,8 +260,8 @@ export function Navbar() {
             {/* Carrito */}
             <Link
               href="/cart"
-              className="rounded-lg p-1.5 transition-colors hover:opacity-70"
-              style={{ color: 'var(--color-text)' }}
+              className="rounded-md p-1 transition-colors hover:opacity-60"
+              style={{ color: navTextColor }}
             >
               <CartIcon count={0} />
             </Link>
@@ -292,39 +269,40 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* ─── Menú móvil full-screen ────────────────────────── */}
+      {/* ─── Móvil full-screen ──────────────────────────────── */}
       <div
-        className={`fixed inset-0 z-40 flex flex-col overflow-y-auto pt-16 transition-all duration-300 lg:hidden ${
+        className={`fixed inset-0 z-40 flex flex-col overflow-y-auto pt-[58px] transition-all duration-300 lg:hidden ${
           open ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
         }`}
         style={{ background: 'var(--color-background)', color: 'var(--color-text)' }}
       >
-        <div className="flex-1 space-y-6 px-6 py-8">
-          {/* Suscripciones */}
+        <div className="flex-1 space-y-6 px-5 py-6">
+          {/* Suscripciones móvil */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Suscripciones</h3>
-            <div className="space-y-2">
+            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Suscripciones</h3>
+            <div className="space-y-1.5">
               {suscripciones.map(s => (
                 <div key={s.nombre}>
                   {s.activo ? (
-                    <Link href={s.link} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-xl border p-4"
+                    <Link href={s.link} onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 rounded-lg border p-3"
                       style={{ borderColor: 'var(--color-border)' }}
                     >
-                      <span className="text-2xl">{s.icon}</span>
+                      <span className="text-xl">{s.icon}</span>
                       <div>
-                        <p className="text-sm font-semibold">{s.nombre}</p>
-                        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.desc}</p>
+                        <p className="text-[13px] font-semibold">{s.nombre}</p>
+                        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{s.subtitulo} &middot; {s.edad}</p>
                       </div>
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-3 rounded-xl border p-4 opacity-50"
+                    <div className="flex items-center gap-3 rounded-lg border p-3 opacity-45"
                       style={{ borderColor: 'var(--color-border)' }}
                     >
-                      <span className="text-2xl">{s.icon}</span>
+                      <span className="text-xl">{s.icon}</span>
                       <div>
-                        <p className="text-sm font-semibold">{s.nombre}</p>
-                        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.desc}</p>
-                        <span className="mt-1 inline-block rounded-full bg-[var(--color-primary)]/10 px-2 py-0.5 text-[10px] font-semibold" style={{ color: 'var(--color-primary)' }}>Próximamente</span>
+                        <p className="text-[13px] font-semibold">{s.nombre}</p>
+                        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{s.subtitulo}</p>
+                        <span className="inline-block mt-1 rounded-md bg-[var(--color-primary)]/10 px-1.5 py-0.5 text-[10px] font-semibold" style={{ color: 'var(--color-primary)' }}>Próximamente</span>
                       </div>
                     </div>
                   )}
@@ -333,13 +311,13 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Comprar más */}
+          {/* Comprar más móvil */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Comprar más</h3>
-            <div className="space-y-1">
+            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Comprar más</h3>
+            <div className="space-y-0.5">
               {comprarMas.map(item => (
                 <Link key={item.nombre} href={item.link} onClick={() => setOpen(false)}
-                  className="block rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-[var(--color-primary)]/5"
+                  className="block rounded-md px-3 py-2 text-[13px] transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
                 >
                   {item.nombre}
                 </Link>
@@ -347,13 +325,13 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Nosotros */}
+          {/* Nosotros móvil */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nosotros</h3>
-            <div className="space-y-1">
+            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nosotros</h3>
+            <div className="space-y-0.5">
               {nosotros.map(item => (
                 <Link key={item.nombre} href={item.link} onClick={() => setOpen(false)}
-                  className="block rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-[var(--color-primary)]/5"
+                  className="block rounded-md px-3 py-2 text-[13px] transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
                 >
                   {item.nombre}
                 </Link>
@@ -361,26 +339,23 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Evento especial (móvil) */}
-          {eventoEspecial && (
-            <Link href={eventoEspecial.link} onClick={() => setOpen(false)}
-              className="block rounded-xl border px-4 py-3 text-center text-sm font-medium"
-              style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
-            >
-              {eventoEspecial.nombre}
-            </Link>
-          )}
+          {/* Evento móvil */}
+          <Link href="/campamento" onClick={() => setOpen(false)}
+            className="block rounded-lg border px-4 py-2.5 text-center text-[13px] font-medium"
+            style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
+          >
+            Verano 🏕️
+          </Link>
         </div>
 
-        {/* Footer menú móvil */}
-        <div className="border-t px-6 py-4" style={{ borderColor: 'var(--color-border)' }}>
-          <p className="text-center text-xs" style={{ color: 'var(--color-text-muted)' }}>
+        <div className="border-t px-5 py-3" style={{ borderColor: 'var(--color-border)' }}>
+          <p className="text-center text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
             {userName ? `Hola, ${userName}` : 'Tinkilabs'}
           </p>
         </div>
       </div>
 
-      {/* ─── Overlay ────────────────────────────────────────── */}
+      {/* Overlay */}
       {open && (
         <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={() => setOpen(false)} />
       )}
