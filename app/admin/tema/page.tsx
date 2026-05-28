@@ -159,52 +159,62 @@ export default function AdminTemaPage() {
 
   // ─── Login ──────────────────────────────────────────────
 
+  const bg = current.backgroundAlt;
+  const surface = current.backgroundAlt === '#FAFAFA' || current.backgroundAlt === '#F8FAFC' || current.backgroundAlt === '#F5F5F0' || current.backgroundAlt === '#FFFBEB'
+    ? '#FFFFFF'
+    : '#0d0d14';
+  const isDark = !['#FAFAFA', '#F8FAFC', '#F5F5F0', '#FFFBEB'].includes(current.backgroundAlt);
+
   if (!authed) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f]">
-        <div className="w-80 rounded-2xl border border-white/5 bg-white/[0.02] p-8">
-          <h1 className="text-lg font-bold text-white">Theme Editor</h1>
-          <p className="mt-1 text-sm text-white/30">Acceso restringido</p>
+      <div className="flex min-h-screen items-center justify-center" style={{ background: bg }}>
+        <div className="w-80 rounded-2xl p-8" style={{ background: surface, border: `1px solid ${current.border}` }}>
+          <h1 className="text-lg font-bold" style={{ color: current.text }}>Theme Editor</h1>
+          <p className="mt-1 text-sm" style={{ color: current.textMuted }}>Acceso restringido</p>
           <input
             type="password" value={password} placeholder="Contraseña"
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
             autoFocus
-            className="mt-6 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[var(--color-primary)]/50"
+            className="mt-6 w-full rounded-xl px-4 py-3 text-sm outline-none"
+            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
           />
           <button onClick={handleLogin}
-            className="mt-3 w-full rounded-xl bg-[var(--color-primary)] px-4 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+            className="mt-3 w-full rounded-xl px-4 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+            style={{ background: current.primary }}
           >
             Entrar
           </button>
-          {loginError && <p className="mt-2 text-center text-xs text-red-400">{loginError}</p>}
+          {loginError && <p className="mt-2 text-center text-xs" style={{ color: current.error }}>{loginError}</p>}
         </div>
       </div>
     );
   }
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f]"><p className="text-white/30">Cargando editor...</p></div>;
+    return <div className="flex min-h-screen items-center justify-center" style={{ background: bg }}>
+      <p style={{ color: current.textMuted }}>Cargando editor...</p>
+    </div>;
   }
 
   // ─── Editor ─────────────────────────────────────────────
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0a0a0f] text-white">
+    <div className="flex h-screen overflow-hidden" style={{ background: bg, color: current.text }}>
       {/* ─── Panel izquierdo: controles ─────────────────── */}
-      <aside className="w-96 flex-shrink-0 overflow-y-auto border-r border-white/5 bg-[#0d0d14] p-6">
+      <aside className="w-96 flex-shrink-0 overflow-y-auto border-r p-6" style={{ background: surface, borderColor: current.border }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/" className="text-sm font-bold tracking-tight hover:opacity-70 transition-opacity">Tinkilabs</Link>
-            <p className="text-xs text-white/20">Theme Editor</p>
+            <Link href="/" className="text-sm font-bold tracking-tight hover:opacity-70 transition-opacity" style={{ color: current.text }}>Tinkilabs</Link>
+            <p className="text-xs" style={{ color: current.textMuted }}>Theme Editor</p>
           </div>
           <button onClick={handleSave}
-            className={`rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
-              saved
-                ? 'bg-emerald-500/20 text-emerald-400'
-                : 'bg-[var(--color-primary)] text-white hover:opacity-90'
-            }`}
+            className="rounded-lg px-4 py-2 text-xs font-semibold transition-all"
+            style={saved
+              ? { background: `${current.success}20`, color: current.success }
+              : { background: current.primary, color: '#fff' }
+            }
           >
             {saved ? '✓ Guardado' : 'Guardar'}
           </button>
@@ -212,17 +222,18 @@ export default function AdminTemaPage() {
 
         {/* Selector de paleta */}
         <section className="mb-8">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/30">Paleta activa</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: current.textMuted }}>Paleta activa</h3>
           <div className="grid grid-cols-2 gap-2">
             {(Object.entries(paletteLabels) as [PaletteName, string][]).map(([key, label]) => (
               <button
                 key={key}
                 onClick={() => setActivePalette(key)}
-                className={`rounded-lg px-3 py-2 text-left text-xs transition-all ${
+                className="rounded-lg px-3 py-2 text-left text-xs transition-all"
+                style={
                   activePalette === key
-                    ? 'bg-[var(--color-primary)]/20 border border-[var(--color-primary)]/40 text-white'
-                    : 'bg-white/[0.02] border border-white/5 text-white/40 hover:border-white/15'
-                }`}
+                    ? { background: `${current.primary}20`, border: `1px solid ${current.primary}60`, color: current.text }
+                    : { background: bg, border: `1px solid ${current.border}`, color: current.textMuted }
+                }
               >
                 <span className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full" style={{ background: palettes[key].primary }} />
@@ -235,7 +246,7 @@ export default function AdminTemaPage() {
 
         {/* Colores */}
         <section className="mb-8">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/30">Colores</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: current.textMuted }}>Colores</h3>
           <div className="space-y-3">
             {(Object.entries(colorLabels) as [keyof PaletteColors, string][]).map(([key, label]) => (
               <div key={key} className="flex items-center gap-3">
@@ -251,9 +262,10 @@ export default function AdminTemaPage() {
                   type="text"
                   value={current[key]}
                   onChange={e => updateColor(key, e.target.value)}
-                  className="flex-1 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-1.5 text-xs font-mono text-white/80 outline-none focus:border-[var(--color-primary)]/30"
+                  className="flex-1 rounded-lg px-3 py-1.5 text-xs font-mono outline-none"
+                  style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
                 />
-                <span className="w-20 text-right text-xs text-white/20">{label}</span>
+                <span className="w-20 text-right text-xs" style={{ color: current.textMuted }}>{label}</span>
               </div>
             ))}
           </div>
@@ -261,25 +273,28 @@ export default function AdminTemaPage() {
 
         {/* Tipografía */}
         <section className="mb-8">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/30">Tipografía</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: current.textMuted }}>Tipografía</h3>
 
-          <label className="mb-2 block text-xs text-white/25">Texto (UI)</label>
+          <label className="mb-2 block text-xs" style={{ color: current.textMuted }}>Texto (UI)</label>
           <select value={fontSans} onChange={e => { setFontSans(e.target.value); setSaved(false); }}
-            className="mb-4 w-full rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 text-xs text-white/80 outline-none focus:border-[var(--color-primary)]/30"
+            className="mb-4 w-full rounded-lg px-3 py-2 text-xs outline-none"
+            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
           >
             {googleFonts.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
 
-          <label className="mb-2 block text-xs text-white/25">Títulos (Display)</label>
+          <label className="mb-2 block text-xs" style={{ color: current.textMuted }}>Títulos (Display)</label>
           <select value={fontDisplay} onChange={e => { setFontDisplay(e.target.value); setSaved(false); }}
-            className="mb-4 w-full rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 text-xs text-white/80 outline-none focus:border-[var(--color-primary)]/30"
+            className="mb-4 w-full rounded-lg px-3 py-2 text-xs outline-none"
+            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
           >
             {googleFonts.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
 
-          <label className="mb-2 block text-xs text-white/25">Código (Mono)</label>
+          <label className="mb-2 block text-xs" style={{ color: current.textMuted }}>Código (Mono)</label>
           <select value={fontMono} onChange={e => { setFontMono(e.target.value); setSaved(false); }}
-            className="w-full rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 text-xs text-white/80 outline-none focus:border-[var(--color-primary)]/30"
+            className="w-full rounded-lg px-3 py-2 text-xs outline-none"
+            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
           >
             {['JetBrains Mono', 'Fira Code', 'IBM Plex Mono', 'Source Code Pro', 'Cascadia Code'].map(f => (
               <option key={f} value={f}>{f}</option>
