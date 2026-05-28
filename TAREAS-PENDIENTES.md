@@ -388,3 +388,4 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 - [x] Deploy en Vercel conectado a GitHub
 - [x] Sistema de theming centralizado (lib/theme.ts + CSS vars) — 4 paletas: Tinkilabs, Ocean, Forest, Sunset
 - [x] Tailwind conectado al fichero de tema central
+- [x] Navbar general tipo CrunchLabs (dropdowns, logo, cuenta, carrito, responsive, móvil full-screen)
