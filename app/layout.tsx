@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Navbar } from '@/components/Navbar';
+import { OrganizationSchema } from '@/components/JsonLd';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="min-h-screen bg-tinki-light font-sans text-tinki-dark antialiased">
+        <OrganizationSchema />
         <Navbar />
         {children}
       </body>
