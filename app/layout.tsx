@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 import { OrganizationSchema } from '@/components/JsonLd';
 import './globals.css';
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <OrganizationSchema />
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
