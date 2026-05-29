@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool, { ensureTables } from '@/lib/db';
-import {
-  addContact,
-  sendTransactionalEmail,
-  plantillaGiftComprador,
-} from '@/lib/brevo';
+import { db } from '@/db';
+import { giftCertificates } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { CreateGiftSchema } from '@/lib/validations';
+import { error400, error404, error500 } from '@/lib/api-utils';
+import { addContact, sendTransactionalEmail, plantillaGiftComprador } from '@/lib/brevo';
 import crypto from 'crypto';
 
 function generateCode(): string {
@@ -12,18 +12,6 @@ function generateCode(): string {
   const seg = () => Array.from(crypto.randomBytes(4))
     .map(b => chars[b % chars.length]).join('');
   return `TINKI-${seg()}-${seg()}`;
-}
-
-interface GiftRequest {
-  product: string;
-  durationMonths: number;
-  priceCents: number;
-  purchaserName: string;
-  purchaserEmail?: string;
-  recipientName: string;
-  recipientEmail: string;
-  message?: string;
-  sendDate: string;
 }
 
 const PRODUCTO_NOMBRES: Record<string, string> = {
@@ -34,45 +22,40 @@ const PRODUCTO_NOMBRES: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureTables();
+    const raw = await request.json();
+    const parsed = CreateGiftSchema.safeParse(raw);
 
-    const body: GiftRequest = await request.json();
-
-    if (!body.product || !body.durationMonths || !body.priceCents ||
-        !body.purchaserName || !body.recipientName || !body.recipientEmail || !body.sendDate) {
-      return NextResponse.json(
-        { error: 'Faltan campos obligatorios' },
-        { status: 400 }
-      );
+    if (!parsed.success) {
+      return error400('Validación fallida', parsed.error);
     }
 
-    if (![3, 6, 12].includes(body.durationMonths)) {
-      return NextResponse.json(
-        { error: 'Duración no válida (3, 6 o 12 meses)' },
-        { status: 400 }
-      );
-    }
-
+    const body = parsed.data;
     const code = generateCode();
 
-    const result = await pool.query(
-      `INSERT INTO gift_certificates
-       (code, product, duration_months, price_cents, purchaser_name, purchaser_email,
-        recipient_name, recipient_email, message, send_date, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'pending')
-       RETURNING id, code, status, created_at`,
-      [code, body.product, body.durationMonths, body.priceCents,
-       body.purchaserName, body.purchaserEmail || null,
-       body.recipientName, body.recipientEmail,
-       body.message || null, body.sendDate]
-    );
+    const result = await db.insert(giftCertificates).values({
+      codigo: code,
+      producto: body.product,
+      duracionMeses: body.durationMonths,
+      precioCents: body.priceCents,
+      nombreComprador: body.purchaserName,
+      emailComprador: body.purchaserEmail || null,
+      nombreDestinatario: body.recipientName,
+      emailDestinatario: body.recipientEmail,
+      mensaje: body.message || null,
+      fechaEnvio: body.sendDate,
+      estado: 'pendiente',
+    }).returning({
+      id: giftCertificates.id,
+      codigo: giftCertificates.codigo,
+      estado: giftCertificates.estado,
+      createdAt: giftCertificates.createdAt,
+    });
 
-    const gift = result.rows[0];
+    const gift = result[0];
     const productoNombre = PRODUCTO_NOMBRES[body.product] || body.product;
     const total = (body.priceCents / 100).toFixed(2).replace('.', ',');
 
-    // Email de confirmación al comprador
-    if (body.purchaserEmail && body.purchaserEmail.includes('@')) {
+    if (body.purchaserEmail) {
       await addContact({
         email: body.purchaserEmail,
         nombre: body.purchaserName,
@@ -89,7 +72,7 @@ export async function POST(request: NextRequest) {
           productoNombre,
           body.durationMonths,
           total,
-          gift.code
+          gift.codigo
         ),
       });
     }
@@ -98,54 +81,38 @@ export async function POST(request: NextRequest) {
       success: true,
       gift: {
         id: gift.id,
-        code: gift.code,
-        status: gift.status,
-        createdAt: gift.created_at,
+        code: gift.codigo,
+        status: gift.estado,
+        createdAt: gift.createdAt,
       },
     });
   } catch (error) {
     console.error('Error al crear gift certificate:', error);
-    return NextResponse.json(
-      { error: 'Error interno al crear el certificado' },
-      { status: 500 }
-    );
+    return error500();
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    await ensureTables();
-
     const code = request.nextUrl.searchParams.get('code');
+
     if (!code) {
-      return NextResponse.json(
-        { error: 'Falta el parámetro code' },
-        { status: 400 }
-      );
+      return error400('Falta el parámetro code');
     }
 
-    const result = await pool.query(
-      `SELECT code, product, duration_months, price_cents, purchaser_name,
-              recipient_name, recipient_email, message, send_date, status,
-              redeemed_at, created_at
-       FROM gift_certificates
-       WHERE code = $1`,
-      [code.toUpperCase().trim()]
-    );
+    const result = await db
+      .select()
+      .from(giftCertificates)
+      .where(eq(giftCertificates.codigo, code.toUpperCase().trim()))
+      .limit(1);
 
-    if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Código no encontrado' },
-        { status: 404 }
-      );
+    if (result.length === 0) {
+      return error404('Código no encontrado');
     }
 
-    return NextResponse.json({ gift: result.rows[0] });
+    return NextResponse.json({ gift: result[0] });
   } catch (error) {
     console.error('Error al consultar gift certificate:', error);
-    return NextResponse.json(
-      { error: 'Error interno' },
-      { status: 500 }
-    );
+    return error500();
   }
 }

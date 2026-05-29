@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool, { ensureTables } from '@/lib/db';
-import {
-  addContact,
-  sendTransactionalEmail,
-  plantillaGiftDestinatario,
-} from '@/lib/brevo';
+import { db } from '@/db';
+import { giftCertificates } from '@/db/schema';
+import { and, eq, sql } from 'drizzle-orm';
+import { error401, error500 } from '@/lib/api-utils';
+import { addContact, sendTransactionalEmail, plantillaGiftDestinatario } from '@/lib/brevo';
 
 const PRODUCTO_NOMBRES: Record<string, string> = {
   'tinki-maker': 'Tinki Maker',
@@ -19,61 +18,59 @@ const PRODUCTO_NOMBRES: Record<string, string> = {
  */
 export async function GET(request: NextRequest) {
   const secret = request.nextUrl.searchParams.get('secret');
-  const expected = process.env.CRON_SECRET || 'tinki-cron-2026';
+  const expected = process.env.CRON_SECRET;
 
-  if (secret !== expected) {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  if (!expected || secret !== expected) {
+    return error401('No autorizado');
   }
 
   try {
-    await ensureTables();
+    const result = await db
+      .select()
+      .from(giftCertificates)
+      .where(
+        and(
+          eq(giftCertificates.fechaEnvio, sql`CURRENT_DATE`),
+          eq(giftCertificates.estado, 'pendiente')
+        )
+      )
+      .limit(50);
 
-    const result = await pool.query(
-      `SELECT id, code, product, duration_months, purchaser_name,
-              recipient_name, recipient_email, message, send_date
-       FROM gift_certificates
-       WHERE send_date = CURRENT_DATE AND status = 'pending'
-       LIMIT 50`
-    );
-
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return NextResponse.json({ sent: 0, message: 'No hay certificados para enviar hoy' });
     }
 
-    const enviados = [];
+    const enviados: string[] = [];
 
-    for (const gift of result.rows) {
-      const productoNombre = PRODUCTO_NOMBRES[gift.product] || gift.product;
+    for (const gift of result) {
+      const productoNombre = PRODUCTO_NOMBRES[gift.producto] || gift.producto;
 
-      // Añadir destinatario a Brevo (lista de leads/regalos)
       await addContact({
-        email: gift.recipient_email,
-        nombre: gift.recipient_name,
+        email: gift.emailDestinatario,
+        nombre: gift.nombreDestinatario,
         listIds: [3],
-        attributes: { TIPO: 'regalo_destinatario', CODIGO: gift.code },
+        attributes: { TIPO: 'regalo_destinatario', CODIGO: gift.codigo },
       });
 
-      // Enviar email del certificado
       const res = await sendTransactionalEmail({
-        to: { email: gift.recipient_email, name: gift.recipient_name },
-        subject: `¡${gift.purchaser_name} te ha regalado Tinkilabs! 🎁`,
+        to: { email: gift.emailDestinatario, name: gift.nombreDestinatario },
+        subject: `¡${gift.nombreComprador} te ha regalado Tinkilabs! 🎁`,
         htmlContent: plantillaGiftDestinatario(
-          gift.recipient_name,
-          gift.purchaser_name,
+          gift.nombreDestinatario,
+          gift.nombreComprador,
           productoNombre,
-          gift.duration_months,
-          gift.code,
-          gift.message
+          gift.duracionMeses,
+          gift.codigo,
+          gift.mensaje ?? undefined
         ),
       });
 
       if (res.ok) {
-        // Marcar como enviado
-        await pool.query(
-          `UPDATE gift_certificates SET status = 'sent' WHERE id = $1`,
-          [gift.id]
-        );
-        enviados.push(gift.code);
+        await db
+          .update(giftCertificates)
+          .set({ estado: 'enviado' })
+          .where(eq(giftCertificates.id, gift.id));
+        enviados.push(gift.codigo);
       }
     }
 
@@ -84,9 +81,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error en cron send-gifts:', error);
-    return NextResponse.json(
-      { error: 'Error interno' },
-      { status: 500 }
-    );
+    return error500();
   }
 }

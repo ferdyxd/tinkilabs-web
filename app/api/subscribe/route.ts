@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool, { ensureTables } from '@/lib/db';
+import { db } from '@/db';
+import { suscripciones } from '@/db/schema';
+import { SubscribeSchema } from '@/lib/validations';
+import { error400, error500 } from '@/lib/api-utils';
 import { addContact, sendTransactionalEmail, plantillaSuscripcion } from '@/lib/brevo';
 
 const PRECIOS: Record<string, Record<string, { precioMes: number; precioTotal: number }>> = {
@@ -34,83 +37,61 @@ const PLAN_NOMBRES: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureTables();
+    const raw = await request.json();
+    const parsed = SubscribeSchema.safeParse(raw);
 
-    const body = await request.json();
-    const { nombreNino, linea, plan, direccion, ciudad, cp, telefono, email } = body;
-
-    if (!nombreNino || !linea || !plan || !direccion || !ciudad || !cp) {
-      return NextResponse.json(
-        { error: 'Faltan campos obligatorios' },
-        { status: 400 }
-      );
+    if (!parsed.success) {
+      return error400('Validación fallida', parsed.error);
     }
 
-    const precios = PRECIOS[linea]?.[plan];
-    if (!precios) {
-      return NextResponse.json(
-        { error: 'Línea o plan no válido' },
-        { status: 400 }
-      );
-    }
+    const body = parsed.data;
+    const precios = PRECIOS[body.linea][body.plan];
 
-    const result = await pool.query(
-      `INSERT INTO subscriptions
-       (nombre_nino, linea, plan, precio_mes_cents, precio_total_cents,
-        direccion, ciudad, cp, telefono, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'paid')
-       RETURNING id, created_at`,
-      [
-        nombreNino,
-        linea,
-        plan,
-        Math.round(precios.precioMes * 100),
-        Math.round(precios.precioTotal * 100),
-        direccion,
-        ciudad,
-        cp,
-        telefono || null,
-      ]
-    );
+    const result = await db.insert(suscripciones).values({
+      linea: body.linea,
+      plan: body.plan === 'trimestral' || body.plan === 'anual' ? body.plan : 'mensual',
+      precioMesCents: Math.round(precios.precioMes * 100),
+      direccion: body.direccion,
+      ciudad: body.ciudad,
+      cp: body.cp,
+      telefono: body.telefono || null,
+      estado: 'activa',
+    }).returning({ id: suscripciones.id, createdAt: suscripciones.createdAt });
 
-    // Email de confirmación al comprador (si tenemos su email)
-    if (email && email.includes('@')) {
-      const lineaNombre = LINEA_NOMBRES[linea] || linea;
-      const planNombre = PLAN_NOMBRES[plan] || plan;
+    const sub = result[0];
+
+    if (body.email) {
+      const lineaNombre = LINEA_NOMBRES[body.linea] || body.linea;
+      const planNombre = PLAN_NOMBRES[body.plan] || body.plan;
       const total = precios.precioTotal.toFixed(2).replace('.', ',');
 
-      // Añadir a Brevo (lista de clientes)
       await addContact({
-        email,
-        nombre: nombreNino,
+        email: body.email,
+        nombre: body.nombreNino,
         listIds: [3],
-        attributes: { LINEA: linea, PLAN: plan },
+        attributes: { LINEA: body.linea, PLAN: body.plan },
       });
 
-      // Email transaccional de bienvenida
       await sendTransactionalEmail({
-        to: { email, name: nombreNino },
-        subject: `¡${nombreNino}, bienvenido a Tinkilabs! 🚀`,
-        htmlContent: plantillaSuscripcion(nombreNino, lineaNombre, planNombre, total),
+        to: { email: body.email, name: body.nombreNino },
+        subject: `¡${body.nombreNino}, bienvenido a Tinkilabs! 🚀`,
+        htmlContent: plantillaSuscripcion(body.nombreNino, lineaNombre, planNombre, total),
       });
     }
 
     return NextResponse.json({
       success: true,
       subscription: {
-        id: result.rows[0].id,
-        nombreNino,
-        linea,
-        plan,
+        id: sub.id,
+        nombreNino: body.nombreNino,
+        linea: body.linea,
+        plan: body.plan,
         precioTotal: precios.precioTotal,
-        createdAt: result.rows[0].created_at,
+        createdAt: sub.createdAt,
       },
     });
   } catch (error) {
     console.error('Error al crear suscripción:', error);
-    return NextResponse.json(
-      { error: 'Error interno al crear la suscripción' },
-      { status: 500 }
-    );
+    return error500();
   }
 }

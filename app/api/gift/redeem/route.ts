@@ -1,73 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool, { ensureTables } from '@/lib/db';
+import { db } from '@/db';
+import { giftCertificates } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { RedeemGiftSchema } from '@/lib/validations';
+import { error400, error404, error409, error410, error500 } from '@/lib/api-utils';
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureTables();
+    const raw = await request.json();
+    const parsed = RedeemGiftSchema.safeParse(raw);
 
-    const body = await request.json();
-    const { code, shippingAddress, shippingCity, shippingZip, shippingCountry } = body;
-
-    if (!code) {
-      return NextResponse.json(
-        { error: 'Falta el código del certificado' },
-        { status: 400 }
-      );
+    if (!parsed.success) {
+      return error400('Validación fallida', parsed.error);
     }
 
-    // Verificar que el código existe y está pendiente
-    const result = await pool.query(
-      `SELECT id, code, product, duration_months, recipient_name, status
-       FROM gift_certificates
-       WHERE code = $1`,
-      [code.toUpperCase().trim()]
-    );
+    const { code } = parsed.data;
 
-    if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Este código no es válido. Comprueba que lo has escrito bien.' },
-        { status: 404 }
-      );
+    const result = await db
+      .select()
+      .from(giftCertificates)
+      .where(eq(giftCertificates.codigo, code.toUpperCase().trim()))
+      .limit(1);
+
+    if (result.length === 0) {
+      return error404('Este código no es válido. Comprueba que lo has escrito bien.');
     }
 
-    const gift = result.rows[0];
+    const gift = result[0];
 
-    if (gift.status === 'redeemed') {
-      return NextResponse.json(
-        { error: 'Este certificado ya ha sido canjeado.' },
-        { status: 409 }
-      );
+    if (gift.estado === 'canjeado') {
+      return error409('Este certificado ya ha sido canjeado.');
     }
 
-    if (gift.status === 'expired') {
-      return NextResponse.json(
-        { error: 'Este certificado ha caducado.' },
-        { status: 410 }
-      );
+    if (gift.estado === 'expirado') {
+      return error410('Este certificado ha caducado.');
     }
 
-    // Marcar como canjeado
-    await pool.query(
-      `UPDATE gift_certificates
-       SET status = 'redeemed', redeemed_at = NOW()
-       WHERE id = $1`,
-      [gift.id]
-    );
-
-    // Aquí en el futuro: crear suscripción en Stripe con trial period = duration_months
-    // y enviar email de confirmación al destinatario vía Brevo
+    await db
+      .update(giftCertificates)
+      .set({ estado: 'canjeado', canjeadoEn: new Date() })
+      .where(eq(giftCertificates.id, gift.id));
 
     return NextResponse.json({
       success: true,
-      message: `¡Bienvenido a Tinkilabs, ${gift.recipient_name}!`,
-      product: gift.product,
-      durationMonths: gift.duration_months,
+      message: `¡Bienvenido a Tinkilabs, ${gift.nombreDestinatario}!`,
+      product: gift.producto,
+      durationMonths: gift.duracionMeses,
     });
   } catch (error) {
     console.error('Error al canjear gift certificate:', error);
-    return NextResponse.json(
-      { error: 'Error interno al canjear el certificado' },
-      { status: 500 }
-    );
+    return error500();
   }
 }
