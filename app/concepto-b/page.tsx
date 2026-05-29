@@ -286,7 +286,7 @@ export default function ConceptoB() {
               <p className="mb-4 text-sm font-semibold text-white/60">
                 Únete a la lista de espera — los primeros 500 tienen 30% de descuento de por vida
               </p>
-              <EmailForm />
+              <EmailForm variant="dark" />
             </div>
           </ScrollReveal>
 

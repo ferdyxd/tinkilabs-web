@@ -40,11 +40,6 @@ export default function ProductoPage({ params }: { params: { slug: string } }) {
             <h1 className="mt-4 text-4xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>{p.nombre}</h1>
             <p className="mt-4 text-lg leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{p.descripcion}</p>
 
-            <div className="mt-6 flex items-baseline gap-4">
-              <span className="text-3xl font-bold" style={{ color: 'var(--color-primary)' }}>{p.pvp}</span>
-              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>/mes</span>
-            </div>
-
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href="/suscribete"

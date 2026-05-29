@@ -1,7 +1,23 @@
 # Tareas pendientes — Web Tinkilabs
 
 > Fichero vivo. Tachar al implementar. Añadir nuevas tareas al final.
-> Actualizado: 2026-05-27
+> Actualizado: 2026-05-28
+
+---
+## 🎯 DECISIÓN DE ARQUITECTURA — Stripe
+
+**Decisión**: Usar **Stripe Elements** (UI embebida en nuestra web, sin salir de tinkilabs.com).
+**Motivo**: El cliente nunca ve stripe.com. Experiencia premium, como KiwiCo y CrunchLabs.
+
+| Flujo | Solución |
+|---|---|
+| Formulario de pago (tarjeta) | Stripe Elements (embebido en `/suscribete` y `/regalo`) |
+| Gestión suscripción (pausar, cancelar, cambiar tarjeta) | API propia en `/mi-cuenta` que habla con Stripe SDK en backend |
+| Facturas | Enlace a PDF de Stripe o renderizado propio |
+| Gift certificates | Lógica propia + Stripe Elements para el pago |
+| Portal del cliente | Desarrollarlo en Next.js, NO usar Stripe Customer Portal alojado |
+
+Stripe SDK se instala cuando se tengan las claves API. Por ahora los formularios de pago son placeholder.
 
 ---
 
@@ -91,9 +107,9 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
-### 2. Página de producto individual (landing de cada kit)
+### 2. Página de producto individual (landing de cada kit) ✅
 
-- [ ] Crear ruta `/productos/[slug]` con:
+- [x] Crear ruta `/productos/[slug]` con:
   - Vídeo del producto (YouTube embed)
   - Galería de imágenes
   - Qué incluye la caja
@@ -123,7 +139,7 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
-### 5. Mejoras SEO
+### 5. Mejoras SEO ✅
 
 - [ ] sitemap.xml dinámico
 - [ ] robots.txt
@@ -140,7 +156,7 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
-### 7. Menú de navegación general (Header/Navbar)
+### 7. Menú de navegación general (Header/Navbar) ✅
 
 **Inspiración:** CrunchLabs.com — estructura exacta del header
 
@@ -211,7 +227,7 @@ Comprador                     Tinkilabs                      Destinatario
 
 ---
 
-### 8. FAQ y Help Center
+### 8. FAQ y Help Center ✅
 
 **Inspiración:** CrunchLabs Help Center (crunchlabshelp.zendesk.com)
 
@@ -365,7 +381,7 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 
 ---
 
-### 13. Páginas legales
+### 13. Páginas legales ✅
 
 - [ ] Términos y condiciones (`/terminos`)
 - [ ] Política de privacidad (`/privacidad`)
@@ -389,3 +405,25 @@ CrunchLabs permite gestionar TODO desde el panel de cuenta:
 - [x] Sistema de theming centralizado (lib/theme.ts + CSS vars) — 4 paletas: Tinkilabs, Ocean, Forest, Sunset
 - [x] Tailwind conectado al fichero de tema central
 - [x] Navbar general tipo CrunchLabs (dropdowns, logo, cuenta, carrito, responsive, móvil full-screen)
+- [x] Editor visual de temas (/admin/tema) con auth — 4 paletas
+- [x] Páginas legales: términos, privacidad, aviso legal, devoluciones, envíos
+- [x] SEO: sitemap.xml, robots.txt, JSON-LD (Organization, FAQ, Product)
+- [x] FAQ / Help Center (/ayuda, /ayuda/contacto, /ayuda/[slug]) con buscador
+- [x] Páginas de producto individual (/productos/[slug]) con datos completos
+- [x] Footer + PlaceholderPage + páginas placeholder: campamento, cart, nosotros, regalo, repuestos, reseñas, suscribete, tienda
+
+---
+
+### 14. Editor de tipografía por elementos
+
+- [ ] Selector de tamaño de letra por elemento en /admin/tema:
+  - **Logo** (navbar)
+  - **Títulos H1** (hero, páginas)
+  - **Títulos H2-H3** (secciones)
+  - **Texto cuerpo** (párrafos, descripciones)
+  - **Botones** (CTA, secundarios)
+  - **Tarjetas** (títulos de producto, precio)
+  - **Navbar** (enlaces del menú)
+  - **Footer** (enlaces, copyright)
+- [ ] Guardar tamaños junto con el tema en /api/admin/theme
+- [ ] Preview en tiempo real como los colores y fuentes

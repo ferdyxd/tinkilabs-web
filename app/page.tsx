@@ -1,66 +1,162 @@
-import { MysteryBox } from '@/components/MysteryBox';
+import { HeroTitle } from '@/components/HeroTitle';
 import { EmailForm } from '@/components/EmailForm';
 import { Counter } from '@/components/Counter';
+import { HowItWorks } from '@/components/HowItWorks';
+import { PlanCards } from '@/components/PlanCards';
+import { FinalCTA } from '@/components/FinalCTA';
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <main className="relative flex h-screen flex-col items-center justify-center overflow-hidden bg-[#08080F] px-6 text-center">
-      {/* Fondos atmosféricos */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-tinki-orange/10 blur-[150px]" />
-        <div className="absolute top-1/3 -right-60 h-[400px] w-[400px] rounded-full bg-tinki-orange/5 blur-[120px]" />
-        <div className="absolute -bottom-40 left-1/4 h-[300px] w-[300px] rounded-full bg-amber-500/5 blur-[100px]" />
+    <main id="main-content">
+    {/* ═══════════════════════════════════════════════════════
+        SECCIÓN 1 — HERO
+        ════════════════════════════════════════════════════ */}
+    <section className="relative min-h-screen overflow-hidden bg-tinki-light">
+      {/* ═══════════════════════════════════════════════════════
+          DEPTH 0 — Fondo: papel milimetrado azul ingeniería
+          ════════════════════════════════════════════════════ */}
+      <div
+        className="pointer-events-none absolute inset-0 pattern-grid-blue"
+        aria-hidden="true"
+      />
 
-        {/* Partículas sutiles */}
-        <div className="absolute left-[15%] top-[20%] h-1.5 w-1.5 animate-pulse rounded-full bg-tinki-orange/30" />
-        <div className="absolute right-[20%] top-[30%] h-1 w-1 animate-pulse rounded-full bg-amber-400/20" style={{ animationDelay: '1.2s' }} />
-        <div className="absolute bottom-[35%] left-[25%] h-1 w-1 animate-pulse rounded-full bg-tinki-orange/20" style={{ animationDelay: '2.5s' }} />
-        <div className="absolute right-[30%] top-[60%] h-1.5 w-1.5 animate-pulse rounded-full bg-amber-300/15" style={{ animationDelay: '0.7s' }} />
-        <div className="absolute left-[40%] bottom-[25%] h-1 w-1 animate-pulse rounded-full bg-tinki-orange/25" style={{ animationDelay: '3.1s' }} />
+      {/* ═══════════════════════════════════════════════════════
+          DEPTH 1 — Atmósfera: orbes naranjas cálidos
+          ════════════════════════════════════════════════════ */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-20 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-tinki-orange/8 blur-[130px]" />
+        <div className="absolute top-1/2 -right-32 h-[350px] w-[350px] rounded-full bg-amber-400/5 blur-[100px]" />
+        <div className="absolute -bottom-20 left-1/4 h-[300px] w-[300px] rounded-full bg-tinki-orange/5 blur-[90px]" />
       </div>
 
-      {/* Contenido */}
-      <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-8">
-        {/* Badge */}
-        <span className="inline-block rounded-full border border-tinki-orange/20 bg-tinki-orange/5 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-tinki-orange/70">
-          Próximamente
-        </span>
-
-        {/* Caja 3D */}
-        <MysteryBox />
-
-        {/* Texto pulsante */}
-        <div>
-          <p
-            className="text-xl font-light tracking-wide text-white/80 sm:text-2xl"
-            style={{ animation: 'pulseText 3s ease-in-out infinite' }}
-          >
-            Algo increíble está a punto de llegar
-          </p>
-          <p className="mt-2 text-sm text-white/30">
-            Deja tu email y sé el primero en saberlo
-          </p>
+      {/* ═══════════════════════════════════════════════════════
+          DEPTH 2 — Engranajes decorativos flotando
+          ════════════════════════════════════════════════════ */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Engranaje grande — arriba izquierda */}
+        <div className="gear-decorative absolute left-[8%] top-[15%] h-20 w-20 opacity-[0.06] sm:h-28 sm:w-28">
+          <svg viewBox="0 0 120 120" className="h-full w-full">
+            <circle cx="60" cy="60" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-tinki-orange" />
+            <circle cx="60" cy="60" r="15" fill="currentColor" className="text-tinki-orange" />
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+              <rect key={angle} x="52" y="8" width="16" height="18" rx="3" fill="currentColor" className="text-tinki-orange" transform={`rotate(${angle} 60 60)`} />
+            ))}
+          </svg>
         </div>
 
-        {/* Formulario */}
-        <div className="w-full">
-          <EmailForm />
+        {/* Engranaje pequeño — abajo derecha */}
+        <div className="gear-decorative-reverse absolute right-[10%] bottom-[20%] h-14 w-14 opacity-[0.05] sm:h-20 sm:w-20">
+          <svg viewBox="0 0 80 80" className="h-full w-full">
+            <circle cx="40" cy="40" r="25" fill="none" stroke="currentColor" strokeWidth="6" className="text-tinki-orange" />
+            <circle cx="40" cy="40" r="10" fill="currentColor" className="text-tinki-orange" />
+            {[0, 60, 120, 180, 240, 300].map((angle) => (
+              <rect key={angle} x="34" y="5" width="12" height="14" rx="2" fill="currentColor" className="text-tinki-orange" transform={`rotate(${angle} 40 40)`} />
+            ))}
+          </svg>
         </div>
 
-        {/* Contador */}
-        <Counter variant="dark" />
+        {/* Puntos de blueprint — dispersos */}
+        <div className="absolute left-[20%] top-[40%] h-1.5 w-1.5 rounded-full bg-tinki-orange/15" />
+        <div className="absolute right-[25%] top-[25%] h-1 w-1 rounded-full bg-blue-400/15" />
+        <div className="absolute left-[35%] bottom-[30%] h-1.5 w-1.5 rounded-full bg-tinki-orange/12" />
+        <div className="absolute right-[15%] top-[55%] h-1 w-1 rounded-full bg-blue-400/12" />
       </div>
 
-      {/* Footer mínimo */}
-      <div className="absolute bottom-6 z-10 flex items-center gap-4 text-xs text-white/15">
-        <p>© {new Date().getFullYear()} Tinkilabs &middot; Hecho con mimo en España</p>
-        <a
-          href="/productos"
-          className="rounded-full border border-white/10 px-3 py-1 text-white/40 transition-colors hover:border-tinki-orange/30 hover:text-tinki-orange/70"
-        >
-          Ver roadmap →
-        </a>
+      {/* ═══════════════════════════════════════════════════════
+          CONTENIDO PRINCIPAL — Depth 3 + 4
+          ════════════════════════════════════════════════════ */}
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pb-12 pt-24 sm:pb-16 sm:pt-28">
+        <div className="flex w-full max-w-2xl flex-col items-center gap-8 sm:gap-10">
+
+          {/* ─── DEPTH 3: Producto Hero ─── */}
+          <div className="float-loop relative">
+            {/* Sombra bajo el producto */}
+            <div className="absolute -bottom-6 left-1/2 h-8 w-48 -translate-x-1/2 rounded-[50%] bg-tinki-orange/12 blur-xl sm:w-64" />
+
+            {/* Contenedor del producto */}
+            <div className="relative overflow-hidden rounded-2xl border border-tinki-orange/10 bg-white shadow-lg shadow-tinki-orange/5">
+              <Image
+                src="/images/productos/01-launcher.jpg"
+                alt="Tinki Launcher — lanzador de discos de madera"
+                width={420}
+                height={340}
+                className="h-auto w-[320px] object-cover sm:w-[420px]"
+                priority
+              />
+              {/* Brillo sutil en borde superior */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-tinki-orange/20 to-transparent" />
+            </div>
+          </div>
+
+          {/* ─── DEPTH 4: Texto + Claim ─── */}
+          <div className="flex flex-col items-center gap-5 text-center">
+
+            {/* Badge */}
+            <span className="inline-block rounded-full border border-tinki-orange/20 bg-tinki-orange/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-tinki-orange">
+              Suscripción mensual
+            </span>
+
+            {/* Claim — Split Converge */}
+            <HeroTitle words={['Imagina.', 'Construye.', 'Alucina.']} />
+
+            {/* Subtítulo */}
+            <p className="max-w-md text-base leading-relaxed text-tinki-dark/50 sm:text-lg">
+              Una caja cada mes con un proyecto de ingeniería real.{' '}
+              <span className="font-medium text-tinki-dark/70">Sin pantallas. Sin pilas. Solo física, madera y tus ganas de crear.</span>
+            </p>
+
+            {/* Precio */}
+            <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-black text-tinki-orange sm:text-4xl">24,90 €</span>
+              <span className="text-sm text-tinki-dark/40">/ mes</span>
+            </div>
+
+            {/* Formulario */}
+            <div className="w-full">
+              <p className="mb-3 text-sm font-semibold text-tinki-dark/60">
+                Únete a la lista de espera — los primeros 500 tienen <span className="text-tinki-orange">30% descuento de por vida</span>
+              </p>
+              <EmailForm />
+            </div>
+
+            {/* Counter */}
+            <Counter />
+          </div>
+        </div>
+
+        {/* ─── Scroll hint ─── */}
+        <div className="absolute bottom-8 animate-bounce">
+          <svg className="h-6 w-6 text-tinki-orange/25" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════
+          DEPTH 5 — Partículas foreground (chispas)
+          ════════════════════════════════════════════════════ */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute left-[18%] top-[22%] h-1 w-1 animate-pulse rounded-full bg-tinki-orange/25" style={{ animationDelay: '0.3s' }} />
+        <div className="absolute right-[22%] top-[35%] h-1 w-1 animate-pulse rounded-full bg-tinki-orange/20" style={{ animationDelay: '1.1s' }} />
+        <div className="absolute left-[28%] bottom-[35%] h-0.5 w-0.5 animate-pulse rounded-full bg-blue-400/20" style={{ animationDelay: '2.0s' }} />
+      </div>
+    </section>
+
+    {/* ═══════════════════════════════════════════════════════
+        SECCIÓN 2 — CÓMO FUNCIONA
+        ════════════════════════════════════════════════════ */}
+    <HowItWorks />
+
+    {/* ═══════════════════════════════════════════════════════
+        SECCIÓN 3 — LÍNEAS
+        ════════════════════════════════════════════════════ */}
+    <PlanCards />
+
+    {/* ═══════════════════════════════════════════════════════
+        SECCIÓN 5 — CTA FINAL
+        ════════════════════════════════════════════════════ */}
+    <FinalCTA />
     </main>
   );
 }

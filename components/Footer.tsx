@@ -1,6 +1,12 @@
 import Link from 'next/link';
 
-const footerLinks = {
+interface FooterLink {
+  nombre: string;
+  link: string;
+  ext?: boolean;
+}
+
+const footerLinks: Record<string, FooterLink[]> = {
   Producto: [
     { nombre: 'Suscripciones', link: '/suscribete' },
     { nombre: 'Certificados de Regalo', link: '/regalo' },
@@ -11,6 +17,7 @@ const footerLinks = {
     { nombre: 'FAQ', link: '/ayuda' },
     { nombre: 'Contacto', link: '/ayuda/contacto' },
     { nombre: 'Envíos', link: '/envios' },
+    { nombre: 'Canjear regalo', link: '/canjear' },
     { nombre: 'Devoluciones', link: '/devoluciones' },
   ],
   Legal: [

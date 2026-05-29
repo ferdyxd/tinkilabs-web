@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 
 // ─── Tipos ──────────────────────────────────────────────────
@@ -58,6 +58,54 @@ const googleFonts = [
   'JetBrains Mono', 'Fira Code', 'IBM Plex Mono',
 ];
 
+// ─── Tamaños de letra ──────────────────────────────────────
+
+interface FontSizes {
+  logo: string;
+  h1: string;
+  h2: string;
+  body: string;
+  button: string;
+  card: string;
+  nav: string;
+  footer: string;
+}
+
+const defaultFontSizes: FontSizes = {
+  logo: '1rem',
+  h1: '2.25rem',
+  h2: '1.5rem',
+  body: '1rem',
+  button: '0.875rem',
+  card: '0.875rem',
+  nav: '0.8125rem',
+  footer: '0.75rem',
+};
+
+const fontSizeLabels: Record<keyof FontSizes, string> = {
+  logo: 'Logo',
+  h1: 'Títulos H1',
+  h2: 'Títulos H2-H3',
+  body: 'Texto cuerpo',
+  button: 'Botones',
+  card: 'Tarjetas',
+  nav: 'Navbar',
+  footer: 'Footer',
+};
+
+const fontSizeOptions = [
+  { label: 'XS', value: '0.625rem' },
+  { label: 'SM', value: '0.75rem' },
+  { label: 'Base', value: '0.875rem' },
+  { label: 'LG', value: '1rem' },
+  { label: 'XL', value: '1.125rem' },
+  { label: '2XL', value: '1.25rem' },
+  { label: '3XL', value: '1.5rem' },
+  { label: '4XL', value: '2rem' },
+  { label: '5XL', value: '2.5rem' },
+  { label: '6XL', value: '3rem' },
+];
+
 // ─── Componente principal ───────────────────────────────────
 
 export default function AdminTemaPage() {
@@ -66,16 +114,34 @@ export default function AdminTemaPage() {
   const [fontSans, setFontSans] = useState('Inter');
   const [fontDisplay, setFontDisplay] = useState('Geist Sans');
   const [fontMono, setFontMono] = useState('JetBrains Mono');
+  const [fondo, setFondo] = useState('none');
+  const [fontSizes, setFontSizes] = useState<FontSizes>(defaultFontSizes);
   const [saved, setSaved] = useState(false);
+  const [previewPage, setPreviewPage] = useState('/');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const previewPages = [
+    { path: '/', label: 'Landing' },
+    { path: '/productos', label: 'Catálogo' },
+    { path: '/suscribete', label: 'Checkout' },
+    { path: '/regalo', label: 'Regalo' },
+    { path: '/concepto-b', label: 'Concepto B' },
+  ];
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
 
   const current = palettes[activePalette];
 
-  // Aplicar cambios visuales en tiempo real
-  useEffect(() => {
-    const root = document.documentElement;
+  // El editor NO aplica CSS vars al documento — solo al iframe de preview
+
+  // Inyectar CSS vars en el iframe de preview
+  const injectIntoIframe = useCallback(() => {
+    const iframe = iframeRef.current;
+    const win = iframe?.contentWindow;
+    if (!win) return;
+    const root = win.document.documentElement;
+
     root.style.setProperty('--color-primary', current.primary);
     root.style.setProperty('--color-primary-light', current.primaryLight);
     root.style.setProperty('--color-primary-dark', current.primaryDark);
@@ -90,7 +156,38 @@ export default function AdminTemaPage() {
     root.style.setProperty('--font-sans', fontSans);
     root.style.setProperty('--font-display', fontDisplay);
     root.style.setProperty('--font-mono', fontMono);
-  }, [current, fontSans, fontDisplay, fontMono]);
+    (Object.entries(fontSizes) as [string, string][]).forEach(([k, v]) => {
+      root.style.setProperty(`--font-size-${k}`, v);
+    });
+    if (fondo !== 'none') {
+      win.document.body.classList.add(fondo);
+    }
+
+    // Reaplicar tras hidratación React
+    setTimeout(() => {
+      try {
+        const r = iframe?.contentWindow?.document?.documentElement;
+        if (!r) return;
+        r.style.setProperty('--color-primary', current.primary);
+        r.style.setProperty('--color-background', current.background);
+        r.style.setProperty('--color-text', current.text);
+        r.style.setProperty('--color-text-muted', current.textMuted);
+        r.style.setProperty('--color-border', current.border);
+      } catch {}
+    }, 800);
+  }, [current, fontSans, fontDisplay, fontMono, fontSizes, fondo]);
+
+  // Cambiar página del iframe sin perder estado del editor
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    iframe.src = previewPage;
+  }, [previewPage]);
+
+  // Reinyectar cuando cambian ajustes (iframe ya cargado)
+  useEffect(() => {
+    injectIntoIframe();
+  }, [injectIntoIframe]);
 
   // Cargar fuentes de Google
   useEffect(() => {
@@ -110,6 +207,7 @@ export default function AdminTemaPage() {
       .then(r => r.json())
       .then(data => {
         if (data.activePalette) setActivePalette(data.activePalette);
+        if (data.fontSizes) setFontSizes(data.fontSizes);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -129,7 +227,7 @@ export default function AdminTemaPage() {
       await fetch('/api/admin/theme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ activePalette, palettes }),
+        body: JSON.stringify({ activePalette, palettes, fontSizes }),
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -159,29 +257,31 @@ export default function AdminTemaPage() {
 
   // ─── Login ──────────────────────────────────────────────
 
-  const bg = current.backgroundAlt;
-  const surface = current.backgroundAlt === '#FAFAFA' || current.backgroundAlt === '#F8FAFC' || current.backgroundAlt === '#F5F5F0' || current.backgroundAlt === '#FFFBEB'
-    ? '#FFFFFF'
-    : '#0d0d14';
-  const isDark = !['#FAFAFA', '#F8FAFC', '#F5F5F0', '#FFFBEB'].includes(current.backgroundAlt);
+  // Colores fijos del editor — NO dependen del tema
+  const bg = '#0d0d14';
+  const surface = '#16161f';
+  const textFixed = '#e4e4e7';
+  const textMutedFixed = '#71717a';
+  const borderFixed = 'rgba(255,255,255,0.08)';
+  const primaryFixed = '#FF6B35';
 
   if (!authed) {
     return (
       <div className="flex min-h-screen items-center justify-center" style={{ background: bg }}>
-        <div className="w-80 rounded-2xl p-8" style={{ background: surface, border: `1px solid ${current.border}` }}>
-          <h1 className="text-lg font-bold" style={{ color: current.text }}>Theme Editor</h1>
-          <p className="mt-1 text-sm" style={{ color: current.textMuted }}>Acceso restringido</p>
+        <div className="w-80 rounded-2xl p-8" style={{ background: surface, border: `1px solid ${borderFixed}` }}>
+          <h1 className="text-lg font-bold" style={{ color: textFixed }}>Theme Editor</h1>
+          <p className="mt-1 text-sm" style={{ color: textMutedFixed }}>Acceso restringido</p>
           <input
             type="password" value={password} placeholder="Contraseña"
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
             autoFocus
             className="mt-6 w-full rounded-xl px-4 py-3 text-sm outline-none"
-            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
+            style={{ background: bg, border: `1px solid ${borderFixed}`, color: textFixed }}
           />
           <button onClick={handleLogin}
             className="mt-3 w-full rounded-xl px-4 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{ background: current.primary }}
+            style={{ background: primaryFixed }}
           >
             Entrar
           </button>
@@ -193,27 +293,27 @@ export default function AdminTemaPage() {
 
   if (loading) {
     return <div className="flex min-h-screen items-center justify-center" style={{ background: bg }}>
-      <p style={{ color: current.textMuted }}>Cargando editor...</p>
+      <p style={{ color: textMutedFixed }}>Cargando editor...</p>
     </div>;
   }
 
   // ─── Editor ─────────────────────────────────────────────
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: bg, color: current.text }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: bg, color: textFixed }}>
       {/* ─── Panel izquierdo: controles ─────────────────── */}
-      <aside className="w-96 flex-shrink-0 overflow-y-auto border-r p-6" style={{ background: surface, borderColor: current.border }}>
+      <aside className="w-96 flex-shrink-0 overflow-y-auto border-r p-6" style={{ background: surface, borderColor: borderFixed }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/" className="text-sm font-bold tracking-tight hover:opacity-70 transition-opacity" style={{ color: current.text }}>Tinkilabs</Link>
-            <p className="text-xs" style={{ color: current.textMuted }}>Theme Editor</p>
+            <Link href="/" className="text-sm font-bold tracking-tight hover:opacity-70 transition-opacity" style={{ color: textFixed }}>Tinkilabs</Link>
+            <p className="text-xs" style={{ color: textMutedFixed }}>Theme Editor</p>
           </div>
           <button onClick={handleSave}
             className="rounded-lg px-4 py-2 text-xs font-semibold transition-all"
             style={saved
               ? { background: `${current.success}20`, color: current.success }
-              : { background: current.primary, color: '#fff' }
+              : { background: primaryFixed, color: '#fff' }
             }
           >
             {saved ? '✓ Guardado' : 'Guardar'}
@@ -222,7 +322,7 @@ export default function AdminTemaPage() {
 
         {/* Selector de paleta */}
         <section className="mb-8">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: current.textMuted }}>Paleta activa</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: textMutedFixed }}>Paleta activa</h3>
           <div className="grid grid-cols-2 gap-2">
             {(Object.entries(paletteLabels) as [PaletteName, string][]).map(([key, label]) => (
               <button
@@ -231,8 +331,8 @@ export default function AdminTemaPage() {
                 className="rounded-lg px-3 py-2 text-left text-xs transition-all"
                 style={
                   activePalette === key
-                    ? { background: `${current.primary}20`, border: `1px solid ${current.primary}60`, color: current.text }
-                    : { background: bg, border: `1px solid ${current.border}`, color: current.textMuted }
+                    ? { background: `${primaryFixed}20`, border: `1px solid ${primaryFixed}60`, color: textFixed }
+                    : { background: bg, border: `1px solid ${borderFixed}`, color: textMutedFixed }
                 }
               >
                 <span className="flex items-center gap-2">
@@ -246,7 +346,7 @@ export default function AdminTemaPage() {
 
         {/* Colores */}
         <section className="mb-8">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: current.textMuted }}>Colores</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: textMutedFixed }}>Colores</h3>
           <div className="space-y-3">
             {(Object.entries(colorLabels) as [keyof PaletteColors, string][]).map(([key, label]) => (
               <div key={key} className="flex items-center gap-3">
@@ -263,9 +363,9 @@ export default function AdminTemaPage() {
                   value={current[key]}
                   onChange={e => updateColor(key, e.target.value)}
                   className="flex-1 rounded-lg px-3 py-1.5 text-xs font-mono outline-none"
-                  style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
+                  style={{ background: bg, border: `1px solid ${borderFixed}`, color: textFixed }}
                 />
-                <span className="w-20 text-right text-xs" style={{ color: current.textMuted }}>{label}</span>
+                <span className="w-20 text-right text-xs" style={{ color: textMutedFixed }}>{label}</span>
               </div>
             ))}
           </div>
@@ -273,202 +373,138 @@ export default function AdminTemaPage() {
 
         {/* Tipografía */}
         <section className="mb-8">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: current.textMuted }}>Tipografía</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: textMutedFixed }}>Tipografía</h3>
 
-          <label className="mb-2 block text-xs" style={{ color: current.textMuted }}>Texto (UI)</label>
+          <label className="mb-2 block text-xs" style={{ color: textMutedFixed }}>Texto (UI)</label>
           <select value={fontSans} onChange={e => { setFontSans(e.target.value); setSaved(false); }}
             className="mb-4 w-full rounded-lg px-3 py-2 text-xs outline-none"
-            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
+            style={{ background: bg, border: `1px solid ${borderFixed}`, color: textFixed }}
           >
             {googleFonts.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
 
-          <label className="mb-2 block text-xs" style={{ color: current.textMuted }}>Títulos (Display)</label>
+          <label className="mb-2 block text-xs" style={{ color: textMutedFixed }}>Títulos (Display)</label>
           <select value={fontDisplay} onChange={e => { setFontDisplay(e.target.value); setSaved(false); }}
             className="mb-4 w-full rounded-lg px-3 py-2 text-xs outline-none"
-            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
+            style={{ background: bg, border: `1px solid ${borderFixed}`, color: textFixed }}
           >
             {googleFonts.map(f => <option key={f} value={f}>{f}</option>)}
           </select>
 
-          <label className="mb-2 block text-xs" style={{ color: current.textMuted }}>Código (Mono)</label>
+          <label className="mb-2 block text-xs" style={{ color: textMutedFixed }}>Código (Mono)</label>
           <select value={fontMono} onChange={e => { setFontMono(e.target.value); setSaved(false); }}
             className="w-full rounded-lg px-3 py-2 text-xs outline-none"
-            style={{ background: bg, border: `1px solid ${current.border}`, color: current.text }}
+            style={{ background: bg, border: `1px solid ${borderFixed}`, color: textFixed }}
           >
             {['JetBrains Mono', 'Fira Code', 'IBM Plex Mono', 'Source Code Pro', 'Cascadia Code'].map(f => (
               <option key={f} value={f}>{f}</option>
             ))}
           </select>
         </section>
+
+        {/* Fondo de ingeniería */}
+        <section className="mb-8">
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: textMutedFixed }}>Fondo técnico</h3>
+          <div className="space-y-1.5">
+            {[
+              { id: 'none', label: 'Ninguno', preview: '' },
+              { id: 'pattern-grid-blue', label: 'Grid azul — Papel milimetrado', preview: 'pattern-grid-blue' },
+              { id: 'pattern-grid-orange', label: 'Grid naranja — Tinkilabs', preview: 'pattern-grid-orange' },
+              { id: 'pattern-dots-blue', label: 'Puntos azules — Blueprint', preview: 'pattern-dots-blue' },
+              { id: 'pattern-dots-orange', label: 'Puntos naranjas — Tinkilabs', preview: 'pattern-dots-orange' },
+              { id: 'pattern-blueprint', label: 'Blueprint — Grid + diagonales', preview: 'pattern-blueprint' },
+              { id: 'pattern-crosshair', label: 'Crosshair — Miras técnicas', preview: 'pattern-crosshair' },
+            ].map(f => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => { setFondo(f.id); setSaved(false); }}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs transition-all ${
+                  fondo === f.id ? 'ring-2 ring-offset-1' : ''
+                }`}
+                style={{
+                  background: fondo === f.id ? `${primaryFixed}15` : bg,
+                  border: `1px solid ${fondo === f.id ? primaryFixed + '60' : borderFixed}`,
+                  color: fondo === f.id ? textFixed : textMutedFixed,
+                }}
+              >
+                <span className={`h-6 w-6 rounded-md border flex-shrink-0 ${f.preview}`}
+                  style={{ borderColor: borderFixed, background: current.background }}
+                />
+                <span className="truncate">{f.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Tamaños de letra */}
+        <section className="mb-8">
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: textMutedFixed }}>Tamaños de letra</h3>
+          <div className="space-y-2">
+            {(Object.entries(fontSizeLabels) as [keyof FontSizes, string][]).map(([key, label]) => (
+              <div key={key} className="flex items-center gap-2">
+                <span className="w-20 text-right text-[10px] font-medium truncate" style={{ color: textMutedFixed }}>
+                  {label}
+                </span>
+                <select
+                  value={fontSizes[key]}
+                  onChange={e => {
+                    setFontSizes(prev => ({ ...prev, [key]: e.target.value }));
+                    setSaved(false);
+                  }}
+                  className="flex-1 rounded-lg px-2 py-1.5 text-[11px] outline-none"
+                  style={{ background: bg, border: `1px solid ${borderFixed}`, color: textFixed }}
+                >
+                  {fontSizeOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label} ({opt.value})</option>
+                  ))}
+                  <option value={fontSizes[key]} disabled>— Personalizado: {fontSizes[key]}</option>
+                </select>
+              </div>
+            ))}
+          </div>
+        </section>
       </aside>
 
-      {/* ─── Panel derecho: preview ──────────────────────── */}
-      <main className="flex-1 overflow-y-auto">
-        {/* Barra superior preview */}
-        <div className="sticky top-0 z-10 flex items-center gap-6 border-b px-8 py-3 backdrop-blur-md"
-          style={{ background: 'var(--color-background)', borderColor: 'var(--color-border)' }}
+      {/* ─── Panel derecho: preview con páginas reales ─── */}
+      <main className="flex-1 flex flex-col min-h-0">
+        {/* Selector de página */}
+        <div className="flex items-center gap-1 border-b px-4 py-2"
+          style={{ background: surface, borderColor: borderFixed }}
         >
-          <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>Tinkilabs</span>
-          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Suscripciones</span>
-          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Comprar más</span>
-          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Nosotros</span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider mr-2" style={{ color: textMutedFixed }}>
+            Preview:
+          </span>
+          {previewPages.map(p => (
+            <button
+              key={p.path}
+              onClick={() => setPreviewPage(p.path)}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+                previewPage === p.path ? '' : 'opacity-50 hover:opacity-80'
+              }`}
+              style={{
+                background: previewPage === p.path ? primaryFixed : 'transparent',
+                color: previewPage === p.path ? '#fff' : textFixed,
+              }}
+            >
+              {p.label}
+            </button>
+          ))}
           <div className="flex-1" />
-          <span className="rounded-full px-3 py-1 text-xs font-medium"
-            style={{ background: 'var(--color-primary)', color: '#fff' }}
-          >
-            Suscríbete
+          <span className="text-[10px]" style={{ color: textMutedFixed }}>
+            {previewPage}
           </span>
         </div>
 
-        <div className="mx-auto max-w-3xl space-y-12 px-8 py-12">
-          {/* Hero preview */}
-          <section className="space-y-6">
-            <div className="space-y-3">
-              <h1 className="text-5xl font-bold tracking-tight" style={{ fontFamily: fontDisplay, color: 'var(--color-text)' }}>
-                Construye. Aprende. <span style={{ color: 'var(--color-primary)' }}>Alucina.</span>
-              </h1>
-              <p className="max-w-lg text-lg leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                Cajas STEM por suscripción para niños de 3 a 14 años. Una caja nueva cada mes con experimentos que molan de verdad.
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <button className="rounded-xl px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90"
-                style={{ background: 'var(--color-primary)' }}
-              >
-                Me apunto
-              </button>
-              <button className="rounded-xl px-6 py-3 text-sm font-semibold transition-all"
-                style={{ border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
-              >
-                Ver cómo funciona
-              </button>
-            </div>
-          </section>
-
-          {/* Cards preview */}
-          <section>
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-              Preview de tarjetas de producto
-            </h2>
-            <div className="grid grid-cols-3 gap-4">
-              {[
-                { name: 'Tinki Launcher', price: '24.90€', age: '8-14 años' },
-                { name: 'Tinki Dominó', price: '29.90€', age: '6-9 años' },
-                { name: 'Tinki Aviones', price: '19.90€', age: '6-9 años' },
-              ].map(p => (
-                <div key={p.name} className="overflow-hidden rounded-2xl transition-all hover:-translate-y-1"
-                  style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-                >
-                  <div className="aspect-video flex items-center justify-center"
-                    style={{ background: `linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))` }}
-                  >
-                    <span className="text-3xl opacity-50">📦</span>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <h3 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>{p.name}</h3>
-                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{p.age}</p>
-                    <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white"
-                      style={{ background: 'var(--color-primary)' }}
-                    >
-                      {p.price}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Tipografía preview */}
-          <section>
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-              Escala tipográfica
-            </h2>
-            <div className="space-y-4 rounded-2xl p-8" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>xs — 12px</p>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>sm — 14px</p>
-              <p style={{ color: 'var(--color-text)' }}>base — 16px. El texto de cuerpo se lee así, con buena legibilidad y espaciado cómodo.</p>
-              <p className="text-lg" style={{ color: 'var(--color-text)' }}>lg — 18px</p>
-              <p className="text-xl font-semibold" style={{ color: 'var(--color-text)' }}>xl — 20px</p>
-              <p className="text-2xl font-bold" style={{ fontFamily: fontDisplay, color: 'var(--color-text)' }}>2xl — Título secundario</p>
-              <p className="text-4xl font-bold" style={{ fontFamily: fontDisplay, color: 'var(--color-text)' }}>4xl — Gran titular</p>
-            </div>
-          </section>
-
-          {/* Estados preview */}
-          <section>
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-              Estados y badges
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              <span className="rounded-full px-4 py-1.5 text-xs font-medium text-white"
-                style={{ background: 'var(--color-primary)' }}
-              >
-                Principal
-              </span>
-              <span className="rounded-full px-4 py-1.5 text-xs font-medium text-white"
-                style={{ background: 'var(--color-success)' }}
-              >
-                Éxito
-              </span>
-              <span className="rounded-full px-4 py-1.5 text-xs font-medium text-white"
-                style={{ background: 'var(--color-error)' }}
-              >
-                Error
-              </span>
-              <span className="rounded-full px-4 py-1.5 text-xs font-medium"
-                style={{ background: 'var(--color-background-alt)', color: 'var(--color-text-muted)' }}
-              >
-                Neutro
-              </span>
-              <span className="rounded-full px-4 py-1.5 text-xs font-medium"
-                style={{ background: 'var(--color-primaryLight)', color: '#fff' }}
-              >
-                Claro
-              </span>
-            </div>
-          </section>
-
-          {/* Fondo oscuro preview */}
-          <section className="rounded-2xl p-8 space-y-4"
-            style={{ background: 'var(--color-background-alt)', color: '#fff' }}
-          >
-            <h2 className="text-sm font-semibold uppercase tracking-wider opacity-40">Fondo alternativo (dark)</h2>
-            <p className="text-2xl font-bold" style={{ fontFamily: fontDisplay }}>
-              Así se ve el texto sobre <span style={{ color: 'var(--color-primary)' }}>fondo oscuro</span>
-            </p>
-            <p className="text-sm opacity-50">
-              Las secciones hero y el catálogo usan este fondo. El contraste debe ser alto para legibilidad.
-            </p>
-            <button className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
-              style={{ background: 'var(--color-primary)' }}
-            >
-              Botón sobre oscuro
-            </button>
-          </section>
-
-          {/* Input preview */}
-          <section>
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-              Formularios
-            </h2>
-            <div className="flex gap-3">
-              <input type="email" placeholder="tu@email.com"
-                className="rounded-xl px-4 py-2.5 text-sm outline-none"
-                style={{
-                  background: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                  color: 'var(--color-text)',
-                }}
-              />
-              <button className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white"
-                style={{ background: 'var(--color-primary)' }}
-              >
-                Enviar
-              </button>
-            </div>
-          </section>
+        {/* Iframe con la página real */}
+        <div className="flex-1 relative">
+          <iframe
+            ref={iframeRef}
+            src={previewPage}
+            className="absolute inset-0 w-full h-full border-0"
+            title="Preview de la web"
+            onLoad={() => injectIntoIframe()}
+          />
         </div>
       </main>
     </div>

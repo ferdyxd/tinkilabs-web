@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { MegaMenu } from '@/components/MegaMenu';
 
 // ─── Datos ──────────────────────────────────────────────────
 
 const suscripciones = [
-  { nombre: 'Tinki Cajas', edad: '6-14 años', subtitulo: 'Kits STEM mensuales', link: '/suscribete', activo: true, icon: '📦' },
+  { nombre: 'Tinki Cajas', edad: '6-9 años', subtitulo: 'Kits STEM mensuales', link: '/suscribete', activo: true, icon: '📦' },
   { nombre: 'Tinki City', edad: 'Próximamente', subtitulo: 'Ciudad modular por meses', link: '', activo: false, icon: '🏙️' },
 ];
 
@@ -22,7 +24,7 @@ const nosotros = [
   { nombre: 'Reseñas', link: '/resenas' },
 ];
 
-// ─── Iconos SVG (18px, finos) ───────────────────────────────
+// ─── Iconos ─────────────────────────────────────────────────
 
 function UserIcon() {
   return (
@@ -68,6 +70,11 @@ export function Navbar() {
   const [userName, setUserName] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+
+  const paginasOscuras = ['/concepto-b', '/productos'];
+  const isDarkPage = paginasOscuras.includes(pathname);
 
   useEffect(() => {
     const cb = () => setScrolled(window.scrollY > 8);
@@ -87,146 +94,111 @@ export function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  const handleEnter = (name: string) => {
+  // Abrir sección al pasar el ratón por encima del botón
+  const openSection = useCallback((name: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setDropdown(name);
-  };
+  }, []);
 
-  const handleLeave = () => {
-    closeTimer.current = setTimeout(() => setDropdown(null), 120);
-  };
+  // Cerrar con un pequeño retardo al salir del nav
+  const scheduleClose = useCallback(() => {
+    closeTimer.current = setTimeout(() => setDropdown(null), 200);
+  }, []);
 
-  const hasBg = scrolled || open;
-  const navTextColor = hasBg ? 'var(--color-text)' : '#ffffff';
+  // Cancelar cierre si el ratón vuelve al nav o al mega menú
+  const cancelClose = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }, []);
+
+  // Toggle al hacer click (accesibilidad)
+  const toggleSection = useCallback((name: string) => {
+    setDropdown(prev => prev === name ? null : name);
+  }, []);
+
+  const closeDropdown = useCallback(() => setDropdown(null), []);
+
+  const megaMenuOpen = dropdown !== null;
+  const hasBg = scrolled || open || !isDarkPage || megaMenuOpen;
+
+  // Navbar con glass effect cuando es transparente
+  const navBg = isDarkPage && !hasBg
+    ? 'transparent'
+    : 'var(--color-background)';
+
+  const glassEffect = isDarkPage && !hasBg
+    ? 'backdrop-blur-[6px] bg-white/[0.03]'
+    : '';
+
+  const navBorder = isDarkPage && !hasBg
+    ? 'border-b border-white/[0.06]'
+    : 'border-b border-[var(--color-border)]';
+
+  const navTextColor = isDarkPage && !hasBg ? '#ffffff' : 'var(--color-text)';
 
   return (
     <>
+      {/* Overlay — solo cubre el contenido, NO el navbar (top-[58px]) */}
+      {megaMenuOpen && (
+        <div
+          className="fixed inset-0 top-[58px] z-40 bg-black/15 transition-opacity duration-200"
+          onClick={closeDropdown}
+        />
+      )}
+
       {/* ─── Navbar ─────────────────────────────────────── */}
       <nav
-        className="fixed top-0 z-50 w-full transition-all duration-300"
+        ref={navRef}
+        className={`fixed top-0 z-50 w-full transition-all duration-300 ${glassEffect} ${navBorder}`}
         style={{
-          background: hasBg ? 'var(--color-background)' : 'transparent',
-          borderBottom: hasBg ? '1px solid var(--color-border)' : '1px solid transparent',
+          background: navBg,
           color: navTextColor,
         }}
+        onMouseLeave={scheduleClose}
+        onMouseEnter={cancelClose}
       >
-        <div className="mx-auto flex h-[58px] max-w-7xl items-center gap-5 px-5">
+        <div className="relative z-10 mx-auto flex h-[58px] max-w-6xl items-center gap-5 px-5">
           {/* Hamburguesa móvil */}
-          <button className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menú">
+          <button type="button" className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menú">
             <Hamburger open={open} />
           </button>
 
-          {/* ─── Izquierda: dropdowns ─────────────────── */}
+          {/* ─── Izquierda: triggers mega menú ────────── */}
           <div className="hidden lg:flex items-center gap-0.5">
-            {/* Suscripciones */}
-            <div className="relative" onMouseEnter={() => handleEnter('subs')} onMouseLeave={handleLeave}>
-              <button
-                onClick={() => setDropdown(dropdown === 'subs' ? null : 'subs')}
-                className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                  dropdown === 'subs' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
-                }`}
-              >
-                Suscripciones
-              </button>
-              {dropdown === 'subs' && (
-                <div
-                  className="absolute left-0 top-full mt-0.5 w-[440px] rounded-xl border p-3 shadow-xl"
-                  style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-                >
-                  <div className="grid grid-cols-2 gap-2">
-                    {suscripciones.map(s => (
-                      <div key={s.nombre}>
-                        {s.activo ? (
-                          <Link
-                            href={s.link}
-                            onClick={() => setDropdown(null)}
-                            className="flex items-start gap-2.5 rounded-lg p-2.5 transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
-                          >
-                            <span className="mt-0.5 text-xl leading-none">{s.icon}</span>
-                            <div className="min-w-0">
-                              <p className="text-[13px] font-semibold leading-tight" style={{ color: 'var(--color-text)' }}>{s.nombre}</p>
-                              <p className="text-[11px] leading-tight mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.subtitulo}</p>
-                              <p className="text-[10px] mt-1" style={{ color: 'var(--color-text-muted)' }}>{s.edad}</p>
-                            </div>
-                          </Link>
-                        ) : (
-                          <div className="flex items-start gap-2.5 rounded-lg p-2.5 opacity-45 cursor-not-allowed">
-                            <span className="mt-0.5 text-xl leading-none">{s.icon}</span>
-                            <div className="min-w-0">
-                              <p className="text-[13px] font-semibold leading-tight" style={{ color: 'var(--color-text)' }}>{s.nombre}</p>
-                              <p className="text-[11px] leading-tight mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.subtitulo}</p>
-                              <span className="inline-block mt-1 rounded-md bg-[var(--color-primary)]/10 px-1.5 py-0.5 text-[10px] font-semibold" style={{ color: 'var(--color-primary)' }}>
-                                Próximamente
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              onMouseEnter={() => openSection('subs')}
+              onClick={() => toggleSection('subs')}
+              aria-expanded={dropdown === 'subs'}
+              className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                dropdown === 'subs' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+              }`}
+            >
+              Suscripciones
+            </button>
 
-            {/* Comprar más */}
-            <div className="relative" onMouseEnter={() => handleEnter('shop')} onMouseLeave={handleLeave}>
-              <button
-                onClick={() => setDropdown(dropdown === 'shop' ? null : 'shop')}
-                className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                  dropdown === 'shop' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
-                }`}
-              >
-                Comprar más
-              </button>
-              {dropdown === 'shop' && (
-                <div
-                  className="absolute left-0 top-full mt-0.5 w-48 rounded-xl border py-1.5 shadow-xl"
-                  style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-                >
-                  {comprarMas.map(item => (
-                    <Link
-                      key={item.nombre}
-                      href={item.link}
-                      onClick={() => setDropdown(null)}
-                      className="block px-3.5 py-2 text-[13px] transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
-                      style={{ color: 'var(--color-text)' }}
-                    >
-                      {item.nombre}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              onMouseEnter={() => openSection('shop')}
+              onClick={() => toggleSection('shop')}
+              aria-expanded={dropdown === 'shop'}
+              className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                dropdown === 'shop' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+              }`}
+            >
+              Comprar más
+            </button>
 
-            {/* Nosotros */}
-            <div className="relative" onMouseEnter={() => handleEnter('about')} onMouseLeave={handleLeave}>
-              <button
-                onClick={() => setDropdown(dropdown === 'about' ? null : 'about')}
-                className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                  dropdown === 'about' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
-                }`}
-              >
-                Nosotros
-              </button>
-              {dropdown === 'about' && (
-                <div
-                  className="absolute left-0 top-full mt-0.5 w-48 rounded-xl border py-1.5 shadow-xl"
-                  style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-                >
-                  {nosotros.map(item => (
-                    <Link
-                      key={item.nombre}
-                      href={item.link}
-                      onClick={() => setDropdown(null)}
-                      className="block px-3.5 py-2 text-[13px] transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
-                      style={{ color: 'var(--color-text)' }}
-                    >
-                      {item.nombre}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              onMouseEnter={() => openSection('about')}
+              onClick={() => toggleSection('about')}
+              aria-expanded={dropdown === 'about'}
+              className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                dropdown === 'about' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+              }`}
+            >
+              Nosotros
+            </button>
           </div>
 
           {/* ─── Logo ────────────────────────────────────── */}
@@ -238,7 +210,6 @@ export function Navbar() {
 
           {/* ─── Derecha ─────────────────────────────────── */}
           <div className="flex items-center gap-2.5">
-            {/* Badge evento */}
             <Link
               href="/campamento"
               className="hidden sm:inline-block rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all hover:bg-white/10"
@@ -247,7 +218,6 @@ export function Navbar() {
               Verano 🏕️
             </Link>
 
-            {/* Cuenta */}
             <Link
               href={userName ? '/mi-cuenta' : '/acceso'}
               className="rounded-md p-1 transition-colors hover:opacity-60"
@@ -257,7 +227,6 @@ export function Navbar() {
               <UserIcon />
             </Link>
 
-            {/* Carrito */}
             <Link
               href="/cart"
               className="rounded-md p-1 transition-colors hover:opacity-60"
@@ -267,6 +236,9 @@ export function Navbar() {
             </Link>
           </div>
         </div>
+
+        {/* Mega menú full-width */}
+        <MegaMenu seccion={dropdown} />
       </nav>
 
       {/* ─── Móvil full-screen ──────────────────────────────── */}
@@ -277,7 +249,6 @@ export function Navbar() {
         style={{ background: 'var(--color-background)', color: 'var(--color-text)' }}
       >
         <div className="flex-1 space-y-6 px-5 py-6">
-          {/* Suscripciones móvil */}
           <div>
             <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Suscripciones</h3>
             <div className="space-y-1.5">
@@ -311,7 +282,6 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Comprar más móvil */}
           <div>
             <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Comprar más</h3>
             <div className="space-y-0.5">
@@ -325,7 +295,6 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Nosotros móvil */}
           <div>
             <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nosotros</h3>
             <div className="space-y-0.5">
@@ -339,7 +308,6 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Evento móvil */}
           <Link href="/campamento" onClick={() => setOpen(false)}
             className="block rounded-lg border px-4 py-2.5 text-center text-[13px] font-medium"
             style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
@@ -355,7 +323,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Overlay */}
+      {/* Overlay móvil */}
       {open && (
         <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={() => setOpen(false)} />
       )}

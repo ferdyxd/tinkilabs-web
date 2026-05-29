@@ -34,6 +34,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="min-h-screen bg-tinki-light font-sans text-tinki-dark antialiased">
+        <a href="#main-content" className="skip-link">Saltar al contenido</a>
         <OrganizationSchema />
         <Navbar />
         {children}

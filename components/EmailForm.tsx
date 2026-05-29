@@ -2,10 +2,16 @@
 
 import { useState } from 'react';
 
-export function EmailForm() {
+interface EmailFormProps {
+  variant?: 'light' | 'dark';
+}
+
+export function EmailForm({ variant = 'light' }: EmailFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+
+  const isDark = variant === 'dark';
 
   const handleSubmit = async () => {
     if (!email || !email.includes('@')) {
@@ -28,7 +34,7 @@ export function EmailForm() {
 
       if (res.ok) {
         setStatus('success');
-        setMessage(data.message || '¡Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
+        setMessage(data.message || 'Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
         setEmail('');
       } else {
         setStatus('error');
@@ -51,7 +57,11 @@ export function EmailForm() {
             if (status === 'error') setStatus('idle');
           }}
           placeholder="tu@email.com"
-          className="flex-1 rounded-xl border-2 border-white/20 bg-white/10 px-5 py-4 text-white placeholder:text-white/50 backdrop-blur-sm transition-all focus:border-tinki-orange focus:outline-none focus:ring-2 focus:ring-tinki-orange/30"
+          className={
+            isDark
+              ? 'flex-1 rounded-xl border-2 border-white/20 bg-white/10 px-5 py-4 text-white placeholder:text-white/50 backdrop-blur-sm transition-all focus:border-tinki-orange focus:outline-none focus:ring-2 focus:ring-tinki-orange/30'
+              : 'flex-1 rounded-xl border-2 border-tinki-orange/15 bg-white px-5 py-4 text-tinki-dark placeholder:text-tinki-dark/30 shadow-sm transition-all focus:border-tinki-orange focus:outline-none focus:ring-2 focus:ring-tinki-orange/30'
+          }
           disabled={status === 'loading' || status === 'success'}
           aria-label="Tu dirección de email"
         />
@@ -66,7 +76,7 @@ export function EmailForm() {
               Enviando...
             </span>
           ) : status === 'success' ? (
-            '¡Apuntado!'
+            'Apuntado!'
           ) : (
             'Me apunto'
           )}
@@ -75,7 +85,9 @@ export function EmailForm() {
       {message && (
         <p
           className={`mt-3 text-center text-sm ${
-            status === 'success' ? 'text-green-300' : 'text-red-300'
+            status === 'success'
+              ? isDark ? 'text-green-300' : 'text-green-600'
+              : isDark ? 'text-red-300' : 'text-red-600'
           }`}
         >
           {message}
