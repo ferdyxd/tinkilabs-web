@@ -16,37 +16,71 @@ function getUsers(): User[] {
   }
 }
 
+// Rutas públicas (sin auth)
+const PUBLIC_PATHS = [
+  '/',
+  '/acceso',
+  '/canjear',
+  '/gracias',
+];
+
+// Prefijos públicos
+const PUBLIC_PREFIXES = [
+  '/api/',
+  '/_next/',
+  '/images/',
+  '/canjear/',
+  '/ayuda',
+  '/terminos',
+  '/privacidad',
+  '/aviso-legal',
+  '/devoluciones',
+  '/envios',
+  '/favicon.ico',
+  '/icon.png',
+  '/robots.txt',
+  '/sitemap.xml',
+];
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.includes(pathname)) return true;
+  return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (isPublicPath(pathname)) {
+    return NextResponse.next();
+  }
+
   const users = getUsers();
 
-  // Si no hay usuarios configurados, permitir acceso libre (dev local)
+  // Sin usuarios configurados: acceso libre (dev local)
   if (users.length === 0) {
     return NextResponse.next();
   }
 
   const authCookie = request.cookies.get('tinkilabs_auth');
   if (!authCookie) {
-    return redirectToAcceso(request);
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // La cookie almacena "nombre:contraseña"
   const [name, password] = authCookie.value.split(':');
-  const user = users.find((u) => u.name === name && u.password === password);
+  if (!name || !password) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
 
+  const user = users.find((u) => u.name === name && u.password === password);
   if (!user) {
-    return redirectToAcceso(request);
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
 }
 
-function redirectToAcceso(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  url.pathname = '/acceso';
-  url.searchParams.set('redirect', request.nextUrl.pathname);
-  return NextResponse.redirect(url);
-}
-
 export const config = {
-  matcher: ['/productos/:path*'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|images/.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico)).*)',
+  ],
 };

@@ -5,14 +5,14 @@ import { OrganizationSchema } from '@/components/JsonLd';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Tinkilabs — Construye. Aprende. Alucina.',
+  title: 'Tinkilabs — Imagina. Construye. Alucina.',
   description:
-    'Cajas de experimentos STEM por suscripción mensual para niños de 3 a 14 años. Recibe una caja cada mes, construye proyectos increíbles y descubre cómo funciona el mundo.',
-  keywords: 'cajas STEM, experimentos niños, suscripción educativa, ciencia para niños, tecnología niños, Tinkilabs',
+    'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Madera natural, sin pantallas, sin pilas. Hecho en España.',
+  keywords: 'cajas construccion, maquinas niños, suscripcion mecanica, construye maquinas, regalo original niños, tinkilabs',
   openGraph: {
-    title: 'Tinkilabs — Construye. Aprende. Alucina.',
+    title: 'Tinkilabs — Imagina. Construye. Alucina.',
     description:
-      'Cajas de experimentos STEM por suscripción mensual para niños de 3 a 14 años.',
+      'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Sin pantallas, sin pilas.',
     type: 'website',
     locale: 'es_ES',
     siteName: 'Tinkilabs',

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Link from 'next/link';
 
 interface Plan {
   nombre: string;
@@ -165,10 +164,13 @@ export function PlanCards() {
                 ))}
               </ul>
 
-              {/* CTA */}
-              <Link
-                href="/suscribete"
-                className={`mt-6 block rounded-xl px-5 py-3.5 text-center text-sm font-bold transition-all duration-200 active:scale-[0.97] sm:mt-7 ${
+              {/* CTA — scroll al formulario */}
+              <button
+                type="button"
+                onClick={() => {
+                  document.getElementById('cta-final')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`mt-6 block w-full rounded-xl px-5 py-3.5 text-center text-sm font-bold transition-all duration-200 active:scale-[0.97] sm:mt-7 ${
                   plan.destacado
                     ? 'text-white shadow-md shadow-tinki-orange/25 hover:shadow-lg hover:shadow-tinki-orange/30'
                     : 'border-2 hover:border-transparent hover:text-white'
@@ -191,8 +193,8 @@ export function PlanCards() {
                   }
                 }}
               >
-                {plan.destacado ? 'Suscríbete ahora' : 'Elegir ' + plan.nombre}
-              </Link>
+                {plan.destacado ? 'Quiero mi caja' : 'Elegir ' + plan.nombre}
+              </button>
             </div>
           ))}
         </div>

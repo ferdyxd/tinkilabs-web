@@ -27,7 +27,7 @@ export function FinalCTA() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-white py-24 sm:py-36">
+    <section id="cta-final" className="relative overflow-hidden bg-white py-24 sm:py-36">
       {/* Fondo degradado naranja cálido */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-b from-tinki-orange/[0.03] via-tinki-orange/[0.06] to-tinki-orange/[0.04]" />
@@ -56,16 +56,16 @@ export function FinalCTA() {
         </div>
 
         <h2 className="text-3xl font-black tracking-tight text-tinki-dark sm:text-5xl">
-          No te quedes fuera
+          Sé Fundador Tinkilabs
         </h2>
 
         <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-tinki-dark/50 sm:text-lg">
-          Los <span className="font-semibold text-tinki-dark/70">primeros 500 suscriptores</span> tendrán{' '}
-          <span className="font-bold text-tinki-orange">30% de descuento de por vida</span>.
-          Para siempre. En todas las cajas.
+          Los <span className="font-semibold text-tinki-dark/70">primeros 500 Fundadores</span> tendrán{' '}
+          <span className="font-bold text-tinki-orange">precio congelado de por vida</span>,{' '}
+          acceso anticipado 3 días y una chapa de madera numerada con tu número de Fundador.
         </p>
 
-        {/* Formulario grande */}
+        {/* Formulario */}
         <div className="mt-8 sm:mt-10">
           <EmailForm />
         </div>

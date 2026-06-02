@@ -2,7 +2,6 @@ import { HeroTitle } from '@/components/HeroTitle';
 import { EmailForm } from '@/components/EmailForm';
 import { Counter } from '@/components/Counter';
 import { HowItWorks } from '@/components/HowItWorks';
-import { PlanCards } from '@/components/PlanCards';
 import { FinalCTA } from '@/components/FinalCTA';
 import Image from 'next/image';
 
@@ -69,23 +68,17 @@ export default function Home() {
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pb-12 pt-24 sm:pb-16 sm:pt-28">
         <div className="flex w-full max-w-2xl flex-col items-center gap-8 sm:gap-10">
 
-          {/* ─── DEPTH 3: Producto Hero ─── */}
+          {/* ─── DEPTH 3: Logo ─── */}
           <div className="float-loop relative">
-            {/* Sombra bajo el producto */}
-            <div className="absolute -bottom-6 left-1/2 h-8 w-48 -translate-x-1/2 rounded-[50%] bg-tinki-orange/12 blur-xl sm:w-64" />
-
-            {/* Contenedor del producto */}
-            <div className="relative overflow-hidden rounded-2xl border border-tinki-orange/10 bg-white shadow-lg shadow-tinki-orange/5">
+            <div className="relative">
               <Image
-                src="/images/productos/01-launcher.jpg"
-                alt="Tinki Launcher — lanzador de discos de madera"
-                width={420}
-                height={340}
-                className="h-auto w-[320px] object-cover sm:w-[420px]"
+                src="/images/logo_tinki.png"
+                alt="Tinkilabs"
+                width={240}
+                height={240}
+                className="h-auto w-[200px] sm:w-[240px]"
                 priority
               />
-              {/* Brillo sutil en borde superior */}
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-tinki-orange/20 to-transparent" />
             </div>
           </div>
 
@@ -94,7 +87,7 @@ export default function Home() {
 
             {/* Badge */}
             <span className="inline-block rounded-full border border-tinki-orange/20 bg-tinki-orange/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-tinki-orange">
-              Suscripción mensual
+              Próximo lanzamiento
             </span>
 
             {/* Claim — Split Converge */}
@@ -106,16 +99,10 @@ export default function Home() {
               <span className="font-medium text-tinki-dark/70">Sin pantallas. Sin pilas. Solo física, madera y tus ganas de crear.</span>
             </p>
 
-            {/* Precio */}
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-black text-tinki-orange sm:text-4xl">24,90 €</span>
-              <span className="text-sm text-tinki-dark/40">/ mes</span>
-            </div>
-
             {/* Formulario */}
             <div className="w-full">
               <p className="mb-3 text-sm font-semibold text-tinki-dark/60">
-                Únete a la lista de espera — los primeros 500 tienen <span className="text-tinki-orange">30% descuento de por vida</span>
+                Conviértete en <span className="text-tinki-orange">Fundador Tinkilabs</span>. Solo 500.
               </p>
               <EmailForm />
             </div>
@@ -149,12 +136,7 @@ export default function Home() {
     <HowItWorks />
 
     {/* ═══════════════════════════════════════════════════════
-        SECCIÓN 3 — LÍNEAS
-        ════════════════════════════════════════════════════ */}
-    <PlanCards />
-
-    {/* ═══════════════════════════════════════════════════════
-        SECCIÓN 5 — CTA FINAL
+        SECCIÓN 3 — CTA FINAL
         ════════════════════════════════════════════════════ */}
     <FinalCTA />
     </main>

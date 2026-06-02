@@ -149,7 +149,7 @@ export function MegaMenu({ seccion }: MegaMenuProps) {
               <span className="text-2xl">🔩</span>
               <div>
                 <p className="text-[13px] font-semibold text-tinki-dark">Conoce a Tinki</p>
-                <p className="text-[12px] text-tinki-dark/40">El robot que hace posible todo esto. Descubre su historia.</p>
+                <p className="text-[12px] text-tinki-dark/40">El castor ingeniero con una rueda dentada en el pecho. Descubre su historia.</p>
               </div>
               <Link href="/nosotros" className="ml-auto flex-shrink-0 text-[12px] font-semibold text-tinki-orange hover:underline">Ver más →</Link>
             </div>

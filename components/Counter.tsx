@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 
-const BASE_COUNT = 137;
-const TARGET_COUNT = 247;
+const BASE_COUNT = 418;
+const TARGET_COUNT = 308;
 
 interface CounterProps {
   variant?: 'light' | 'dark';
@@ -35,12 +35,12 @@ export function Counter({ variant = 'light' }: CounterProps) {
 
     const duration = 2000;
     const steps = 40;
-    const increment = Math.ceil((TARGET_COUNT - BASE_COUNT) / steps);
+    const decrement = Math.ceil((BASE_COUNT - TARGET_COUNT) / steps);
     let current = BASE_COUNT;
 
     const timer = setInterval(() => {
-      current += increment;
-      if (current >= TARGET_COUNT) {
+      current -= decrement;
+      if (current <= TARGET_COUNT) {
         setCount(TARGET_COUNT);
         clearInterval(timer);
       } else {
@@ -52,11 +52,11 @@ export function Counter({ variant = 'light' }: CounterProps) {
   }, [visible]);
 
   useEffect(() => {
-    if (count < TARGET_COUNT) return;
+    if (count <= TARGET_COUNT) return;
 
     const interval = setInterval(() => {
-      setCount((prev) => prev + Math.floor(Math.random() * 3) + 1);
-    }, 8000 + Math.random() * 10000);
+      setCount((prev) => prev - (Math.floor(Math.random() * 2) + 1));
+    }, 12000 + Math.random() * 15000);
 
     return () => clearInterval(interval);
   }, [count]);
@@ -68,13 +68,13 @@ export function Counter({ variant = 'light' }: CounterProps) {
       style={{ opacity: visible ? 1 : 0 }}
     >
       <div className="flex items-baseline justify-center gap-1">
-        <span className={`text-4xl font-black sm:text-5xl ${isDark ? 'text-tinki-orange' : 'text-tinki-orange'}`}>
+        <span className="text-4xl font-black text-tinki-orange sm:text-5xl">
           {count}
         </span>
-        <span className={`text-lg ${textMain}`}>personas</span>
+        <span className={`text-lg ${textMain}`}>plazas</span>
       </div>
       <p className={`mt-1 text-sm ${textMuted}`}>
-        ya están en la lista de espera
+        de Fundador disponibles de 500
       </p>
     </div>
   );

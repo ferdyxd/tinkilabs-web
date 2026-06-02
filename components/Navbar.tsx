@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MegaMenu } from '@/components/MegaMenu';
 
@@ -68,6 +69,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [dropdown, setDropdown] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [autenticado, setAutenticado] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -75,6 +77,7 @@ export function Navbar() {
 
   const paginasOscuras = ['/concepto-b', '/productos'];
   const isDarkPage = paginasOscuras.includes(pathname);
+  const esLandingPublica = pathname === '/' && !autenticado;
 
   useEffect(() => {
     const cb = () => setScrolled(window.scrollY > 8);
@@ -85,7 +88,12 @@ export function Navbar() {
   useEffect(() => {
     fetch('/api/auth/me')
       .then(r => r.ok ? r.json() : null)
-      .then(d => d && setUserName(d.name))
+      .then(d => {
+        if (d) {
+          setUserName(d.name);
+          setAutenticado(true);
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -153,102 +161,146 @@ export function Navbar() {
           background: navBg,
           color: navTextColor,
         }}
-        onMouseLeave={scheduleClose}
-        onMouseEnter={cancelClose}
+        onMouseLeave={esLandingPublica ? undefined : scheduleClose}
+        onMouseEnter={esLandingPublica ? undefined : cancelClose}
       >
         <div className="relative z-10 mx-auto flex h-[58px] max-w-6xl items-center gap-5 px-5">
-          {/* Hamburguesa móvil */}
-          <button type="button" className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menú">
-            <Hamburger open={open} />
-          </button>
+          {esLandingPublica ? (
+            <>
+              {/* ─── Navbar mínimo (landing pública) ─── */}
+              <div className="flex-1" />
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-base font-bold tracking-tight transition-colors hover:opacity-70"
+                style={{ color: navTextColor }}
+              >
+                <Image
+                  src="/images/logotinkiweb.png"
+                  alt="Tinki"
+                  width={28}
+                  height={28}
+                  className="h-7 w-7"
+                />
+                Tinkilabs
+              </Link>
+              <div className="flex-1 flex justify-end">
+                <Link
+                  href="/acceso"
+                  className="rounded-md p-1.5 text-tinki-dark/15 transition-all hover:text-tinki-orange/50"
+                  title="Acceso privado"
+                  aria-label="Acceso privado"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Hamburguesa móvil */}
+              <button type="button" className="lg:hidden" onClick={() => setOpen(!open)} aria-label="Menú">
+                <Hamburger open={open} />
+              </button>
 
-          {/* ─── Izquierda: triggers mega menú ────────── */}
-          <div className="hidden lg:flex items-center gap-0.5">
-            <button
-              type="button"
-              onMouseEnter={() => openSection('subs')}
-              onClick={() => toggleSection('subs')}
-              aria-expanded={dropdown === 'subs'}
-              className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                dropdown === 'subs' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
-              }`}
-            >
-              Suscripciones
-            </button>
+              {/* ─── Izquierda: triggers mega menú ────────── */}
+              <div className="hidden lg:flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onMouseEnter={() => openSection('subs')}
+                  onClick={() => toggleSection('subs')}
+                  aria-expanded={dropdown === 'subs'}
+                  className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                    dropdown === 'subs' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                  }`}
+                >
+                  Suscripciones
+                </button>
 
-            <button
-              type="button"
-              onMouseEnter={() => openSection('shop')}
-              onClick={() => toggleSection('shop')}
-              aria-expanded={dropdown === 'shop'}
-              className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                dropdown === 'shop' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
-              }`}
-            >
-              Comprar más
-            </button>
+                <button
+                  type="button"
+                  onMouseEnter={() => openSection('shop')}
+                  onClick={() => toggleSection('shop')}
+                  aria-expanded={dropdown === 'shop'}
+                  className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                    dropdown === 'shop' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                  }`}
+                >
+                  Comprar más
+                </button>
 
-            <Link
-              href="/taller"
-              className="rounded-md px-2.5 py-2 text-[13px] font-medium opacity-65 transition-colors hover:opacity-100"
-            >
-              Taller
-            </Link>
+                <Link
+                  href="/blog"
+                  className="rounded-md px-2.5 py-2 text-[13px] font-medium opacity-65 transition-colors hover:opacity-100"
+                >
+                  Blog
+                </Link>
 
-            <button
-              type="button"
-              onMouseEnter={() => openSection('about')}
-              onClick={() => toggleSection('about')}
-              aria-expanded={dropdown === 'about'}
-              className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                dropdown === 'about' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
-              }`}
-            >
-              Nosotros
-            </button>
-          </div>
+                <button
+                  type="button"
+                  onMouseEnter={() => openSection('about')}
+                  onClick={() => toggleSection('about')}
+                  aria-expanded={dropdown === 'about'}
+                  className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                    dropdown === 'about' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                  }`}
+                >
+                  Nosotros
+                </button>
+              </div>
 
-          {/* ─── Logo ────────────────────────────────────── */}
-          <div className="flex-1 lg:flex-none lg:mx-auto text-center lg:text-left">
-            <Link href="/" className="text-base font-bold tracking-tight transition-colors hover:opacity-70" style={{ color: navTextColor }}>
-              Tinkilabs
-            </Link>
-          </div>
+              {/* ─── Logo ────────────────────────────────────── */}
+              <div className="flex-1 lg:flex-none lg:mx-auto text-center lg:text-left">
+                <Link href="/" className="flex items-center justify-center lg:justify-start gap-2 text-base font-bold tracking-tight transition-colors hover:opacity-70" style={{ color: navTextColor }}>
+                  <Image
+                    src="/images/logotinkiweb.png"
+                    alt="Tinki"
+                    width={28}
+                    height={28}
+                    className="h-7 w-7"
+                  />
+                  Tinkilabs
+                </Link>
+              </div>
 
-          {/* ─── Derecha ─────────────────────────────────── */}
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/campamento"
-              className="hidden sm:inline-block rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all hover:bg-white/10"
-              style={{ color: navTextColor, opacity: hasBg ? 0.65 : 0.85 }}
-            >
-              Verano 🏕️
-            </Link>
+              {/* ─── Derecha ─────────────────────────────────── */}
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/campamento"
+                  className="hidden sm:inline-block rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all hover:bg-white/10"
+                  style={{ color: navTextColor, opacity: hasBg ? 0.65 : 0.85 }}
+                >
+                  Verano 🏕️
+                </Link>
 
-            <Link
-              href={userName ? '/mi-cuenta' : '/acceso'}
-              className="rounded-md p-1 transition-colors hover:opacity-60"
-              style={{ color: navTextColor }}
-              title={userName || 'Acceder'}
-            >
-              <UserIcon />
-            </Link>
+                <Link
+                  href={userName ? '/mi-cuenta' : '/acceso'}
+                  className="rounded-md p-1 transition-colors hover:opacity-60"
+                  style={{ color: navTextColor }}
+                  title={userName || 'Acceder'}
+                >
+                  <UserIcon />
+                </Link>
 
-            <Link
-              href="/cart"
-              className="rounded-md p-1 transition-colors hover:opacity-60"
-              style={{ color: navTextColor }}
-            >
-              <CartIcon count={0} />
-            </Link>
-          </div>
+                <Link
+                  href="/cart"
+                  className="rounded-md p-1 transition-colors hover:opacity-60"
+                  style={{ color: navTextColor }}
+                >
+                  <CartIcon count={0} />
+                </Link>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Mega menú full-width */}
-        <MegaMenu seccion={dropdown} />
+        {!esLandingPublica && <MegaMenu seccion={dropdown} />}
       </nav>
 
       {/* ─── Móvil full-screen ──────────────────────────────── */}
+      {!esLandingPublica && (
       <div
         className={`fixed inset-0 z-40 flex flex-col overflow-y-auto pt-[58px] transition-all duration-300 lg:hidden ${
           open ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
@@ -303,11 +355,11 @@ export function Navbar() {
           </div>
 
           <div>
-            <Link href="/taller" onClick={() => setOpen(false)}
+            <Link href="/blog" onClick={() => setOpen(false)}
               className="block rounded-md px-3 py-2 text-[13px] font-medium transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
               style={{ color: 'var(--color-primary)' }}
             >
-              Taller de Tinki 🔧
+              Blog de Tinki 📝
             </Link>
           </div>
 
@@ -338,6 +390,7 @@ export function Navbar() {
           </p>
         </div>
       </div>
+      )}
 
       {/* Overlay móvil */}
       {open && (
