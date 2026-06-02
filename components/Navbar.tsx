@@ -188,6 +188,13 @@ export function Navbar() {
               Comprar más
             </button>
 
+            <Link
+              href="/taller"
+              className="rounded-md px-2.5 py-2 text-[13px] font-medium opacity-65 transition-colors hover:opacity-100"
+            >
+              Taller
+            </Link>
+
             <button
               type="button"
               onMouseEnter={() => openSection('about')}
@@ -293,6 +300,15 @@ export function Navbar() {
                 </Link>
               ))}
             </div>
+          </div>
+
+          <div>
+            <Link href="/taller" onClick={() => setOpen(false)}
+              className="block rounded-md px-3 py-2 text-[13px] font-medium transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
+              style={{ color: 'var(--color-primary)' }}
+            >
+              Taller de Tinki 🔧
+            </Link>
           </div>
 
           <div>
