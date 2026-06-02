@@ -19,9 +19,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Tinkilabs — Construye. Aprende. Alucina.',
+    title: 'Tinkilabs — Imagina. Construye. Alucina.',
     description:
-      'Cajas de experimentos STEM por suscripción mensual para niños de 3 a 14 años.',
+      'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Sin pantallas, sin pilas.',
   },
   robots: 'index, follow',
 };
