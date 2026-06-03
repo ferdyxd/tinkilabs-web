@@ -23,6 +23,7 @@ const nosotros = [
   { nombre: 'Sobre nosotros', link: '/nosotros' },
   { nombre: 'FAQ y Ayuda', link: '/ayuda' },
   { nombre: 'Reseñas', link: '/resenas' },
+  { nombre: 'Nuestro logo', link: '/nuestro-logo' },
 ];
 
 // ─── Iconos ─────────────────────────────────────────────────

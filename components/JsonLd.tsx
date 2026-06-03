@@ -5,7 +5,7 @@ export function OrganizationSchema() {
     name: 'Tinkilabs',
     url: 'https://tinkilabs.com',
     logo: 'https://tinkilabs.com/images/logotinkiweb.png',
-    description: 'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Madera natural, sin pantallas, sin pilas. Hecho en España.',
+    description: 'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Madera natural, sin pantallas. Hecho en España.',
     email: 'hola@tinkilabs.com',
     foundingDate: '2026',
     founder: { '@type': 'Person', name: 'Alby' },

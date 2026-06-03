@@ -96,7 +96,7 @@ export default function Home() {
             {/* Subtítulo */}
             <p className="max-w-md text-base leading-relaxed text-tinki-dark/50 sm:text-lg">
               Una caja cada mes con un proyecto de ingeniería real.{' '}
-              <span className="font-medium text-tinki-dark/70">Sin pantallas. Sin pilas. Solo física, madera y tus ganas de crear.</span>
+              <span className="font-medium text-tinki-dark/70">Sin pantallas. Solo física, madera y tus ganas de crear.</span>
             </p>
 
             {/* Formulario */}

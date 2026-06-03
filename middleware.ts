@@ -22,6 +22,8 @@ const PUBLIC_PATHS = [
   '/acceso',
   '/canjear',
   '/gracias',
+  '/comparar',
+  '/nuestro-logo',
 ];
 
 // Prefijos públicos

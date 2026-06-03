@@ -46,7 +46,7 @@ export default function SobreNosotros() {
 
           <div className="mt-10 space-y-5 text-base leading-relaxed text-tinki-dark/55 sm:text-lg">
             <p>
-              Tinkilabs nació en un garaje de Valladolid con una idea sencilla: ¿y si cada mes le llegase a un niño una caja con todo lo necesario para construir una máquina de verdad? Sin pilas. Sin pantallas. Solo piezas de madera, engranajes, muelles y mucha curiosidad.
+              Tinkilabs nació en un garaje de Valladolid con una idea sencilla: ¿y si cada mes le llegase a un niño una caja con todo lo necesario para construir una máquina de verdad? Sin pantallas. Solo piezas de madera, engranajes, muelles y mucha curiosidad.
             </p>
             <p>
               Somos un equipo de cinco personas. Hay un ingeniero mecánico que antes diseñaba maquinaria industrial. Una diseñadora industrial que esculpe prototipos en madera como quien hace ganchillo. Un maker que convierte cualquier idea en un prototipo funcional en 48 horas. Un creativo que pone voz a Tinki y escribe las guías. Y Alby, nuestro fundador, que un día decidió que España se merecía sus propios kits de ingeniería sin tener que pagar 40€ de envío desde Estados Unidos.

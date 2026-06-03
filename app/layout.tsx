@@ -7,12 +7,12 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Tinkilabs — Imagina. Construye. Alucina.',
   description:
-    'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Madera natural, sin pantallas, sin pilas. Hecho en España.',
+    'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Madera natural, sin pantallas. Hecho en España.',
   keywords: 'cajas construccion, maquinas niños, suscripcion mecanica, construye maquinas, regalo original niños, tinkilabs',
   openGraph: {
     title: 'Tinkilabs — Imagina. Construye. Alucina.',
     description:
-      'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Sin pantallas, sin pilas.',
+      'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Sin pantallas.',
     type: 'website',
     locale: 'es_ES',
     siteName: 'Tinkilabs',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Tinkilabs — Imagina. Construye. Alucina.',
     description:
-      'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Sin pantallas, sin pilas.',
+      'Cajas de construcción mecánica por suscripción para niños de 6-9 años. Una máquina de verdad cada mes. Sin pantallas.',
   },
   robots: 'index, follow',
 };

@@ -47,7 +47,7 @@ const pasos: Paso[] = [
     numero: '03',
     titulo: 'Construye y alucina',
     descripcion:
-      'Monta pieza a pieza. Sin pilas, sin pantallas. Solo física real y la sensación de decir "lo he hecho yo".',
+      'Monta pieza a pieza. Sin pantallas. Solo física real y la sensación de decir "lo he hecho yo".',
     icono: (
       <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {/* Engranaje */}

@@ -247,7 +247,7 @@ export default function ConceptoB() {
               <span className="text-tinki-orange">funciona de verdad</span>
             </p>
             <p className="mt-3 text-center text-base text-white/40 sm:text-lg">
-              Sin pilas. Sin pantallas. Solo física, mecánica y tus ganas de crear.
+              Sin pantallas. Solo física, mecánica y tus ganas de crear.
             </p>
           </ScrollReveal>
         </div>

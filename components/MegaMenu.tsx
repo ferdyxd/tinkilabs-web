@@ -105,7 +105,7 @@ export function MegaMenu({ seccion }: MegaMenuProps) {
             </div>
             <div className="mt-6 flex items-center justify-between border-t border-neutral-100 pt-5">
               <p className="text-[12px] text-tinki-dark/30">Envío gratis a España peninsular. Sin permanencia. Cancela cuando quieras.</p>
-              <Link href="/suscribete" className="text-[13px] font-semibold text-tinki-orange transition-colors hover:text-tinki-orange-dark">Comparar planes →</Link>
+              <Link href="/comparar" className="text-[13px] font-semibold text-tinki-orange transition-colors hover:text-tinki-orange-dark">Comparar planes →</Link>
             </div>
           </div>
         )}
@@ -151,7 +151,7 @@ export function MegaMenu({ seccion }: MegaMenuProps) {
                 <p className="text-[13px] font-semibold text-tinki-dark">Conoce a Tinki</p>
                 <p className="text-[12px] text-tinki-dark/40">El castor ingeniero con una rueda dentada en el pecho. Descubre su historia.</p>
               </div>
-              <Link href="/nosotros" className="ml-auto flex-shrink-0 text-[12px] font-semibold text-tinki-orange hover:underline">Ver más →</Link>
+              <Link href="/nuestro-logo" className="ml-auto flex-shrink-0 text-[12px] font-semibold text-tinki-orange hover:underline">Ver más →</Link>
             </div>
           </div>
         )}
