@@ -119,11 +119,6 @@ export function Navbar() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   }, []);
 
-  // Toggle al hacer click (accesibilidad)
-  const toggleSection = useCallback((name: string) => {
-    setDropdown(prev => prev === name ? null : name);
-  }, []);
-
   const closeDropdown = useCallback(() => setDropdown(null), []);
 
   const megaMenuOpen = dropdown !== null;
@@ -205,50 +200,45 @@ export function Navbar() {
                 <Hamburger open={open} />
               </button>
 
-              {/* ─── Izquierda: triggers mega menú ────────── */}
-              <div className="hidden lg:flex items-center gap-0.5">
-                <button
-                  type="button"
+              {/* ─── Izquierda: navegación principal ────────── */}
+              <div className="hidden lg:flex items-center gap-1">
+                <Link
+                  href="/suscribete"
                   onMouseEnter={() => openSection('subs')}
-                  onClick={() => toggleSection('subs')}
-                  aria-expanded={dropdown === 'subs'}
-                  className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                    dropdown === 'subs' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    dropdown === 'subs' ? 'text-tinki-orange bg-tinki-orange/10' : 'text-tinki-dark/65 hover:text-tinki-dark hover:bg-neutral-50'
                   }`}
                 >
                   Suscripciones
-                </button>
+                </Link>
 
-                <button
-                  type="button"
+                <Link
+                  href="/tienda"
                   onMouseEnter={() => openSection('shop')}
-                  onClick={() => toggleSection('shop')}
-                  aria-expanded={dropdown === 'shop'}
-                  className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                    dropdown === 'shop' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    dropdown === 'shop' ? 'text-tinki-orange bg-tinki-orange/10' : 'text-tinki-dark/65 hover:text-tinki-dark hover:bg-neutral-50'
                   }`}
                 >
                   Comprar más
-                </button>
+                </Link>
 
                 <Link
                   href="/blog"
-                  className="rounded-md px-2.5 py-2 text-[13px] font-medium opacity-65 transition-colors hover:opacity-100"
+                  onMouseEnter={() => setDropdown(null)}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-tinki-dark/65 transition-colors hover:text-tinki-dark hover:bg-neutral-50"
                 >
                   Blog
                 </Link>
 
-                <button
-                  type="button"
+                <Link
+                  href="/nosotros"
                   onMouseEnter={() => openSection('about')}
-                  onClick={() => toggleSection('about')}
-                  aria-expanded={dropdown === 'about'}
-                  className={`rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors ${
-                    dropdown === 'about' ? 'opacity-100' : 'opacity-65 hover:opacity-100'
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    dropdown === 'about' ? 'text-tinki-orange bg-tinki-orange/10' : 'text-tinki-dark/65 hover:text-tinki-dark hover:bg-neutral-50'
                   }`}
                 >
                   Nosotros
-                </button>
+                </Link>
               </div>
 
               {/* ─── Logo ────────────────────────────────────── */}
@@ -266,10 +256,10 @@ export function Navbar() {
               </div>
 
               {/* ─── Derecha ─────────────────────────────────── */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <Link
                   href="/campamento"
-                  className="hidden sm:inline-block rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all hover:bg-white/10"
+                  className="hidden sm:inline-block rounded-md px-3 py-1.5 text-xs font-medium transition-all hover:bg-white/10"
                   style={{ color: navTextColor, opacity: hasBg ? 0.65 : 0.85 }}
                 >
                   Verano 🏕️
@@ -277,7 +267,7 @@ export function Navbar() {
 
                 <Link
                   href={userName ? '/mi-cuenta' : '/acceso'}
-                  className="rounded-md p-1 transition-colors hover:opacity-60"
+                  className="rounded-md p-1.5 transition-colors hover:opacity-60"
                   style={{ color: navTextColor }}
                   title={userName || 'Acceder'}
                 >
@@ -286,7 +276,7 @@ export function Navbar() {
 
                 <Link
                   href="/cart"
-                  className="rounded-md p-1 transition-colors hover:opacity-60"
+                  className="rounded-md p-1.5 transition-colors hover:opacity-60"
                   style={{ color: navTextColor }}
                 >
                   <CartIcon count={0} />

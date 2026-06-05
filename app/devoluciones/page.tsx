@@ -49,7 +49,37 @@ export default function DevolucionesPage() {
       </Section>
 
       <Section title="6. Suscripciones">
-        <p>Para las suscripciones, el derecho de desistimiento aplica sobre la primera caja recibida. Una vez transcurridos 14 días desde la recepción de la primera caja, o si la caja ha sido abierta, la suscripción puede cancelarse (dejando de recibir y pagar futuras cajas) pero no reembolsarse las ya pagadas.</p>
+        <p>Nuestras suscripciones funcionan de manera distinta según el plan que elijas. El descuento que obtienes en los planes trimestral y anual existe porque adquieres un compromiso de recibir todas las cajas de ese periodo.</p>
+
+        <h3 className="font-semibold mt-4" style={{ color: 'var(--color-text)' }}>Plan Mensual (24,90 €/mes)</h3>
+        <ul className="list-disc pl-5">
+          <li>Sin compromiso de permanencia.</li>
+          <li>Puedes cancelar cuando quieras desde tu cuenta, antes del siguiente cobro.</li>
+          <li>Las cajas ya pagadas y recibidas no se reembolsan.</li>
+        </ul>
+
+        <h3 className="font-semibold mt-4" style={{ color: 'var(--color-text)' }}>Plan Trimestral (22,90 €/mes — 3 cajas)</h3>
+        <ul className="list-disc pl-5">
+          <li>Compromiso de <strong>3 meses</strong> (3 cajas).</li>
+          <li>Al finalizar el trimestre, puedes cancelar desde tu cuenta o la suscripción se renueva automáticamente.</li>
+          <li>Si necesitas cancelar antes de tiempo, contacta con nosotros en <a href="mailto:hola@tinkilabs.com" className="text-[var(--color-primary)] underline">hola@tinkilabs.com</a> y buscaremos una solución.</li>
+          <li>El precio reducido (22,90 €/mes en lugar de 24,90 €) está vinculado al compromiso de 3 meses.</li>
+        </ul>
+
+        <h3 className="font-semibold mt-4" style={{ color: 'var(--color-text)' }}>Plan Anual (19,90 €/mes — 12 cajas)</h3>
+        <ul className="list-disc pl-5">
+          <li>Compromiso de <strong>12 meses</strong> (12 cajas).</li>
+          <li>Al finalizar el año, puedes cancelar desde tu cuenta o la suscripción se renueva automáticamente.</li>
+          <li>Si necesitas cancelar antes de tiempo, contacta con nosotros en <a href="mailto:hola@tinkilabs.com" className="text-[var(--color-primary)] underline">hola@tinkilabs.com</a> y buscaremos una solución.</li>
+          <li>El precio reducido (19,90 €/mes en lugar de 24,90 €) está vinculado al compromiso de 12 meses.</li>
+        </ul>
+
+        <h3 className="font-semibold mt-4" style={{ color: 'var(--color-text)' }}>Caja única (27,00 €)</h3>
+        <ul className="list-disc pl-5">
+          <li>Sin ningún tipo de compromiso. Es una compra puntual.</li>
+          <li>Aplica el derecho de desistimiento de 14 días desde la recepción (ver sección 1).</li>
+          <li>Si luego te suscribes a un plan, te bonificamos la diferencia entre el precio de la caja única y el precio del plan elegido en tu primera renovación.</li>
+        </ul>
       </Section>
 
       <Section title="7. Productos defectuosos o piezas faltantes">

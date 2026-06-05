@@ -2,6 +2,7 @@ import { HeroTitle } from '@/components/HeroTitle';
 import { EmailForm } from '@/components/EmailForm';
 import { Counter } from '@/components/Counter';
 import { HowItWorks } from '@/components/HowItWorks';
+import { TestimonialMarquee } from '@/components/TestimonialMarquee';
 import { FinalCTA } from '@/components/FinalCTA';
 import Image from 'next/image';
 
@@ -136,7 +137,12 @@ export default function Home() {
     <HowItWorks />
 
     {/* ═══════════════════════════════════════════════════════
-        SECCIÓN 3 — CTA FINAL
+        SECCIÓN 3 — TESTIMONIOS MARQUEE
+        ════════════════════════════════════════════════════ */}
+    <TestimonialMarquee />
+
+    {/* ═══════════════════════════════════════════════════════
+        SECCIÓN 4 — CTA FINAL
         ════════════════════════════════════════════════════ */}
     <FinalCTA />
     </main>

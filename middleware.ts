@@ -24,6 +24,12 @@ const PUBLIC_PATHS = [
   '/gracias',
   '/comparar',
   '/nuestro-logo',
+  '/blog',
+  '/resenas',
+  '/nosotros',
+  '/campamento',
+  '/repuestos',
+  '/concepto-b',
 ];
 
 // Prefijos públicos
@@ -32,6 +38,7 @@ const PUBLIC_PREFIXES = [
   '/_next/',
   '/images/',
   '/canjear/',
+  '/blog/',
   '/ayuda',
   '/terminos',
   '/privacidad',

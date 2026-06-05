@@ -15,35 +15,37 @@ interface PlanInfo {
   badge?: string;
 }
 
+const PRECIO_SINGLE = 27.00;
 const PRECIO_BASE_MES = 24.90;
 
 const PLANES: PlanInfo[] = [
   {
-    slug: 'mensual',
-    nombre: 'Mensual',
-    meses: 1,
-    precioMes: 24.90,
-    precioTotal: 24.90,
-    ahorro: 0,
-  },
-  {
     slug: 'trimestral',
-    nombre: 'Trimestral',
+    nombre: '3 meses',
     meses: 3,
     precioMes: 22.90,
     precioTotal: 68.70,
-    ahorro: 6.00,
+    ahorro: 12.30,
+    badge: 'Para probar',
+  },
+  {
+    slug: 'semestral',
+    nombre: '6 meses',
+    meses: 6,
+    precioMes: 20.90,
+    precioTotal: 125.40,
+    ahorro: 36.60,
     popular: true,
-    badge: 'El más elegido',
+    badge: '1 caja gratis',
   },
   {
     slug: 'anual',
-    nombre: 'Anual',
+    nombre: '12 meses',
     meses: 12,
     precioMes: 19.90,
     precioTotal: 238.80,
-    ahorro: 60.00,
-    badge: 'Mejor precio',
+    ahorro: 85.20,
+    badge: '+2 cajas gratis',
   },
 ];
 
@@ -53,11 +55,9 @@ const LINEAS = [
     nombre: 'Tinki Mini',
     edad: '3-5 años',
     emoji: '🧸',
-    color: 'from-amber-400 to-yellow-500',
     bg: 'bg-amber-50',
     border: 'border-amber-300',
     text: 'text-amber-700',
-    tag: 'tag-amber',
     descripcion: 'Proyectos grandes para manos pequeñas. Piezas extra grandes, montaje sin herramientas, colores vivos. Todo pensado para que construyan solos sin frustrarse.',
     incluye: [
       'Piezas de madera extra grandes (fáciles de agarrar)',
@@ -72,11 +72,9 @@ const LINEAS = [
     nombre: 'Tinki Maker',
     edad: '6-9 años',
     emoji: '🔧',
-    color: 'from-orange-500 to-tinki-orange',
     bg: 'bg-orange-50',
     border: 'border-orange-300',
     text: 'text-orange-700',
-    tag: 'tag-orange',
     descripcion: 'Mecanismos de verdad que se montan, funcionan y molan. Engranajes, muelles, palancas. Cada caja es una máquina nueva que sorprende y engancha.',
     incluye: [
       'Proyectos mecánicos: lanzadores, robots, vehículos',
@@ -91,11 +89,9 @@ const LINEAS = [
     nombre: 'Tinki Pro',
     edad: '10-14 años',
     emoji: '🚀',
-    color: 'from-red-500 to-pink-500',
     bg: 'bg-red-50',
     border: 'border-red-300',
     text: 'text-red-700',
-    tag: 'tag-red',
     descripcion: 'Proyectos de ingeniería de verdad. Electrónica básica, circuitos, motores, programación con Arduino. Para los que ya quieren ir más allá del "mola" al "¿cómo funciona?".',
     incluye: [
       'Electrónica: motores, LEDs, sensores, Arduino',
@@ -109,9 +105,10 @@ const LINEAS = [
 
 // ─── Componente principal ───────────────────────────────────
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 0 | 1 | 2 | 3 | 4;
 
 interface FormData {
+  modo: 'single' | 'sub';
   nombreNino: string;
   linea: typeof LINEAS[0];
   plan: PlanInfo;
@@ -123,8 +120,9 @@ interface FormData {
 }
 
 export function PurchaseWizard() {
-  const [step, setStep] = useState<Step>(1);
+  const [step, setStep] = useState<Step>(0);
   const [data, setData] = useState<FormData>({
+    modo: 'sub',
     nombreNino: '',
     linea: LINEAS[1],
     plan: PLANES[1],
@@ -140,12 +138,14 @@ export function PurchaseWizard() {
   const [dir, setDir] = useState<'fwd' | 'back'>('fwd');
   const [animKey, setAnimKey] = useState(0);
 
+  const totalSteps = data.modo === 'single' ? 3 : 4;
+
   const goNext = (next: Step) => { setDir('fwd'); setAnimKey(k => k + 1); setStep(next); };
   const goBack = (prev: Step) => { setDir('back'); setAnimKey(k => k + 1); setStep(prev); };
 
   const update = (partial: Partial<FormData>) => setData((d) => ({ ...d, ...partial }));
 
-  const progresso = ((step - 1) / 4) * 100;
+  const progresso = totalSteps > 0 ? ((step) / totalSteps) * 100 : 0;
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -155,9 +155,10 @@ export function PurchaseWizard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          modo: data.modo,
           nombreNino: data.nombreNino,
           linea: data.linea.slug,
-          plan: data.plan.slug,
+          plan: data.modo === 'single' ? 'single' : data.plan.slug,
           email: data.email,
           direccion: data.direccion,
           ciudad: data.ciudad,
@@ -178,21 +179,35 @@ export function PurchaseWizard() {
   // ─── Confirmación final ─────────────────────────────────
 
   if (done) {
+    const isSingle = data.modo === 'single';
     return (
-      <div className="text-center py-16 px-4">
-        <div className="text-7xl mb-6">🚀</div>
+      <div className="text-center py-16 px-4 animate-fade-in">
+        <div className="text-7xl mb-6 animate-bounce" style={{ animationDuration: '600ms' }}>{isSingle ? '📦' : '🚀'}</div>
         <h2 className="text-3xl font-black text-tinki-dark mb-3">
-          ¡{data.nombreNino}, bienvenido a Tinkilabs!
+          {isSingle ? `¡${data.nombreNino}, tu caja está en camino!` : `¡${data.nombreNino}, bienvenido a Tinkilabs!`}
         </h2>
-        <p className="text-lg text-tinki-dark/50 mb-2">
-          Tu primera caja <strong>{data.linea.nombre}</strong> sale el día <strong>5 del mes que viene</strong>.
-        </p>
-        <p className="text-tinki-dark/30 mb-8">
-          Te hemos enviado un email con todos los detalles.
-        </p>
+        {isSingle ? (
+          <>
+            <p className="text-lg text-tinki-dark/50 mb-2">
+              Tu <strong className="text-tinki-dark">{data.linea.nombre}</strong> sale en <strong className="text-tinki-orange">5-7 días</strong>. Envío gratis.
+            </p>
+            <p className="text-tinki-dark/30 mb-4">
+              Te avisaremos cuando llegue. Si te mola, te esperamos con un plan y te bonificamos la diferencia. 🦫
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-lg text-tinki-dark/50 mb-2">
+              Tu primera caja <strong className="text-tinki-dark">{data.linea.nombre}</strong> sale el día <strong className="text-tinki-orange">5 del mes que viene</strong>.
+            </p>
+            <p className="text-tinki-dark/30 mb-8">
+              Te hemos enviado un email con todos los detalles. 🧰
+            </p>
+          </>
+        )}
         <a
           href="/"
-          className="inline-block px-8 py-4 bg-tinki-orange text-white font-black text-lg rounded-xl hover:opacity-90 transition-opacity"
+          className="inline-block px-8 py-4 bg-tinki-orange text-white font-black text-lg rounded-xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out"
         >
           Seguir explorando
         </a>
@@ -208,12 +223,29 @@ export function PurchaseWizard() {
         {/* Columna izquierda: wizard */}
         <div className="flex-1 min-w-0">
           {/* Barra de progreso */}
-          <div className="mb-10">
-            <div className="flex justify-between text-xs text-tinki-dark/30 font-bold mb-2">
-              <span className={step >= 1 ? 'text-tinki-orange' : ''}>¿Quién?</span>
-              <span className={step >= 2 ? 'text-tinki-orange' : ''}>Plan</span>
-              <span className={step >= 3 ? 'text-tinki-orange' : ''}>Envío</span>
-              <span className={step >= 4 ? 'text-tinki-orange' : ''}>Pago</span>
+          <div className="mb-10" role="progressbar" aria-valuenow={progresso} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso de suscripción">
+            <div className="flex justify-between text-xs font-bold mb-2">
+              {(data.modo === 'single'
+                ? ['¿Quién?', 'Envío', 'Pago']
+                : ['¿Quién?', 'Plan', 'Envío', 'Pago']
+              ).map((label, i) => {
+                const num = data.modo === 'single' ? [1, 3, 4][i] : i + 1;
+                const done = step > num;
+                const active = step === num;
+                return (
+                  <span
+                    key={label}
+                    className={`flex items-center gap-1 ${active ? 'text-tinki-orange' : done ? 'text-emerald-600' : 'text-tinki-dark/25'}`}
+                  >
+                    {done && (
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                    {label}
+                  </span>
+                );
+              })}
             </div>
             <div className="h-2 bg-tinki-dark/5 rounded-full overflow-hidden">
               <div
@@ -225,17 +257,26 @@ export function PurchaseWizard() {
 
           {/* Pasos animados */}
           <div key={animKey} className={dir === 'fwd' ? 'animate-slide-in-right' : 'animate-slide-in-left'}>
+            {step === 0 && (
+              <Step0
+                modo={data.modo}
+                onSelect={(modo) => update({ modo })}
+                onNext={() => goNext(1)}
+              />
+            )}
+
             {step === 1 && (
               <Step1
                 nombreNino={data.nombreNino}
                 linea={data.linea}
                 onNombre={(n) => update({ nombreNino: n })}
                 onLinea={(l) => update({ linea: l })}
-                onNext={() => goNext(2)}
+                onBack={() => goBack(0)}
+                onNext={() => data.modo === 'single' ? goNext(3) : goNext(2)}
               />
             )}
 
-            {step === 2 && (
+            {step === 2 && data.modo === 'sub' && (
               <Step2
                 plan={data.plan}
                 onPlan={(p) => update({ plan: p })}
@@ -252,7 +293,7 @@ export function PurchaseWizard() {
                 cp={data.cp}
                 telefono={data.telefono}
                 onChange={(f) => update(f)}
-                onBack={() => goBack(2)}
+                onBack={() => data.modo === 'single' ? goBack(1) : goBack(2)}
                 onNext={() => goNext(4)}
               />
             )}
@@ -262,13 +303,108 @@ export function PurchaseWizard() {
                 data={data}
                 loading={loading}
                 error={error}
-                onBack={() => goBack(3)}
+                onBack={() => data.modo === 'single' ? goBack(3) : goBack(3)}
                 onSubmit={handleSubmit}
               />
             )}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PASO 0 — ¿1 caja o suscripción?
+// ═══════════════════════════════════════════════════════════════
+
+function Step0({
+  modo,
+  onSelect,
+  onNext,
+}: {
+  modo: 'single' | 'sub';
+  onSelect: (m: 'single' | 'sub') => void;
+  onNext: () => void;
+}) {
+  return (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-black text-tinki-dark mb-2">¿Cómo quieres empezar?</h2>
+        <p className="text-tinki-dark/40">Elige tu camino. Siempre puedes cambiar de opinión.</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {/* Caja única */}
+        <button
+          type="button"
+          onClick={() => onSelect('single')}
+          className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
+            modo === 'single'
+              ? 'shadow-md shadow-tinki-orange/15 bg-orange-50 border-tinki-orange'
+              : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
+          }`}
+        >
+          <div className="text-3xl mb-3">📦</div>
+          <h3 className="text-xl font-black text-tinki-dark mb-1">Una sola caja</h3>
+          <p className="text-4xl font-black text-tinki-dark tracking-tight mb-1">
+            27<span className="text-xl text-tinki-dark/30">€</span>
+          </p>
+          <p className="text-xs text-tinki-dark/35 mb-4">Envío gratis. Sin compromiso.</p>
+          <ul className="space-y-1.5">
+            {['Pruébalo sin ataduras', 'Si te mola, te bonificamos el plan', 'Envío en 5-7 días'].map((item) => (
+              <li key={item} className="flex items-start gap-2 text-xs text-tinki-dark/50">
+                <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-tinki-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </button>
+
+        {/* Suscripción */}
+        <button
+          type="button"
+          onClick={() => onSelect('sub')}
+          className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
+            modo === 'sub'
+              ? 'shadow-md shadow-tinki-orange/15 bg-orange-50 border-tinki-orange'
+              : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
+          }`}
+        >
+          <div className="text-3xl mb-3">🔄</div>
+          <h3 className="text-xl font-black text-tinki-dark mb-1">Suscripción</h3>
+          <p className="text-sm text-tinki-dark/50 mb-1">
+            Desde <span className="font-bold text-tinki-dark">19,90€</span> /mes
+          </p>
+          <p className="text-xs text-tinki-dark/35 mb-4">El mejor precio. Cancela cuando quieras.</p>
+          <ul className="space-y-1.5">
+            {['1 caja nueva cada mes', 'Mejor precio garantizado', 'Sin permanencia', 'Envío gratis siempre'].map((item) => (
+              <li key={item} className="flex items-start gap-2 text-xs text-tinki-dark/50">
+                <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-tinki-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </button>
+      </div>
+
+      {/* Mensaje de bonificación */}
+      <div className="bg-tinki-orange/5 border border-tinki-orange/15 rounded-2xl p-4 text-center">
+        <p className="text-sm text-tinki-dark/60">
+          💡 <strong>Si empiezas con 1 caja y luego te suscribes</strong>, te bonificamos la diferencia del plan que elijas. Como si hubieras empezado con suscripción desde el principio.
+        </p>
+      </div>
+
+      <button
+        onClick={onNext}
+        className="w-full py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none"
+      >
+        {modo === 'single' ? 'Quiero una caja →' : 'Quiero suscribirme →'}
+      </button>
     </div>
   );
 }
@@ -282,12 +418,14 @@ function Step1({
   linea,
   onNombre,
   onLinea,
+  onBack,
   onNext,
 }: {
   nombreNino: string;
   linea: typeof LINEAS[0];
   onNombre: (n: string) => void;
   onLinea: (l: typeof LINEAS[0]) => void;
+  onBack: () => void;
   onNext: () => void;
 }) {
   return (
@@ -327,10 +465,12 @@ function Step1({
                 <button
                   key={l.slug}
                   type="button"
+                  role="radio"
+                  aria-checked={sel}
                   onClick={() => onLinea(l)}
                   className={`relative rounded-2xl border-2 p-4 text-left transition-all flex items-center gap-4 ${
                     sel
-                      ? 'border-tinki-orange ring-2 ring-tinki-orange ring-offset-2 bg-orange-50'
+                      ? 'border-tinki-orange shadow-md shadow-tinki-orange/15 bg-orange-50'
                       : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
                   }`}
                 >
@@ -371,7 +511,7 @@ function Step1({
             <ul className="space-y-2 mb-4">
               {linea.incluye.map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
-                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                   <span className="text-tinki-dark/60">{item}</span>
@@ -390,13 +530,21 @@ function Step1({
         </div>
       </div>
 
-      <button
-        onClick={onNext}
-        disabled={!nombreNino.trim()}
-        className="w-full py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
-      >
-        Siguiente: elegir plan →
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={onBack}
+          className="px-6 py-5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
+        >
+          ← Atrás
+        </button>
+        <button
+          onClick={onNext}
+          disabled={!nombreNino.trim()}
+          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+        >
+          Siguiente: elegir plan →
+        </button>
+      </div>
     </div>
   );
 }
@@ -431,10 +579,12 @@ function Step2({
             <button
               key={p.slug}
               type="button"
+              role="radio"
+              aria-checked={selected}
               onClick={() => onPlan(p)}
               className={`relative w-full rounded-2xl border-2 p-5 text-left transition-all ${
                 selected
-                  ? 'border-tinki-orange ring-2 ring-tinki-orange ring-offset-2 bg-orange-50'
+                  ? 'border-tinki-orange shadow-md shadow-tinki-orange/15 bg-orange-50'
                   : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
               }`}
             >
@@ -442,7 +592,7 @@ function Step2({
               {p.badge && (
                 <span
                   className={`absolute -top-2.5 right-4 px-3 py-0.5 rounded-full text-xs font-black text-white ${
-                    p.popular ? 'bg-tinki-orange' : 'bg-green-500'
+                    p.popular ? 'bg-tinki-orange' : 'bg-emerald-500'
                   }`}
                 >
                   {p.badge}
@@ -460,11 +610,11 @@ function Step2({
                 <div className="text-right">
                   {/* Precio por mes grande */}
                   <div className="flex items-baseline gap-0.5 justify-end">
-                    <span className="text-3xl font-black text-tinki-dark">
+                    <span className="text-4xl font-black text-tinki-dark tracking-tight">
                       {p.precioMes.toFixed(2).replace('.', ',')}
                     </span>
-                    <span className="text-lg font-bold text-tinki-dark/40">€</span>
-                    <span className="text-sm text-tinki-dark/30">/mes</span>
+                    <span className="text-xl font-bold text-tinki-dark/30">€</span>
+                    <span className="text-sm text-tinki-dark/25">/mes</span>
                   </div>
 
                   {/* Total */}
@@ -481,11 +631,11 @@ function Step2({
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex-1 h-2 bg-tinki-dark/5 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-green-500 rounded-full transition-all duration-700"
-                      style={{ width: `${Math.round((p.ahorro / 60) * 100)}%` }}
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                      style={{ width: `${Math.round((p.ahorro / 85.20) * 100)}%` }}
                     />
                   </div>
-                  <span className="text-sm font-black text-green-600 whitespace-nowrap">
+                  <span className="text-sm font-black text-emerald-600 whitespace-nowrap">
                     Ahorras {p.ahorro.toFixed(0).replace('.', ',')}€
                   </span>
                 </div>
@@ -505,9 +655,9 @@ function Step2({
       </div>
 
       {/* Comparativa rápida */}
-      <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
-        <span className="text-sm text-green-700">
-          🌱 Con el plan anual <strong>ahorras 60€</strong> — ¡son más de 2 cajas gratis!
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
+        <span className="text-sm text-emerald-700">
+          🌱 Todos los planes incluyen <strong>envío gratis</strong> y <strong>sin permanencia</strong> más allá del periodo elegido. Si no te convence, cancelas al terminar.
         </span>
       </div>
 
@@ -658,6 +808,11 @@ function Step4({
   onBack: () => void;
   onSubmit: () => void;
 }) {
+  const [compromisoAceptado, setCompromisoAceptado] = useState(false);
+  const necesitaCompromiso = data.modo === 'sub' && data.plan.meses > 1;
+
+  const puedePagar = necesitaCompromiso ? compromisoAceptado : true;
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -681,12 +836,14 @@ function Step4({
             {data.linea.emoji} {data.linea.nombre} ({data.linea.edad})
           </span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-tinki-dark/40">Plan</span>
-          <span className="font-bold text-tinki-dark">
-            {data.plan.nombre} — {data.plan.precioMes.toFixed(2).replace('.', ',')}€/mes
-          </span>
-        </div>
+        {data.modo === 'sub' && (
+          <div className="flex justify-between text-sm">
+            <span className="text-tinki-dark/40">Plan</span>
+            <span className="font-bold text-tinki-dark">
+              {data.plan.nombre} — {data.plan.precioMes.toFixed(2).replace('.', ',')}€/mes
+            </span>
+          </div>
+        )}
         <div className="flex justify-between text-sm">
           <span className="text-tinki-dark/40">Envío a</span>
           <span className="font-bold text-tinki-dark text-right max-w-[200px]">
@@ -700,34 +857,61 @@ function Step4({
           </div>
         )}
         <hr className="border-tinki-dark/5" />
-        <div className="flex justify-between text-lg font-black text-tinki-dark">
-          <span>Primer pago</span>
-          <span>{data.plan.precioTotal.toFixed(2).replace('.', ',')}€</span>
-        </div>
-        <p className="text-xs text-tinki-dark/25 text-right">
-          Luego {data.plan.precioMes.toFixed(2).replace('.', ',')}€ cada {data.plan.meses === 1 ? 'mes' : `${data.plan.meses} meses`}. Sin permanencia.
-        </p>
+        {data.modo === 'single' ? (
+          <>
+            <div className="flex justify-between text-lg font-black text-tinki-dark">
+              <span>Pago único</span>
+              <span>27,00€</span>
+            </div>
+            <p className="text-xs text-tinki-dark/25 text-right">Envío gratis. Sin compromiso.</p>
+          </>
+        ) : (
+          <>
+            <div className="flex justify-between text-lg font-black text-tinki-dark">
+              <span>Primer pago</span>
+              <span>{data.plan.precioTotal.toFixed(2).replace('.', ',')}€</span>
+            </div>
+            <p className="text-xs text-tinki-dark/25 text-right">
+              {data.plan.precioMes.toFixed(2).replace('.', ',')}€ al mes durante {data.plan.meses} meses.
+            </p>
+            {/* Bonificación por upgrade desde caja única */}
+            <div className="mt-3 rounded-xl bg-tinki-orange/5 border border-tinki-orange/15 p-3">
+              <p className="text-xs text-tinki-dark/50 leading-relaxed">
+                🦫 <strong>¿Vienes de una caja única?</strong> Si ya compraste una caja suelta y ahora te suscribes, tu primera renovación incluye una bonificación de <strong>{(27 - data.plan.precioMes).toFixed(2).replace('.', ',')}€</strong> (la diferencia con tu caja única). El total será el mismo que si hubieras empezado con suscripción.
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Placeholder tarjeta */}
-      <div className="bg-tinki-dark rounded-2xl p-5 space-y-4">
-        <div className="flex items-center gap-2 text-white/60 text-sm font-bold">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-          </svg>
-          Tarjeta de crédito o débito
-        </div>
+      {/* Compromiso (solo trimestral/anual) */}
+      {necesitaCompromiso && (
+        <label className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={compromisoAceptado}
+            onChange={(e) => setCompromisoAceptado(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-amber-300 text-tinki-orange focus:ring-tinki-orange"
+          />
+          <span className="text-sm text-amber-900 leading-relaxed">
+            Entiendo que el plan <strong>{data.plan.nombre.toLowerCase()}</strong> implica un compromiso de <strong>{data.plan.meses} meses</strong> ({data.plan.meses} cajas). Podré cancelar al finalizar el periodo. El descuento sobre el precio mensual está vinculado a este compromiso.
+          </span>
+        </label>
+      )}
 
-        <div className="bg-white/10 rounded-xl p-4 border border-white/5">
-          <div className="flex gap-3 mb-3">
-            <div className="flex-1 h-10 bg-white/10 rounded-lg" />
-            <div className="flex-1 h-10 bg-white/10 rounded-lg" />
+      {/* Pago */}
+      <div className="bg-tinki-dark rounded-2xl p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+            <svg className="w-5 h-5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
-          <div className="h-10 bg-white/10 rounded-lg w-1/3" />
+          <div>
+            <p className="text-sm font-bold text-white">Pago seguro con Stripe</p>
+            <p className="text-xs text-white/40">Tus datos viajan cifrados. No los almacenamos.</p>
+          </div>
         </div>
-        <p className="text-white/25 text-xs text-center">
-          🔒 Pago seguro con Stripe. Tus datos viajan cifrados y no los almacenamos.
-        </p>
       </div>
 
       {error && (
@@ -745,8 +929,8 @@ function Step4({
         </button>
         <button
           onClick={onSubmit}
-          disabled={loading}
-          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading || !puedePagar}
+          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
@@ -756,6 +940,8 @@ function Step4({
               </svg>
               Procesando...
             </span>
+          ) : data.modo === 'single' ? (
+            'Pagar 27,00€'
           ) : (
             `Pagar ${data.plan.precioTotal.toFixed(2).replace('.', ',')}€`
           )}

@@ -1,9 +1,35 @@
+// ─── Estructura de artículo ───────────────────────────────────
+
+export interface PasoProyecto {
+  numero: number;
+  titulo: string;
+  texto: string;
+  imagenDescripcion?: string;
+}
+
+export interface ArticuloEstructurado {
+  intro: string;
+  pasos: PasoProyecto[];
+  cienciaTitulo: string;
+  cienciaTexto: string;
+  soluciones: { problema: string; solucion: string }[];
+  juegoTitulo: string;
+  juegoTexto: string;
+  cta: string;
+}
+
+// ─────────────────────────────────────────────────────────────
+
 export type CategoriaBlog =
   | 'proyectos'
   | 'ciencia'
   | 'ingenieria'
   | 'padres'
   | 'tinkilabs';
+
+export type LineaProducto = 'mini' | 'maker' | 'pro';
+export type NivelMancha = 'limpio' | 'poco' | 'mancha';
+export type TipoAyuda = 'solo' | 'adulto';
 
 export interface BlogPost {
   slug: string;
@@ -16,6 +42,14 @@ export interface BlogPost {
   lecturaMin: number;
   coverEmoji: string;
   tags: string[];
+  edad?: LineaProducto;
+  tiempoMin?: number;
+  mancha?: NivelMancha;
+  ayuda?: TipoAyuda;
+  materialesEmoji?: { emoji: string; texto: string }[];
+  aprendeCallout?: { concepto: string; puntos: string[] };
+  sabiasCallout?: { titular: string; dato: string };
+  contenidoEstructurado?: ArticuloEstructurado;
 }
 
 export const CATEGORIA_LABELS: Record<CategoriaBlog, string> = {
@@ -24,6 +58,27 @@ export const CATEGORIA_LABELS: Record<CategoriaBlog, string> = {
   ingenieria: 'Ingeniería para peques',
   padres: 'Para padres',
   tinkilabs: 'Tinkilabs',
+};
+
+const IND = '/images/inidicadores';
+
+export const EDAD_LABELS: Record<LineaProducto, { linea: string; edad: string; img: string }> = {
+  mini:   { linea: 'Tinki Mini',  edad: '3-5 años',   img: `${IND}/tinki_mini_blog_logo.png` },
+  maker:  { linea: 'Tinki Maker', edad: '6-9 años',   img: `${IND}/tinki_maker1_blog_logo.png` },
+  pro:    { linea: 'Tinki Pro',   edad: '8-14 años',  img: `${IND}/tinki_pro_blog_logo.png` },
+};
+
+export const TIEMPO_IMG = `${IND}/tinki_time_blog_logo.png`;
+
+export const MANCHA_LABELS: Record<NivelMancha, { texto: string; img: string }> = {
+  limpio: { texto: 'Limpio',           img: `${IND}/tinki_clean_blog_logo.png` },
+  poco:   { texto: 'Un poco',          img: `${IND}/tinki_Un poco_blog_logo.png` },
+  mancha: { texto: '¡Que se manche!',  img: `${IND}/tinki_messy_blog_logo.png` },
+};
+
+export const AYUDA_LABELS: Record<TipoAyuda, { texto: string; img: string }> = {
+  solo:   { texto: 'En solitario',  img: `${IND}/tinki_solo_blog_logo.png` },
+  adulto: { texto: 'Con un adulto', img: `${IND}/tinki_adult_blog_logo.png` },
 };
 
 export const posts: BlogPost[] = [
@@ -99,6 +154,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '🎯',
     tags: ["lanzador","gomas","física","proyectil","reciclaje"],
+    edad: 'pro',
+    tiempoMin: 15,
+    mancha: 'poco',
+    ayuda: 'solo',
   },
 
   {
@@ -171,6 +230,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '🏗️',
     tags: ["catapulta","palancas","física","proyectil","reciclaje"],
+    edad: 'pro',
+    tiempoMin: 15,
+    mancha: 'poco',
+    ayuda: 'solo',
   },
 
   {
@@ -246,6 +309,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '🚗',
     tags: ["coche","gomas","torsión","energía","reciclaje"],
+    edad: 'maker',
+    tiempoMin: 30,
+    mancha: 'poco',
+    ayuda: 'solo',
   },
 
   {
@@ -316,6 +383,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '🌀',
     tags: ["peonza","giroscopio","rotación","física","cartón"],
+    edad: 'maker',
+    tiempoMin: 20,
+    mancha: 'limpio',
+    ayuda: 'solo',
   },
 
   {
@@ -404,6 +475,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 5,
     coverEmoji: '🦾',
     tags: ["garra","tendones","biomecánica","cartón","mecanismo"],
+    edad: 'pro',
+    tiempoMin: 30,
+    mancha: 'poco',
+    ayuda: 'solo',
   },
 
   {
@@ -454,6 +529,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 6,
     coverEmoji: '🛞',
     tags: ['engranajes', 'muelles', 'madera', 'lanzador'],
+    edad: 'pro',
+    tiempoMin: 60,
+    mancha: 'poco',
+    ayuda: 'adulto',
   },
   {
     slug: 'volcan-casero-bicarbonato',
@@ -501,6 +580,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '🌋',
     tags: ['química', 'bicarbonato', 'reacción', 'experimento clásico'],
+    edad: 'maker',
+    tiempoMin: 15,
+    mancha: 'mancha',
+    ayuda: 'adulto',
   },
   {
     slug: 'por-que-stem-sin-pantallas',
@@ -594,6 +677,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 5,
     coverEmoji: '🏗️',
     tags: ['palancas', 'catapulta', 'física', 'proyectil'],
+    edad: 'maker',
+    tiempoMin: 10,
+    mancha: 'poco',
+    ayuda: 'solo',
   },
   {
     slug: 'engranajes-explicados-para-ninos',
@@ -638,6 +725,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '⚙️',
     tags: ['engranajes', 'mecánica', 'transmisión', 'física'],
+    edad: 'maker',
+    tiempoMin: 20,
+    mancha: 'limpio',
+    ayuda: 'solo',
   },
   {
     slug: 'que-buscamos-en-un-kit',
@@ -722,6 +813,10 @@ export const posts: BlogPost[] = [
     lecturaMin: 3,
     coverEmoji: '🚀',
     tags: ['Newton', 'física', 'cohete', 'propulsión'],
+    edad: 'maker',
+    tiempoMin: 10,
+    mancha: 'limpio',
+    ayuda: 'solo',
   },
   {
     slug: 'tinkilabs-nace-para-llenar-un-vacio',
@@ -756,5 +851,482 @@ export const posts: BlogPost[] = [
     lecturaMin: 4,
     coverEmoji: '🚀',
     tags: ['Tinkilabs', 'origen', 'STEM', 'España'],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // NUEVOS: adaptados de KiwiCo
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    slug: 'aerodeslizador-globo-cd',
+    titulo: 'Cómo hacer un aerodeslizador con un CD viejo y un globo',
+    excerpt: 'Un CD que no usas, un globo de cumpleaños y un tapón de botella. En 15 minutos tienes un vehículo que flota sobre la mesa como por arte de magia.',
+    contenido: `<p>Un CD viejo que ya no suena. Un globo de los que sobran de la última fiesta. Un tapón de botella de agua. Con eso, y 15 minutos, tu hijo va a construir un aerodeslizador que flota de verdad sobre la mesa.</p>
+<p>No es magia. Es física. Y es alucinante.</p>
+
+<hr>
+
+<h2>Materiales (todo cosas de casa)</h2>
+<ul>
+<li>1 CD o DVD viejo (de los que ya no funcionan)</li>
+<li>1 globo (de cumpleaños, cuanto más grande mejor)</li>
+<li>1 tapón de botella de agua de las que se abren tirando hacia arriba</li>
+<li>Pistola de silicona caliente (esto lo hace un adulto)</li>
+<li>Opcional: una canica pequeña para darle más peso al centro</li>
+</ul>
+<p>¿No tienes silicona caliente? Puedes probar con pegamento fuerte tipo Super Glue, pero la silicona caliente sella mejor y evita fugas de aire. Este es el único paso donde necesitas ayudar.</p>
+
+<hr>
+
+<h2>Paso a paso</h2>
+
+<h3>Paso 1: Prepara el tapón</h3>
+<p>Abre el tapón de la botella (tirando de la boquilla hacia arriba). Con la pistola de silicona caliente, un adulto pega la base del tapón en el centro del CD. El agujero del tapón debe quedar alineado con el agujero del CD.</p>
+<p><strong>Clave:</strong> la silicona debe cubrir todo el borde del tapón, sin dejar huecos. Si se escapa aire por algún lado, el hovercraft no flota. Un cordón continuo de silicona alrededor de toda la base.</p>
+
+<h3>Paso 2: Deja secar</h3>
+<p>Espera 5 minutos a que la silicona esté completamente dura. Mientras, infla y desinfla el globo un par de veces para estirarlo. Un globo recién estirado se acopla mejor al tapón.</p>
+
+<h3>Paso 3: Coloca el globo</h3>
+<p>Estira la boca del globo sobre el tapón. El globo queda sentado sobre el CD, con la boca bien ajustada alrededor del tapón.</p>
+
+<h3>Paso 4: Infla por debajo</h3>
+<p>Dale la vuelta al CD. Verás el agujero del tapón en el centro. Sopla por ahí para inflar el globo. Cuando esté bien hinchado, cierra la boquilla del tapón rápidamente (empujándola hacia abajo).</p>
+<p>Si te cuesta inflarlo así, hazlo al revés: quita el globo, ciérralo con los dedos tras inflarlo, y estira la boca sobre el tapón con el globo ya lleno. Luego abre la boquilla al ponerlo en la mesa.</p>
+
+<h3>Paso 5: ¡A volar!</h3>
+<p>Coloca el hovercraft sobre una mesa lisa (cristal, madera pulida, mármol de la cocina). Abre la boquilla del tapón. El aire empieza a escapar del globo, atraviesa el tapón y sale por debajo del CD, creando un colchón de aire.</p>
+<p>Dale un empujoncito con el dedo. Mira cómo se desliza. No se para.</p>
+
+<hr>
+
+<div class="not-prose my-10 rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6 lg:hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">💡</span>
+<span class="text-base font-bold text-blue-800">¿Sabías que...?</span>
+</div>
+<p class="text-[15px] leading-relaxed text-blue-900/80 mb-0">El primer aerodeslizador real lo inventó Christopher Cockerell en 1956. Para probarlo usó dos latas de café, un secador de pelo y unas balanzas de cocina. El primer vuelo de prueba fue sobre el césped de su jardín. Hoy los aerodeslizadores militares transportan tanques de 60 toneladas flotando sobre un colchón de aire. Tu hijo acaba de reproducir el mismo experimento de Cockerell con un CD y un globo.</p>
+</div>
+
+<hr>
+
+<h2>Cómo funciona (para que se lo cuentes a tu hijo)</h2>
+<p>Cuando apoyas un CD en la mesa y lo empujas, roza. Ese roce se llama <strong>fricción</strong>: dos superficies que se tocan y se frenan mutuamente. Como cuando arrastras los pies por la alfombra y luego tocas a alguien (calambre incluido).</p>
+<p>Pero si metes una capa de aire entre el CD y la mesa, desaparece la fricción. El CD ya no toca la mesa. Flota sobre un colchón de aire microscópico. Como un disco de air hockey. Como un aerodeslizador de verdad en el mar.</p>
+<p>El aire que sale del globo empuja hacia abajo, levanta el CD y elimina el contacto. Por eso se desliza tan suave y tan lejos con un simple empujón.</p>
+
+<hr>
+
+<div class="not-prose my-10 rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6 lg:hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">🧠</span>
+<span class="text-base font-bold text-amber-800">¿Qué aprendes?</span>
+</div>
+<p class="text-[15px] leading-relaxed text-amber-900/80 mb-0">Tu hijo acaba de entender tres conceptos de física sin que nadie le haya dado una clase:</p>
+<ul class="mt-2 space-y-1 text-[15px] leading-relaxed text-amber-900/80" style="list-style-type: disc; padding-left: 1.5rem;">
+<li><strong>Fricción:</strong> la fuerza que frena dos superficies cuando se tocan.</li>
+<li><strong>Colchón de aire:</strong> una capa de aire a presión que separa dos superficies y elimina la fricción.</li>
+<li><strong>Principio de Bernoulli:</strong> el aire al moverse más rápido genera menos presión, creando sustentación.</li>
+</ul>
+<p class="text-[15px] leading-relaxed text-amber-900/80 mt-2 mb-0">Lo ha aprendido con las manos. Que es como se aprende de verdad.</p>
+</div>
+
+<hr>
+
+<h2>Solución de problemas</h2>
+<ul>
+<li><strong>No flota:</strong> hay una fuga de aire. Revisa que la silicona selle completamente alrededor del tapón. Si oyes un silbido, ahí está la fuga.</li>
+<li><strong>Flota pero se para enseguida:</strong> el globo es demasiado pequeño o no lo has inflado lo suficiente. Prueba con un globo más grande.</li>
+<li><strong>Se va de lado:</strong> el tapón no está centrado en el CD. Quita la silicona, vuelve a pegarlo bien centrado y prueba otra vez.</li>
+<li><strong>No avanza:</strong> la superficie es demasiado rugosa (mantel, madera sin pulir). Necesitas una superficie lisa: cristal, espejo, mármol, parqué.</li>
+</ul>
+
+<hr>
+
+<h2>Carreras de hovercrafts</h2>
+<p>Construye dos hovercrafts con tu hijo. Poned una pajita en el suelo como línea de salida. A la de tres, empujáis los dos a la vez.</p>
+<p>Luego cambia variables:</p>
+<ul>
+<li>¿Qué pasa si inflas más el globo? ¿Llega más lejos?</li>
+<li>¿Y si le pegas una canica al centro del CD para darle más peso?</li>
+<li>¿En qué superficie se desliza mejor: la mesa de la cocina, el suelo de parqué o el cristal de la mesa del salón?</li>
+</ul>
+<p>Que tu hijo prediga qué va a pasar ANTES de probarlo. Que apunte resultados. Eso es una hipótesis científica, aunque él solo sepa que "está jugando a carreras de CDs voladores".</p>
+
+<hr>
+
+<h2>Esto es lo que hacemos en Tinkilabs</h2>
+<p>Este aerodeslizador de CD es la versión casera de los mecanismos que enviamos cada mes en nuestras cajas. En Tinkilabs construyes máquinas de verdad con madera de abedul: lanzadores, engranajes, catapultas. Sin pantallas. Sin pilas.</p>
+<p>Si tu hijo alucina haciendo flotar un CD con un globo, imagina lo que va a sentir cuando construya un lanzador de discos con tren de engranajes real.</p>
+<p>[→ Ver qué trae la primera caja]</p>
+
+<hr>
+
+<p><em>¿Te ha molado? Compártelo con otro padre o madre que necesite un plan para el finde.</em></p>`,
+    categoria: 'proyectos',
+    autor: 'Tinki',
+    fecha: '2026-06-04',
+    lecturaMin: 5,
+    coverEmoji: '💿',
+    tags: ['aerodeslizador', 'fricción', 'aire', 'globo', 'reciclaje'],
+    edad: 'maker',
+    tiempoMin: 15,
+    mancha: 'poco',
+    ayuda: 'adulto',
+    materialesEmoji: [
+      { emoji: '🎈', texto: '1 globo (de cumpleaños, grande)' },
+      { emoji: '💿', texto: '1 CD o DVD viejo' },
+      { emoji: '🧴', texto: '1 tapón de botella de agua (de las que se abren tirando)' },
+      { emoji: '🔫', texto: 'Pistola de silicona caliente' },
+      { emoji: '🪙', texto: '1 canica pequeña (opcional)' },
+    ],
+    aprendeCallout: {
+      concepto: 'Tu hijo ha entendido tres conceptos de física sin que nadie le haya dado una clase:',
+      puntos: [
+        'Fricción: la fuerza que frena dos superficies cuando se tocan',
+        'Colchón de aire: una capa de aire que elimina la fricción',
+        'Principio de Bernoulli: el aire rápido genera sustentación',
+      ],
+    },
+    sabiasCallout: {
+      dato: 'El primer aerodeslizador lo inventó Christopher Cockerell en 1956. Para probarlo usó dos latas de café, un secador de pelo y unas balanzas de cocina. Hoy los aerodeslizadores militares transportan tanques de 60 toneladas.',
+    },
+    contenidoEstructurado: {
+      intro: '<p>Un CD viejo que ya no suena. Un globo de los que sobran de la última fiesta. Un tapón de botella de agua. Con eso, y 15 minutos, tu hijo va a construir un aerodeslizador que flota de verdad sobre la mesa.</p><p>No es magia. Es física. Y es alucinante.</p>',
+      pasos: [
+        { numero: 1, titulo: 'Prepara el tapón', texto: 'Abre el tapón de la botella (tirando de la boquilla hacia arriba). Con la pistola de silicona caliente, un adulto pega la base del tapón en el centro del CD. El agujero del tapón debe quedar alineado con el agujero del CD. La silicona debe cubrir todo el borde del tapón, sin dejar huecos. Si se escapa aire por algún lado, el hovercraft no flota.', imagenDescripcion: 'Tapón de botella pegado con silicona al centro del CD. Primer plano.' },
+        { numero: 2, titulo: 'Deja secar', texto: 'Espera 5 minutos a que la silicona esté completamente dura. Mientras, infla y desinfla el globo un par de veces para estirarlo. Un globo recién estirado se acopla mejor al tapón.', imagenDescripcion: 'CD con tapón pegado y globo al lado, listos para el montaje.' },
+        { numero: 3, titulo: 'Coloca el globo', texto: 'Estira la boca del globo sobre el tapón. El globo queda sentado sobre el CD, con la boca bien ajustada alrededor del tapón. Asegúrate de que entra firme: la unión entre el globo y el tapón es por donde sale todo el aire que levanta el hovercraft.', imagenDescripcion: 'Globo colocado sobre el tapón del CD. El globo está sin inflar.' },
+        { numero: 4, titulo: 'Infla por debajo', texto: 'Dale la vuelta al CD. Verás el agujero del tapón en el centro. Sopla por ahí para inflar el globo. Cuando esté bien hinchado, cierra la boquilla del tapón rápidamente. Si te cuesta inflarlo así, quita el globo, ciérralo con los dedos tras inflarlo, y estira la boca sobre el tapón con el globo ya lleno.', imagenDescripcion: 'CD visto desde abajo, con el globo inflado visible a través del agujero.' },
+        { numero: 5, titulo: '¡A volar!', texto: 'Coloca el hovercraft sobre una mesa lisa (cristal, madera pulida, mármol de la cocina). Abre la boquilla del tapón. El aire empieza a escapar del globo, atraviesa el tapón y sale por debajo del CD, creando un colchón de aire. Dale un empujoncito con el dedo. Mira cómo se desliza. No se para.', imagenDescripcion: 'Hovercraft deslizándose sobre una mesa lisa. Barrido de movimiento.' },
+      ],
+      cienciaTitulo: 'Cómo funciona (para que se lo cuentes a tu hijo)',
+      cienciaTexto: '<p>Cuando apoyas un CD en la mesa y lo empujas, roza. Ese roce se llama <strong>fricción</strong>: dos superficies que se tocan y se frenan mutuamente. Como cuando arrastras los pies por la alfombra.</p><p>Pero si metes una capa de aire entre el CD y la mesa, desaparece la fricción. El CD ya no toca la mesa. Flota sobre un colchón de aire microscópico. Como un disco de air hockey. Como un aerodeslizador de verdad en el mar.</p><p>El aire que sale del globo empuja hacia abajo, levanta el CD y elimina el contacto. Por eso se desliza tan suave y tan lejos con un simple empujón.</p>',
+      soluciones: [
+        { problema: 'No flota', solucion: 'hay una fuga de aire. Revisa que la silicona selle completamente alrededor del tapón. Si oyes un silbido, ahí está la fuga.' },
+        { problema: 'Flota pero se para enseguida', solucion: 'el globo es demasiado pequeño o no lo has inflado lo suficiente. Prueba con un globo más grande.' },
+        { problema: 'Se va de lado', solucion: 'el tapón no está centrado en el CD. Quita la silicona, vuelve a pegarlo bien centrado.' },
+        { problema: 'No avanza', solucion: 'la superficie es demasiado rugosa. Necesitas una superficie lisa: cristal, espejo, mármol, parqué.' },
+      ],
+      juegoTitulo: 'Carreras de hovercrafts',
+      juegoTexto: '<p>Construye dos hovercrafts con tu hijo. Poned una pajita en el suelo como línea de salida. A la de tres, empujáis los dos a la vez.</p><p>Luego cambia variables: ¿qué pasa si inflas más el globo? ¿Y si le pegas una canica al centro del CD? ¿En qué superficie se desliza mejor?</p><p>Que tu hijo prediga qué va a pasar ANTES de probarlo. Eso es una hipótesis científica, aunque él solo sepa que "está jugando a carreras de CDs voladores".</p>',
+      cta: '<p>Este aerodeslizador de CD es la versión casera de los mecanismos que enviamos cada mes en nuestras cajas. En Tinkilabs construyes máquinas de verdad con madera de abedul: lanzadores, engranajes, catapultas. Sin pantallas. Sin pilas.</p><p>Si tu hijo alucina haciendo flotar un CD con un globo, imagina lo que va a sentir cuando construya un lanzador de discos con tren de engranajes real.</p><p>[→ Ver qué trae la primera caja]</p>',
+    },
+  },
+
+  {
+    slug: 'helicoptero-goma-elastica',
+    titulo: 'Cómo hacer un helicóptero de goma elástica que vuela de verdad',
+    excerpt: 'Un palito, un par de tiras de cartón y una goma elástica. Giras, sueltas y el helicóptero sube volando por encima de tu cabeza. Sin pilas, sin motor.',
+    contenido: `<p>Un helicóptero que vuela de verdad. Construido con un palito, dos tiras de cartón y una goma elástica. Sin pilas. Sin motor eléctrico. Solo la energía que almacenas en tus manos al retorcer una goma.</p>
+<p>Esto no es un juguete de feria. Es ingeniería aeronáutica de la buena. La misma física que mantiene un helicóptero real en el aire, metida en un proyecto de 45 minutos que puedes construir en la mesa del salón.</p>
+
+<hr>
+
+<h2>Materiales</h2>
+<ul>
+<li>1 palito de brocheta de madera (de los de pincho moruno)</li>
+<li>2 tiras de cartón fino de 12 cm (caja de cereales va perfecta)</li>
+<li>2 clips grandes (de los de oficina, para hacer los ganchos)</li>
+<li>1 goma elástica gruesa y larga (el "motor")</li>
+<li>1 cuenta de collar o abalorio (para que gire sin rozar)</li>
+<li>Cinta aislante</li>
+<li>Pistola de silicona caliente (ayuda un adulto)</li>
+</ul>
+<p>El cartón de caja de cereales es perfecto porque es ligero y rígido a la vez. Las hélices tienen que ser ligeras para que la goma pueda hacerlas girar rápido.</p>
+
+<hr>
+
+<h2>Paso a paso</h2>
+
+<h3>Paso 1: Fabrica las hélices</h3>
+<p>Corta dos tiras de cartón de 12 cm de largo x 2 cm de ancho. Redondea las esquinas con las tijeras.</p>
+<p>Desdobla los dos clips hasta que tengas dos alambres rectos. En un extremo de cada alambre, dobla la punta formando un pequeño gancho (donde enganchará la goma después).</p>
+<p>Pega cada tira de cartón a un clip con silicona caliente. Importante: cada tira debe quedar ligeramente inclinada, como las aspas de un ventilador. Una inclinada hacia un lado, la otra hacia el lado contrario. Esto hace que ambas empujen aire hacia abajo aunque giren en direcciones opuestas.</p>
+
+<h3>Paso 2: Prepara el soporte</h3>
+<p>Ensarta la cuenta de collar en el palito de brocheta. Deslízala hasta la mitad. Esta cuenta es el cojinete: separa el palito de la hélice inferior y reduce la fricción.</p>
+<p>Corta dos trocitos de pajita de 1 cm (si tienes) y colócalos a cada lado de la cuenta. No son obligatorios pero ayudan a que gire más suave.</p>
+
+<h3>Paso 3: Monta los ejes</h3>
+<p>Inserta un clip (con su hélice de cartón) en cada extremo del palito. El clip de abajo atraviesa la cuenta y se dobla por detrás para que no se salga. El clip de arriba atraviesa el palito directamente.</p>
+<p>Cada clip debe poder girar libremente. Si roza, agranda un poco el agujero del cartón o ajusta la posición.</p>
+
+<h3>Paso 4: El motor de goma</h3>
+<p>Engancha la goma elástica entre los dos ganchos de los clips. La goma va desde el gancho del clip superior hasta el gancho del clip inferior, pasando por fuera del palito (no por dentro).</p>
+<p>La goma debe quedar recta pero no tensa. Si está demasiado tensa sin haberla girado, es demasiado corta. Prueba con una más larga o junta dos gomas con un nudito.</p>
+
+<h3>Paso 5: Carga y despega</h3>
+<p>Sujeta la hélice de abajo con una mano. Con la otra, gira la hélice de arriba en sentido antihorario. Dale 40, 50, 60 vueltas. Notarás cómo la goma se va retorciendo y ofrece más resistencia. Estás almacenando energía.</p>
+<p>Sujeta el helicóptero por el palito (sin tocar las hélices). Suelta las dos hélices a la vez. La goma se destuerce, las hélices giran como locas, y el helicóptero... sube.</p>
+<p>Vuela de verdad.</p>
+
+<hr>
+
+<div class="not-prose my-10 rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6 lg:hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">💡</span>
+<span class="text-base font-bold text-blue-800">¿Sabías que...?</span>
+</div>
+<p class="text-[15px] leading-relaxed text-blue-900/80 mb-0">El primer helicóptero de juguete con goma elástica lo inventó Alphonse Pénaud en 1870. <strong>Tenía 13 años.</strong> Su juguete volaba 15 metros con una goma retorcida y dos hélices de papel. Los hermanos Wright dijeron que ese helicóptero de goma fue lo que les enganchó a la aeronáutica cuando eran niños. Sin el juguete de Pénaud, quizá no existirían los aviones. Tu hijo está a una goma elástica de distancia de los hermanos Wright.</p>
+</div>
+
+<hr>
+
+<h2>Cómo funciona</h2>
+<p>Acabas de construir una máquina que transforma <strong>energía elástica</strong> en <strong>sustentación aerodinámica</strong> en tres pasos:</p>
+<ol>
+<li><strong>Energía elástica:</strong> al retorcer la goma, la estás forzando a una posición que no es la suya. La goma "quiere" volver a su estado natural. Esa tensión acumulada es energía potencial elástica.</li>
+<li><strong>Energía cinética (giro):</strong> al soltar, la goma se destuerce violentamente. Ese giro se transmite a las hélices a través de los clips-eje.</li>
+<li><strong>Sustentación:</strong> las hélices girando empujan aire hacia abajo. Por la tercera ley de Newton (acción-reacción), el aire empuja las hélices hacia arriba con la misma fuerza. El helicóptero sube.</li>
+</ol>
+<p>Las dos hélices giran en direcciones opuestas. Si girasen las dos en el mismo sentido, el palito giraría sobre sí mismo como una brocheta loca y no volaría. Al girar en sentidos contrarios, se anulan los giros del palito y toda la energía va a empujar aire.</p>
+<p>Es el mismo principio de un helicóptero real. Con la diferencia de que el helicóptero real quema queroseno y el tuyo quema... ganas de pasarlo bien.</p>
+
+<hr>
+
+<div class="not-prose my-10 rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6 lg:hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">🧠</span>
+<span class="text-base font-bold text-amber-800">¿Qué aprendes?</span>
+</div>
+<p class="text-[15px] leading-relaxed text-amber-900/80 mb-0">En 45 minutos, tu hijo ha tocado con las manos tres principios de la física que mueven el mundo:</p>
+<ul class="mt-2 space-y-1 text-[15px] leading-relaxed text-amber-900/80" style="list-style-type: disc; padding-left: 1.5rem;">
+<li><strong>Energía potencial elástica:</strong> la goma retorcida almacena energía. Es la misma que usa un reloj de cuerda, un arco de flechas o el muelle de un coche de juguete.</li>
+<li><strong>Tercera ley de Newton (acción-reacción):</strong> las hélices empujan aire hacia abajo, el aire empuja el helicóptero hacia arriba. Los cohetes de SpaceX usan exactamente el mismo principio.</li>
+<li><strong>Sustentación aerodinámica:</strong> las aspas inclinadas generan una diferencia de presión entre arriba y abajo. Es lo que mantiene en el aire un avión de 300 toneladas.</li>
+</ul>
+<p class="text-[15px] leading-relaxed text-amber-900/80 mt-2 mb-0">Tres leyes de Newton. Un palito. Una goma. Y un niño con los ojos como platos viendo cómo sube.</p>
+</div>
+
+<hr>
+
+<h2>Solución de problemas</h2>
+<ul>
+<li><strong>No sube:</strong> la goma es demasiado fina. Prueba con una goma más gruesa o junta dos. También prueba a dar más vueltas (60, 80).</li>
+<li><strong>Subía y ya no sube:</strong> la goma se ha dado de sí. Las gomas se desgastan con el uso. Cambia por una nueva.</li>
+<li><strong>Gira sobre sí mismo y no vuela recto:</strong> las hélices están inclinadas en la misma dirección. Una debe empujar aire hacia abajo cuando gira en sentido horario y la otra cuando gira en sentido antihorario. Revisa la inclinación de las tiras de cartón.</li>
+<li><strong>Las hélices se doblan con la velocidad:</strong> el cartón es demasiado fino. Usa doble capa de cartón o cartón de calendar (más grueso).</li>
+</ul>
+
+<hr>
+
+<h2>Conviértelo en competición</h2>
+<p>Construye dos helicópteros y competid con un cronómetro:</p>
+<ul>
+<li>¿Cuál aguanta más tiempo en el aire?</li>
+<li>¿Cuál sube más alto?</li>
+<li>¿Qué pasa si cargas uno con 40 vueltas y otro con 80? ¿Vuela el doble de tiempo?</li>
+<li>¿Y si pegas un clip pequeño al palito como "pasajero"? ¿Cuánto peso extra puede levantar?</li>
+</ul>
+<p>Que tu hijo experimente y saque sus propias conclusiones. Un ingeniero de verdad prueba, mide, anota y mejora.</p>
+
+<hr>
+
+<h2>Esto es lo que hacemos en Tinkilabs</h2>
+<p>Este helicóptero de goma es el primo volador de los mecanismos que enviamos cada mes en Tinkilabs. En nuestras cajas, los engranajes son de madera de abedul cortada a láser, los ejes son de acero, y todo encaja con un "clic" satisfactorio.</p>
+<p>Pero la física —la energía que se guarda y se libera, el movimiento que se transmite— es exactamente la misma que acabas de construir con un palito y una goma.</p>
+<p>[→ Descubre las máquinas de este mes]</p>
+
+<hr>
+
+<p><em>¿Ha volado? Grábalo en cámara lenta y súbelo etiquetando a @tinkilabs. Queremos verlo.</em></p>`,
+    categoria: 'proyectos',
+    autor: 'Tinki',
+    fecha: '2026-06-04',
+    lecturaMin: 6,
+    coverEmoji: '🚁',
+    tags: ['helicóptero', 'gomas', 'energía', 'vuelo', 'hélices'],
+    edad: 'pro',
+    tiempoMin: 45,
+    mancha: 'poco',
+    ayuda: 'adulto',
+    materialesEmoji: [
+      { emoji: '🪵', texto: '1 palito de brocheta de madera' },
+      { emoji: '📦', texto: '2 tiras de cartón fino de 12 cm (caja de cereales)' },
+      { emoji: '📎', texto: '2 clips grandes (para los ganchos)' },
+      { emoji: '🩹', texto: '1 goma elástica gruesa y larga' },
+      { emoji: '🔮', texto: '1 cuenta de collar o abalorio' },
+      { emoji: '🔫', texto: 'Pistola de silicona caliente' },
+      { emoji: '📏', texto: 'Cinta aislante' },
+    ],
+    aprendeCallout: {
+      concepto: 'En 45 minutos, tu hijo ha tocado con las manos tres principios que mueven el mundo:',
+      puntos: [
+        'Energía potencial elástica: la goma retorcida almacena energía, como un reloj de cuerda',
+        '3ª ley de Newton: acción-reacción. El aire empuja hacia arriba. Como un SpaceX.',
+        'Sustentación: las aspas inclinadas crean diferencia de presión. Como un avión de 300 toneladas.',
+      ],
+    },
+    sabiasCallout: {
+      dato: 'El primer helicóptero de juguete con goma elástica lo inventó Alphonse Pénaud en 1870. Tenía 13 años. Los hermanos Wright dijeron que ese juguete fue lo que les enganchó a volar.',
+    },
+    contenidoEstructurado: {
+      intro: '<p>Un helicóptero que vuela de verdad. Construido con un palito, dos tiras de cartón y una goma elástica. Sin pilas. Sin motor eléctrico. Solo la energía que almacenas en tus manos al retorcer una goma.</p><p>Esto no es un juguete de feria. Es ingeniería aeronáutica de la buena. La misma física que mantiene un helicóptero real en el aire, metida en un proyecto de 45 minutos.</p>',
+      pasos: [
+        { numero: 1, titulo: 'Fabrica las hélices', texto: 'Corta dos tiras de cartón de 12 cm de largo x 2 cm de ancho. Redondea las esquinas. Desdobla los dos clips hasta tener dos alambres rectos. En un extremo de cada alambre, dobla la punta formando un pequeño gancho (donde enganchará la goma). Pega cada tira de cartón a un clip con silicona caliente. Cada tira debe quedar ligeramente inclinada, como las aspas de un ventilador: una hacia un lado, la otra hacia el contrario.', imagenDescripcion: 'Dos tiras de cartón pegadas a clips, inclinadas en direcciones opuestas.' },
+        { numero: 2, titulo: 'Prepara el soporte', texto: 'Ensarta la cuenta de collar en el palito de brocheta hasta la mitad. Esta cuenta es el cojinete: separa el palito de la hélice inferior y reduce la fricción. Si tienes pajitas, corta dos trocitos de 1 cm y colócalos a cada lado de la cuenta para que gire aún más suave.', imagenDescripcion: 'Palito con cuenta de collar en el centro y trocitos de pajita.' },
+        { numero: 3, titulo: 'Monta los ejes', texto: 'Inserta un clip (con su hélice de cartón) en cada extremo del palito. El clip de abajo atraviesa la cuenta y se dobla por detrás para que no se salga. El clip de arriba atraviesa el palito directamente. Cada clip debe poder girar libremente.', imagenDescripcion: 'Palito con hélices de cartón montadas en ambos extremos.' },
+        { numero: 4, titulo: 'El motor de goma', texto: 'Engancha la goma elástica entre los dos ganchos de los clips. La goma va desde el gancho superior hasta el inferior, por fuera del palito. Debe quedar recta pero no tensa. Si está tirante sin haberla girado, es demasiado corta: junta dos gomas con un nudito.', imagenDescripcion: 'Goma elástica enganchada entre los dos clips, pasando por fuera del palito.' },
+        { numero: 5, titulo: 'Carga y despega', texto: 'Sujeta la hélice de abajo con una mano. Con la otra, gira la hélice de arriba en sentido antihorario. Dale 40, 50, 60 vueltas. Notarás cómo la goma se retuerce y ofrece más resistencia. Estás almacenando energía. Sujeta el helicóptero por el palito, sin tocar las hélices. Suelta las dos a la vez. La goma se destuerce, las hélices giran, y el helicóptero sube. Vuela de verdad.', imagenDescripcion: 'Helicóptero soltado en el aire, hélices girando, a medio metro del suelo.' },
+      ],
+      cienciaTitulo: 'Cómo funciona',
+      cienciaTexto: '<p>Acabas de construir una máquina que transforma <strong>energía elástica</strong> en <strong>sustentación aerodinámica</strong> en tres pasos:</p><ol><li><strong>Energía elástica:</strong> al retorcer la goma, la fuerzas a una posición que no es la suya. Esa tensión acumulada es energía potencial.</li><li><strong>Energía cinética:</strong> al soltar, la goma se destuerce y transmite el giro a las hélices.</li><li><strong>Sustentación:</strong> las hélices empujan aire hacia abajo. Por la tercera ley de Newton, el aire empuja hacia arriba con la misma fuerza. El helicóptero sube.</li></ol><p>Las dos hélices giran en direcciones opuestas para que el palito no gire sobre sí mismo. Es el mismo principio de un helicóptero real, pero con goma en vez de queroseno.</p>',
+      soluciones: [
+        { problema: 'No sube', solucion: 'la goma es demasiado fina. Prueba con una más gruesa o junta dos. También prueba a dar más vueltas (60-80).' },
+        { problema: 'Subía y ya no sube', solucion: 'la goma se ha dado de sí. Cambia por una nueva.' },
+        { problema: 'Gira sobre sí mismo', solucion: 'las hélices están inclinadas en la misma dirección. Una debe empujar aire hacia abajo en sentido horario y la otra en antihorario.' },
+        { problema: 'Las hélices se doblan', solucion: 'el cartón es demasiado fino. Usa doble capa o cartón más grueso.' },
+      ],
+      juegoTitulo: 'Conviértelo en competición',
+      juegoTexto: '<p>Construye dos helicópteros y competid con un cronómetro:</p><ul><li>¿Cuál aguanta más tiempo en el aire?</li><li>¿Cuál sube más alto?</li><li>¿Qué pasa si cargas uno con 40 vueltas y otro con 80?</li><li>¿Y si pegas un clip pequeño al palito como "pasajero"?</li></ul><p>Que tu hijo experimente y saque sus propias conclusiones. Un ingeniero prueba, mide, anota y mejora.</p>',
+      cta: '<p>Este helicóptero de goma es el primo volador de los mecanismos que enviamos cada mes en Tinkilabs. En nuestras cajas, los engranajes son de madera de abedul cortada a láser y todo encaja con un "clic" satisfactorio.</p><p>Pero la física —la energía que se guarda y se libera— es exactamente la misma que acabas de construir con un palito y una goma.</p><p>[→ Descubre las máquinas de este mes]</p>',
+    },
+  },
+
+  {
+    slug: 'paracaidas-casero-bolsa',
+    titulo: 'Cómo hacer un paracaídas con una bolsa de plástico (y que funcione)',
+    excerpt: 'Una bolsa del súper, cuatro hilos y un muñeco pequeño. 5 minutos de montaje para entender por qué no nos caemos del cielo.',
+    contenido: `<p>Una bolsa de plástico de la compra. Cuatro trozos de hilo. Un Playmobil que tienes por casa. En 5 minutos tienes un paracaídas que frena la caída de verdad.</p>
+<p>Lánzalo desde una silla. Desde la escalera. Desde la ventana de tu habitación (con cuidado). Cada vez que el muñeco llega al suelo flotando en lugar de estrellarse, tu hijo está entendiendo la resistencia del aire sin que nadie le dé una clase.</p>
+
+<hr>
+
+<h2>Materiales (4 cosas)</h2>
+<ul>
+<li>1 bolsa de plástico (de la compra, cuanto más grande mejor)</li>
+<li>4 trozos de hilo de coser o lana fina (30 cm cada uno)</li>
+<li>1 muñeco pequeño (Playmobil, Lego, un tapón de corcho con cara dibujada)</li>
+<li>Celo</li>
+<li>Tijeras</li>
+<li>Opcional: un clip pequeño para ajustar el peso</li>
+</ul>
+<p>La bolsa de plástico de camiseta del súper es perfecta: ya tiene forma rectangular, es ligera y frena muy bien. Si usas una bolsa de basura grande, el paracaídas será más potente aún.</p>
+
+<hr>
+
+<h2>Paso a paso</h2>
+
+<h3>Paso 1: Recorta la vela</h3>
+<p>Extiende la bolsa de plástico sobre la mesa. Recorta un cuadrado de unos 30 x 30 cm. Puedes usar las propias líneas de la bolsa como guía.</p>
+<p>Cuanto más grande sea el cuadrado, más aire atrapa y más lento cae. Con 30 cm ya tienes un paracaídas que funciona. Con 50 cm, el muñeco parece que flota.</p>
+
+<h3>Paso 2: Prepara los cabos</h3>
+<p>Corta 4 trozos de hilo de 30 cm. Con un trocito de celo, pega cada hilo a una esquina del cuadrado de plástico. Refuerza el celo doblando un trocito sobre sí mismo por el otro lado de la bolsa.</p>
+<p>Los 4 hilos deben tener la misma longitud. Si uno es más corto, el paracaídas se inclinará hacia ese lado durante la caída.</p>
+
+<h3>Paso 3: Une los cabos al muñeco</h3>
+<p>Junta los 4 hilos en el centro, justo debajo del plástico. Átalos todos juntos con un nudito. Luego ata ese nudo al muñeco (por la cintura, por un brazo, o donde puedas).</p>
+<p>También puedes atar un clip al nudo central como punto de enganche rápido, y luego enganchar distintos muñecos al clip para comparar resultados.</p>
+
+<h3>Paso 4: ¡Lánzalo!</h3>
+<p>Sujeta el paracaídas por el centro del plástico (no por los hilos). Súbelo todo lo que puedas. Abre la mano y suelta.</p>
+<p>El plástico se infla solo con el aire. Los hilos se tensan. El muñeco baja despacio, flotando, como un paracaidista de verdad.</p>
+
+<hr>
+
+<div class="not-prose my-10 rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6 lg:hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">💡</span>
+<span class="text-base font-bold text-blue-800">¿Sabías que...?</span>
+</div>
+<p class="text-[15px] leading-relaxed text-blue-900/80 mb-0">El primer salto en paracaídas de la historia lo hizo André-Jacques Garnerin en 1797. Saltó desde un globo aerostático a 900 metros de altura sobre París. Su paracaídas era de seda, no tenía agujero en la parte superior (como los modernos), y al caer se balanceaba tanto que aterrizó con náuseas. Aún así, repitió la hazaña decenas de veces. Su mujer, Jeanne Labrosse, fue la primera mujer paracaidista del mundo. Todo esto empezó con un trozo de tela y una idea absurda: "¿y si salto desde ahí arriba y no me mato?".</p>
+</div>
+
+<hr>
+
+<h2>Cómo funciona</h2>
+<p>Cuando sueltas un objeto, la gravedad tira de él hacia abajo. Sin nada que lo frene, cae cada vez más rápido hasta estrellarse contra el suelo.</p>
+<p>El paracaídas cambia las reglas del juego. Al caer, el plástico choca contra las moléculas de aire que están en el camino. Esas moléculas empujan hacia arriba. Es la <strong>resistencia del aire</strong>: una fuerza que se opone al movimiento.</p>
+<p>Cuanta más superficie tiene el paracaídas, más moléculas de aire golpea, más resistencia genera y más lento cae. Un paracaidista real usa una vela de 50 metros cuadrados. Con 30 cm ya se nota el efecto.</p>
+<p>Sin aire (en la Luna, por ejemplo) un paracaídas no serviría de nada. Da Vinci diseñó un paracaídas en 1485. El primero en probarlo fue Louis-Sébastien Lenormand en 1783. Tu hijo se une a una tradición de 240 años de gente que mira al cielo y piensa "¿y si floto?".</p>
+
+<hr>
+
+<div class="not-prose my-10 rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6 lg:hidden">
+<div class="flex items-center gap-2 mb-3">
+<span class="text-xl">🧠</span>
+<span class="text-base font-bold text-amber-800">¿Qué aprendes?</span>
+</div>
+<p class="text-[15px] leading-relaxed text-amber-900/80 mb-0">En 5 minutos de montaje y 30 segundos de vuelo, tu hijo ha experimentado con tres fuerzas fundamentales:</p>
+<ul class="mt-2 space-y-1 text-[15px] leading-relaxed text-amber-900/80" style="list-style-type: disc; padding-left: 1.5rem;">
+<li><strong>Gravedad:</strong> la Tierra tira de todo hacia su centro. Sin gravedad, no habría caída. Sin caída, no habría paracaídas.</li>
+<li><strong>Resistencia del aire:</strong> las moléculas de aire frenan los objetos que caen. Cuanta más superficie, más frenado. Es lo que hace que una hoja de papel plana caiga más lento que la misma hoja hecha una bola.</li>
+<li><strong>Velocidad terminal:</strong> llega un momento en que la resistencia del aire iguala al peso del objeto. A partir de ahí, la velocidad de caída se mantiene constante. Sin paracaídas, un cuerpo humano alcanza 200 km/h. Con paracaídas abierto, unos 20 km/h.</li>
+</ul>
+<p class="text-[15px] leading-relaxed text-amber-900/80 mt-2 mb-0">Tu hijo no sabe las fórmulas. Pero acaba de sentir en sus manos que una bolsa de plástico frena una caída. Eso no se olvida.</p>
+</div>
+
+<hr>
+
+<h2>El desafío del huevo</h2>
+<p>Una vez que domines el paracaídas básico, sube la apuesta:</p>
+<ol>
+<li><strong>Cambia el tamaño de la vela:</strong> haz paracaídas de 20, 30, 50 cm. Mide el tiempo de caída desde la misma altura. ¿El doble de grande tarda el doble en caer?</li>
+<li><strong>Cambia el peso:</strong> el mismo paracaídas con un Playmobil, con un clic, con una canica. ¿Cuánto peso puede frenar?</li>
+<li><strong>El huevo:</strong> envuelve un huevo crudo en papel de cocina (por si acaso). Constrúyele un paracaídas con una bolsa de basura grande. Lánzalo desde una ventana baja. ¿Sobrevive?</li>
+</ol>
+<p>Si el huevo llega entero al suelo, tu hijo acaba de diseñar un sistema de protección para cargas frágiles. Que es básicamente lo que hace un ingeniero de la NASA con los rovers que aterrizan en Marte. Vale, a escala cocina. Pero el principio es el mismo.</p>
+
+<hr>
+
+<h2>Esto es lo que hacemos en Tinkilabs</h2>
+<p>Este paracaídas es un aperitivo de lo que encontrarás en nuestras cajas mensuales. En Tinkilabs cada mes construyes una máquina con tus manos: lanzadores, catapultas, engranajes. Mecanismos de verdad que funcionan de verdad.</p>
+<p>La física que has visto hoy (gravedad, resistencia del aire, velocidad de caída) es la misma que aplicamos en proyectos como el Tinki Aviones o el Tinki Cohete. Pero con madera de abedul y piezas que encajan como un reloj.</p>
+<p>[→ Ver la colección completa de máquinas]</p>
+
+<hr>
+
+<p><em>¿Ha sobrevivido el huevo? Cuéntanoslo en redes con #TinkiChallenge. Los ingenieros de la NASA también empezaron así.</em></p>`,
+    categoria: 'proyectos',
+    autor: 'Tinki',
+    fecha: '2026-06-04',
+    lecturaMin: 5,
+    coverEmoji: '🪂',
+    tags: ['paracaídas', 'gravedad', 'aire', 'resistencia', 'reciclaje'],
+    edad: 'maker',
+    tiempoMin: 10,
+    mancha: 'limpio',
+    ayuda: 'solo',
+    materialesEmoji: [
+      { emoji: '🛍️', texto: '1 bolsa de plástico (de la compra, grande)' },
+      { emoji: '🧵', texto: '4 trozos de hilo o lana fina (30 cm cada uno)' },
+      { emoji: '🧸', texto: '1 muñeco pequeño (Playmobil, Lego, corcho)' },
+      { emoji: '📏', texto: 'Celo' },
+      { emoji: '✂️', texto: 'Tijeras' },
+      { emoji: '📎', texto: '1 clip pequeño (opcional, para ajustar peso)' },
+    ],
+    aprendeCallout: {
+      concepto: 'En 5 minutos de montaje y 30 segundos de vuelo, tu hijo ha experimentado tres fuerzas fundamentales:',
+      puntos: [
+        'Gravedad: la Tierra tira de todo hacia su centro',
+        'Resistencia del aire: las moléculas de aire frenan los objetos que caen',
+        'Velocidad terminal: cuando resistencia = peso, la velocidad se estabiliza',
+      ],
+    },
+    sabiasCallout: {
+      dato: 'El primer salto en paracaídas lo hizo André-Jacques Garnerin en 1797 desde un globo a 900 metros sobre París. Su paracaídas de seda se balanceaba tanto que aterrizó con náuseas. Aun así, repitió la hazaña.',
+    },
+    contenidoEstructurado: {
+      intro: '<p>Una bolsa de plástico de la compra. Cuatro trozos de hilo. Un Playmobil que tienes por casa. En 5 minutos tienes un paracaídas que frena la caída de verdad.</p><p>Lánzalo desde una silla. Desde la escalera. Desde la ventana de tu habitación (con cuidado). Cada vez que el muñeco llega al suelo flotando en lugar de estrellarse, tu hijo está entendiendo la resistencia del aire sin que nadie le dé una clase.</p>',
+      pasos: [
+        { numero: 1, titulo: 'Recorta la vela', texto: 'Extiende la bolsa de plástico sobre la mesa. Recorta un cuadrado de unos 30 x 30 cm. Puedes usar las líneas de la bolsa como guía. Cuanto más grande sea el cuadrado, más aire atrapa y más lento cae. Con 30 cm ya funciona. Con 50 cm, el muñeco parece que flota.', imagenDescripcion: 'Cuadrado de plástico de 30 cm recortado sobre una mesa.' },
+        { numero: 2, titulo: 'Prepara los cabos', texto: 'Corta 4 trozos de hilo de 30 cm cada uno. Con un trocito de celo, pega cada hilo a una esquina del cuadrado de plástico. Refuerza el celo doblando un trocito sobre sí mismo por el otro lado. Los 4 hilos deben tener la misma longitud. Si uno es más corto, el paracaídas se inclinará hacia ese lado durante la caída.', imagenDescripcion: 'Cuadrado de plástico con 4 hilos pegados con celo en las esquinas.' },
+        { numero: 3, titulo: 'Une los cabos al muñeco', texto: 'Junta los 4 hilos en el centro, justo debajo del plástico. Átalos todos juntos con un nudito. Luego ata ese nudo al muñeco (por la cintura, un brazo, o donde puedas). También puedes atar un clip al nudo central como punto de enganche rápido para cambiar de muñeco.', imagenDescripcion: 'Muñeco atado a los 4 hilos del paracaídas, listo para lanzar.' },
+        { numero: 4, titulo: '¡Lánzalo!', texto: 'Sujeta el paracaídas por el centro del plástico (no por los hilos). Súbelo todo lo que puedas. Abre la mano y suelta. El plástico se infla solo con el aire. Los hilos se tensan. El muñeco baja despacio, flotando, como un paracaidista de verdad.', imagenDescripcion: 'Paracaídas en el aire, completamente inflado, con el muñeco colgando.' },
+      ],
+      cienciaTitulo: 'Cómo funciona',
+      cienciaTexto: '<p>Cuando sueltas un objeto, la gravedad tira de él hacia abajo. Sin nada que lo frene, cae cada vez más rápido hasta estrellarse.</p><p>El paracaídas cambia las reglas. Al caer, el plástico choca contra las moléculas de aire. Esas moléculas empujan hacia arriba. Es la <strong>resistencia del aire</strong>: una fuerza que se opone al movimiento. Cuanta más superficie tiene el paracaídas, más moléculas golpea, más resistencia genera y más lento cae.</p><p>Sin aire (en la Luna) un paracaídas no serviría de nada. Da Vinci diseñó uno en 1485. El primero en probarlo fue Louis-Sébastien Lenormand en 1783. Tu hijo se une a una tradición de 240 años de gente que mira al cielo y piensa "¿y si floto?".</p>',
+      soluciones: [
+        { problema: 'El muñeco cae muy rápido', solucion: 'la vela es demasiado pequeña. Haz un cuadrado más grande (40-50 cm) o usa una bolsa de basura.' },
+        { problema: 'El paracaídas se inclina', solucion: 'los hilos no tienen la misma longitud. Mídelos de nuevo y ajústalos.' },
+        { problema: 'El celo se despega', solucion: 'usa dos trozos de celo por esquina, uno por delante y otro por detrás. O haz un nudito en la esquina del plástico.' },
+        { problema: 'Los hilos se enredan', solucion: 'antes de lanzar, sujeta el paracaídas por el centro del plástico y deja que los hilos cuelguen rectos.' },
+      ],
+      juegoTitulo: 'El desafío del huevo',
+      juegoTexto: '<p>Una vez que domines el paracaídas básico, sube la apuesta:</p><ol><li><strong>Cambia el tamaño:</strong> haz paracaídas de 20, 30, 50 cm. Mide el tiempo de caída. ¿El doble de grande tarda el doble en caer?</li><li><strong>Cambia el peso:</strong> mismo paracaídas con un Playmobil, con un clic, con una canica. ¿Cuánto peso puede frenar?</li><li><strong>El huevo:</strong> envuelve un huevo crudo en papel de cocina. Constrúyele un paracaídas con bolsa de basura. Lánzalo desde una ventana baja. ¿Sobrevive?</li></ol><p>Si el huevo llega entero, tu hijo acaba de diseñar un sistema de protección para cargas frágiles. Como un ingeniero de la NASA con los rovers de Marte. A escala cocina.</p>',
+      cta: '<p>Este paracaídas es un aperitivo de lo que encontrarás en nuestras cajas mensuales. En Tinkilabs cada mes construyes una máquina con tus manos: lanzadores, catapultas, engranajes. Mecanismos de verdad que funcionan de verdad.</p><p>La física que has visto hoy es la misma que aplicamos en proyectos como el Tinki Aviones o el Tinki Cohete. Pero con madera de abedul y piezas que encajan como un reloj.</p><p>[→ Ver la colección completa de máquinas]</p>',
+    },
   },
 ];
