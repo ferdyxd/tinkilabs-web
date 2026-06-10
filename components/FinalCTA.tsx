@@ -27,7 +27,7 @@ export function FinalCTA() {
   }, []);
 
   return (
-    <section id="cta-final" className="relative overflow-hidden bg-white py-24 sm:py-36">
+    <section id="cta-final" className="relative overflow-hidden bg-tinki-light py-24 sm:py-36">
       {/* Fondo degradado naranja cálido */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-b from-tinki-orange/[0.03] via-tinki-orange/[0.06] to-tinki-orange/[0.04]" />

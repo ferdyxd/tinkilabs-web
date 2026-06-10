@@ -4,14 +4,14 @@ import { useState, useMemo } from 'react';
 import { BlogCard } from '@/components/BlogCard';
 import { posts, CATEGORIA_LABELS, type CategoriaBlog } from '@/lib/blog-data';
 
-export default function BlogPage() {
+export default function ActividadesPage() {
   const [categoria, setCategoria] = useState<CategoriaBlog | null>(null);
   const [search, setSearch] = useState('');
 
-  const articulos = useMemo(() => posts.filter((p) => p.tipo === 'articulo'), []);
+  const actividades = useMemo(() => posts.filter((p) => p.tipo === 'actividad'), []);
 
   const filtrados = useMemo(() => {
-    return articulos.filter((p) => {
+    return actividades.filter((p) => {
       if (categoria && p.categoria !== categoria) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -25,41 +25,35 @@ export default function BlogPage() {
     });
   }, [categoria, search]);
 
-  // Solo categorías que aparecen en artículos (no proyectos ni ciencia)
-  const categorias = (Object.entries(CATEGORIA_LABELS) as [CategoriaBlog, string][]).filter(
-    ([key]) => key === 'ingenieria' || key === 'padres' || key === 'tinkilabs'
-  );
+  const categorias = Object.entries(CATEGORIA_LABELS).filter(
+    ([key]) => key === 'proyectos' || key === 'ciencia'
+  ) as [CategoriaBlog, string][];
 
   return (
     <main id="main-content" className="min-h-screen bg-white">
-      {/* ═══════════════════════════════════════════════════════
-          HERO
-          ════════════════════════════════════════════════════ */}
+      {/* Hero */}
       <section className="relative overflow-hidden bg-tinki-light py-20 sm:py-28">
         <div className="pointer-events-none absolute inset-0 pattern-dots-orange" aria-hidden="true" />
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-tinki-orange/5 blur-[100px]" aria-hidden="true" />
 
         <div className="relative z-10 mx-auto max-w-2xl px-6 text-center">
           <span className="inline-block rounded-full border border-tinki-orange/15 bg-tinki-orange/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-tinki-orange">
-            Blog de Tinki
+            Actividades DIY
           </span>
           <h1 className="mt-6 text-3xl font-black tracking-tight text-tinki-dark sm:text-5xl">
-            Construye, experimenta, alucina
+            Construye paso a paso
           </h1>
           <p className="mx-auto mt-4 max-w-md text-base text-tinki-dark/45">
-            Proyectos, ciencia, ingeniería e historias del castor constructor. Sin pantallas, sin rollos, solo ganas de crear.
+            Proyectos que puedes hacer en casa con materiales que ya tienes. Sin pantallas, sin piezas caras. Solo ganas de crear.
           </p>
           <p className="mt-6 text-[13px] font-medium text-tinki-dark/25">
-            {articulos.length} artículos · Nuevos cada semana
+            {actividades.length} actividades · Nuevas cada semana
           </p>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          FILTROS + GRID
-          ════════════════════════════════════════════════════ */}
+      {/* Filtros + Grid */}
       <div className="mx-auto max-w-5xl px-6 py-12 sm:py-20">
-        {/* Buscador + categorías */}
         <div className="mb-10 space-y-5">
           {/* Buscador */}
           <div className="relative mx-auto max-w-md">
@@ -75,7 +69,7 @@ export default function BlogPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="engranajes, Newton, proyectos..."
+              placeholder="lanzador, engranajes, catapulta..."
               className="w-full rounded-lg border border-neutral-200 py-2.5 pl-9 pr-3 text-[13px] text-tinki-dark placeholder:text-tinki-dark/20 focus:border-tinki-orange focus:outline-none focus:ring-2 focus:ring-tinki-orange/10"
             />
           </div>
@@ -91,7 +85,7 @@ export default function BlogPage() {
                   : 'bg-neutral-50 text-tinki-dark/50 hover:bg-neutral-100 hover:text-tinki-dark/65'
               }`}
             >
-              Todo
+              Todas
             </button>
             {categorias.map(([key, label]) => (
               <button
@@ -137,17 +131,15 @@ export default function BlogPage() {
         )}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════
-          CTA — Suscripción
-          ════════════════════════════════════════════════════ */}
+      {/* CTA */}
       <section className="bg-tinki-light py-20 sm:py-28">
         <div className="mx-auto max-w-xl px-6 text-center">
           <span className="text-4xl">📦</span>
           <h2 className="mt-4 text-2xl font-black tracking-tight text-tinki-dark sm:text-3xl">
-            ¿Quieres la experiencia completa?
+            ¿Quieres ir al siguiente nivel?
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-tinki-dark/45">
-            Cada mes te enviamos una caja con un proyecto de ingeniería real. Piezas de madera, instrucciones paso a paso y la revista de Tinki.
+            Estas actividades son un aperitivo. Con la suscripción recibes cada mes una caja con piezas de madera y un proyecto de ingeniería real.
           </p>
           <a
             href="/suscribete"

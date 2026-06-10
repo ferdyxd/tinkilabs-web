@@ -20,11 +20,13 @@ function getUsers(): User[] {
 const PUBLIC_PATHS = [
   '/',
   '/acceso',
+  '/login',
   '/canjear',
   '/gracias',
   '/comparar',
   '/nuestro-logo',
   '/blog',
+  '/actividades',
   '/resenas',
   '/nosotros',
   '/campamento',
@@ -39,6 +41,7 @@ const PUBLIC_PREFIXES = [
   '/images/',
   '/canjear/',
   '/blog/',
+  '/actividades/',
   '/ayuda',
   '/terminos',
   '/privacidad',
@@ -72,17 +75,28 @@ export function middleware(request: NextRequest) {
 
   const authCookie = request.cookies.get('tinkilabs_auth');
   if (!authCookie) {
-    return NextResponse.redirect(new URL('/', request.url));
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   const [name, password] = authCookie.value.split(':');
   if (!name || !password) {
-    return NextResponse.redirect(new URL('/', request.url));
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   const user = users.find((u) => u.name === name && u.password === password);
   if (!user) {
-    return NextResponse.redirect(new URL('/', request.url));
+    // Si el usuario no está en ACCESS_USERS, podría ser un cliente registrado
+    // Permitimos acceso si name tiene formato email (contiene @)
+    if (name.includes('@')) {
+      return NextResponse.next();
+    }
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();

@@ -15,7 +15,7 @@ const config: Config = {
         tinki: {
           orange: '#FF6B35',
           dark: '#08080F',
-          light: '#FAFAFA',
+          light: '#F3EFE9',
           'orange-light': '#FF8C5A',
           'orange-dark': '#E55A2B',
         },

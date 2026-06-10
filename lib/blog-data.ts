@@ -31,12 +31,16 @@ export type LineaProducto = 'mini' | 'maker' | 'pro';
 export type NivelMancha = 'limpio' | 'poco' | 'mancha';
 export type TipoAyuda = 'solo' | 'adulto';
 
+export type TipoPost = 'actividad' | 'articulo';
+
 export interface BlogPost {
   slug: string;
   titulo: string;
   excerpt: string;
   contenido: string;
   categoria: CategoriaBlog;
+  tipo: TipoPost;
+  publicado: boolean;
   autor: string;
   fecha: string; // ISO date
   lecturaMin: number;
@@ -60,6 +64,21 @@ export const CATEGORIA_LABELS: Record<CategoriaBlog, string> = {
   tinkilabs: 'Tinkilabs',
 };
 
+export const TIPO_LABELS: Record<TipoPost, string> = {
+  actividad: 'Actividad DIY',
+  articulo: 'Artículo',
+};
+
+import { actividadesPendientes } from './actividades-pendientes';
+
+export function getPostsByTipo(tipo: TipoPost): BlogPost[] {
+  return posts.filter((p) => p.tipo === tipo && p.publicado);
+}
+
+export function getPostBySlug(slug: string): BlogPost | undefined {
+  return posts.find((p) => p.slug === slug && p.publicado);
+}
+
 const IND = '/images/inidicadores';
 
 export const EDAD_LABELS: Record<LineaProducto, { linea: string; edad: string; img: string }> = {
@@ -82,6 +101,7 @@ export const AYUDA_LABELS: Record<TipoAyuda, { texto: string; img: string }> = {
 };
 
 export const posts: BlogPost[] = [
+  ...actividadesPendientes,
 {
     slug: 'como-hacer-lanzador-tapones',
     titulo: 'Cómo hacer un lanzador de tapones que dispara de verdad',
@@ -149,6 +169,8 @@ export const posts: BlogPost[] = [
 <hr>
 <p><em>¿Te ha molado? Compártelo con alguien que tenga un pequeño ingeniero en casa.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-02',
     lecturaMin: 4,
@@ -225,6 +247,8 @@ export const posts: BlogPost[] = [
 <hr>
 <p><em>¿Le ha molado a tu hijo? Pásaselo a otro padre que necesite un plan para el finde.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-02',
     lecturaMin: 4,
@@ -304,6 +328,8 @@ export const posts: BlogPost[] = [
 <hr>
 <p><em>Este artículo es para compartir. Si conoces a alguien con un pequeño constructor en casa, pásaselo.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-02',
     lecturaMin: 4,
@@ -378,6 +404,8 @@ export const posts: BlogPost[] = [
 <hr>
 <p><em>¿Tu hijo ha construido una peonza que aguanta más de 30 segundos? Súbela con #TinkiChallenge y presúmela.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-02',
     lecturaMin: 4,
@@ -470,6 +498,8 @@ export const posts: BlogPost[] = [
 <hr>
 <p><em>Comparte este artículo con un padre o madre que necesite un plan de sábado por la mañana.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-02',
     lecturaMin: 5,
@@ -524,6 +554,8 @@ export const posts: BlogPost[] = [
 
 <p>Eso es ingeniería de verdad: construir, probar, romper, arreglar, mejorar. El lanzador perfecto no existe: existe el que tú diseñas.</p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-05-15',
     lecturaMin: 6,
@@ -575,6 +607,8 @@ export const posts: BlogPost[] = [
 
 <p>Y recuerda: pon periódicos debajo de la bandeja. Esto mancha. Pero manchar mola.</p>`,
     categoria: 'ciencia',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-05-20',
     lecturaMin: 4,
@@ -620,6 +654,8 @@ export const posts: BlogPost[] = [
 
 <p>En Tinkilabs creemos que la mejor forma de preparar a un niño para el futuro no es darle más pantallas. Es darle herramientas, piezas y la confianza de que puede construir lo que imagine.</p>`,
     categoria: 'padres',
+    tipo: 'articulo',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-05-25',
     lecturaMin: 5,
@@ -672,6 +708,8 @@ export const posts: BlogPost[] = [
 <li>Construye una diana con puntuaciones y juega por turnos</li>
 </ul>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-05-28',
     lecturaMin: 5,
@@ -720,6 +758,8 @@ export const posts: BlogPost[] = [
 
 <p>Ese momento — cuando la teoría se convierte en experiencia — es exactamente por lo que existe Tinkilabs.</p>`,
     categoria: 'ingenieria',
+    tipo: 'articulo',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-01',
     lecturaMin: 4,
@@ -763,6 +803,8 @@ export const posts: BlogPost[] = [
 
 <p>No tenemos fórmula para esto. Pero sabemos reconocerlo cuando lo vemos.</p>`,
     categoria: 'tinkilabs',
+    tipo: 'articulo',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-02',
     lecturaMin: 5,
@@ -808,6 +850,8 @@ export const posts: BlogPost[] = [
 <h2>Para nota</h2>
 <p>Si quieres impresionar, di esto en la cena: "Hoy he construido un sistema de propulsión a reacción con mi hijo usando un globo y una pajita". Técnicamente correcto. Y suena increíble.</p>`,
     categoria: 'ciencia',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-05-12',
     lecturaMin: 3,
@@ -846,6 +890,8 @@ export const posts: BlogPost[] = [
 
 <p>Y nosotros vamos a dárselas. Una caja al mes.</p>`,
     categoria: 'tinkilabs',
+    tipo: 'articulo',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-05-10',
     lecturaMin: 4,
@@ -964,6 +1010,8 @@ export const posts: BlogPost[] = [
 
 <p><em>¿Te ha molado? Compártelo con otro padre o madre que necesite un plan para el finde.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-04',
     lecturaMin: 5,
@@ -1132,6 +1180,8 @@ export const posts: BlogPost[] = [
 
 <p><em>¿Ha volado? Grábalo en cámara lenta y súbelo etiquetando a @tinkilabs. Queremos verlo.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-04',
     lecturaMin: 6,
@@ -1280,6 +1330,8 @@ export const posts: BlogPost[] = [
 
 <p><em>¿Ha sobrevivido el huevo? Cuéntanoslo en redes con #TinkiChallenge. Los ingenieros de la NASA también empezaron así.</em></p>`,
     categoria: 'proyectos',
+    tipo: 'actividad',
+    publicado: true,
     autor: 'Tinki',
     fecha: '2026-06-04',
     lecturaMin: 5,
@@ -1327,6 +1379,129 @@ export const posts: BlogPost[] = [
       juegoTitulo: 'El desafío del huevo',
       juegoTexto: '<p>Una vez que domines el paracaídas básico, sube la apuesta:</p><ol><li><strong>Cambia el tamaño:</strong> haz paracaídas de 20, 30, 50 cm. Mide el tiempo de caída. ¿El doble de grande tarda el doble en caer?</li><li><strong>Cambia el peso:</strong> mismo paracaídas con un Playmobil, con un clic, con una canica. ¿Cuánto peso puede frenar?</li><li><strong>El huevo:</strong> envuelve un huevo crudo en papel de cocina. Constrúyele un paracaídas con bolsa de basura. Lánzalo desde una ventana baja. ¿Sobrevive?</li></ol><p>Si el huevo llega entero, tu hijo acaba de diseñar un sistema de protección para cargas frágiles. Como un ingeniero de la NASA con los rovers de Marte. A escala cocina.</p>',
       cta: '<p>Este paracaídas es un aperitivo de lo que encontrarás en nuestras cajas mensuales. En Tinkilabs cada mes construyes una máquina con tus manos: lanzadores, catapultas, engranajes. Mecanismos de verdad que funcionan de verdad.</p><p>La física que has visto hoy es la misma que aplicamos en proyectos como el Tinki Aviones o el Tinki Cohete. Pero con madera de abedul y piezas que encajan como un reloj.</p><p>[→ Ver la colección completa de máquinas]</p>',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // NUEVOS: extraídos de KiwiCo (05/06/2026)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    slug: 'barco-bicarbonato',
+    titulo: 'Cómo hacer un barco que navega solo con bicarbonato y vinagre',
+    excerpt: 'Una botella, un chorro de vinagre, una cucharada de bicarbonato y una pajita. Sin pilas, sin motor. Tu barco avanza solo con la fuerza de una reacción química.',
+    contenido: '',
+    categoria: 'ciencia',
+    tipo: 'actividad',
+    publicado: false,
+    autor: 'Tinki',
+    fecha: '2026-06-05',
+    lecturaMin: 5,
+    coverEmoji: '⛵',
+    tags: ['química', 'bicarbonato', 'propulsión', 'reacción', 'barco'],
+    edad: 'maker',
+    tiempoMin: 30,
+    mancha: 'poco',
+    ayuda: 'adulto',
+    materialesEmoji: [
+      { emoji: '🧴', texto: '1 botella de plástico pequeña vacía' },
+      { emoji: '🥄', texto: 'Bicarbonato de sodio' },
+      { emoji: '🫗', texto: 'Vinagre' },
+      { emoji: '🧃', texto: '1 pajita' },
+      { emoji: '✂️', texto: 'Tijeras' },
+      { emoji: '🔫', texto: 'Pistola de silicona caliente' },
+      { emoji: '🪣', texto: 'Un barreño o bañera con agua' },
+    ],
+    aprendeCallout: {
+      concepto: 'Tu hijo ha construido un motor a reacción con cosas de la cocina:',
+      puntos: [
+        'Reacción química: bicarbonato + vinagre = CO₂ (gas a presión)',
+        '3ª ley de Newton: el gas sale hacia atrás, el barco avanza hacia adelante',
+        'Propulsión: mismo principio que un cohete espacial',
+      ],
+    },
+    sabiasCallout: {
+      dato: 'Los calamares usan el mismo sistema que tu barco: expulsan agua a presión por un tubo y salen disparados hacia adelante. Es el sistema de propulsión a chorro más antiguo de la naturaleza. La NASA lo estudió para diseñar los primeros cohetes.',
+    },
+    contenidoEstructurado: {
+      intro: '<p>Una botella de plástico vacía. Un chorro de vinagre. Una cucharada de bicarbonato. Una pajita. Con eso tu hijo va a construir un barco que navega solo, sin pilas ni motor eléctrico.</p><p>No es magia. Es química. Y la misma física que impulsa un cohete al espacio. Todo en el barreño de casa.</p><p><strong>Importante:</strong> este experimento requiere la ayuda de un adulto. Hay que hacer un agujero en la botella y sellarlo bien. Sin el agujero, el gas no tiene salida y la presión puede ser peligrosa. Dicho esto, hecho con cuidado, es seguro y absolutamente alucinante.</p>',
+      pasos: [
+        { numero: 1, titulo: 'Prepara la botella (esto lo hace un adulto)', texto: 'Con unas tijeras o un cúter, haz un agujero pequeño en el fondo de la botella, cerca del borde. El agujero debe ser del tamaño justo para que entre la pajita. Corta un trozo de pajita de unos 5 cm e insértalo en el agujero. Sella alrededor de la pajita con silicona caliente: no puede haber fugas. El único camino de salida para el gas debe ser a través de la pajita.', imagenDescripcion: 'Botella con pajita insertada en el fondo y sellada con silicona.' },
+        { numero: 2, titulo: 'Añade el vinagre', texto: 'Sujeta la botella casi en horizontal, con la pajita apuntando hacia arriba. Así el vinagre no se escapa por la pajita. Vierte un chorro generoso de vinagre (unos 50 ml, como 3 dedos en el fondo de la botella).', imagenDescripcion: 'Botella inclinada con pajita hacia arriba, vertiendo vinagre.' },
+        { numero: 3, titulo: 'Añade el bicarbonato (con cuidado)', texto: 'Mantén la botella nivelada. Con una cuchara, echa una cucharada de bicarbonato dentro. Que el bicarbonato se quede en el fondo seco, sin tocar el vinagre todavía. Este es el momento clave: si se mezclan antes de tiempo, la reacción empieza y pierdes el efecto sorpresa.', imagenDescripcion: 'Cuchara con bicarbonato entrando en la botella, separada del vinagre.' },
+        { numero: 4, titulo: 'Cierra, agita y ¡al agua!', texto: 'Enrosca la tapa rápido. Agita la botella un par de veces para que el bicarbonato y el vinagre se mezclen. Inmediatamente, coloca la botella en el agua con la pajita sumergida. Sujétala un segundo. Notarás cómo empieza a vibrar. Suelta. El barco avanza solo, dejando un rastro de burbujas.', imagenDescripcion: 'Botella en el agua, pajita bajo la superficie, burbujas saliendo y el barco avanzando.' },
+      ],
+      cienciaTitulo: 'Cómo funciona',
+      cienciaTexto: '<p>Dentro de la botella está ocurriendo una <strong>reacción química</strong>. El bicarbonato de sodio y el ácido acético del vinagre reaccionan y producen tres cosas: agua, acetato de sodio y <strong>dióxido de carbono (CO₂)</strong>, que es un gas.</p><p>El gas ocupa mucho más espacio que los líquidos. Como la botella está sellada, el CO₂ busca una salida desesperadamente. La única salida es la pajita. El gas sale disparado hacia atrás por la pajita, bajo el agua. Por la <strong>tercera ley de Newton</strong> (acción-reacción), al expulsar gas hacia atrás, el barco recibe un empuje igual hacia adelante.</p><p>Es exactamente el mismo principio que un cohete SpaceX o el motor a reacción de un avión. Pero con vinagre y bicarbonato en lugar de queroseno.</p>',
+      soluciones: [
+        { problema: 'El barco no avanza', solucion: 'la pajita no está bien sellada y el gas se escapa por otro lado. Revisa la silicona alrededor de la pajita. No debe haber fugas.' },
+        { problema: 'Avanza muy poco', solucion: 'prueba con más bicarbonato y más vinagre. La cantidad de gas determina la potencia. También prueba con vinagre templado: la reacción es más rápida.' },
+        { problema: 'La reacción empieza antes de tiempo', solucion: 'estás mezclando bicarbonato y vinagre al añadirlos. Mantén la botella nivelada y echa el bicarbonato con cuidado, sin que toque el vinagre hasta que cierres la tapa.' },
+        { problema: 'El vinagre se sale por la pajita al verterlo', solucion: 'sujeta la botella con la pajita hacia arriba mientras echas el vinagre. La pajita debe ser lo bastante larga para que el vinagre no llegue a su base.' },
+      ],
+      juegoTitulo: 'Carreras de barcos químicos',
+      juegoTexto: '<p>Construye dos barcos y competid en el barreño:</p><ul><li>¿Qué barco llega más lejos: el que lleva más bicarbonato o el que lleva más vinagre?</li><li>¿Funciona con zumo de limón en lugar de vinagre? ¿Y con Coca-Cola?</li><li>¿Qué pasa si pones la pajita apuntando hacia un lado en lugar de hacia atrás?</li></ul><p>Que tu hijo formule una hipótesis antes de cada prueba. "Creo que con dos cucharadas de bicarbonato llegará el doble de lejos". Luego que compruebe si acertó. Eso es el método científico en acción.</p>',
+      cta: '<p>Este barco químico es un aperitivo de lo que hacemos en Tinkilabs. En nuestras cajas, los mecanismos son de madera de abedul y funcionan con engranajes, muelles y palancas. Pero la física —acción-reacción, propulsión, energía— es exactamente la misma.</p><p>Cada mes enviamos una máquina nueva. Sin pantallas, sin pilas. Construida con las manos.</p><p>[→ Descubre las máquinas de este mes]</p>',
+    },
+  },
+
+  {
+    slug: 'medusa-electrica',
+    titulo: 'Cómo hacer una medusa que baila con electricidad estática',
+    excerpt: 'Un globo, papel de seda y electricidad estática. Construye una medusa que mueve los tentáculos sola cuando acercas el globo. Sin pilas, sin cables.',
+    contenido: '',
+    categoria: 'ciencia',
+    tipo: 'actividad',
+    publicado: false,
+    autor: 'Tinki',
+    fecha: '2026-06-05',
+    lecturaMin: 4,
+    coverEmoji: '🪼',
+    tags: ['electricidad', 'estática', 'electrones', 'física', 'papel'],
+    edad: 'mini',
+    tiempoMin: 30,
+    mancha: 'poco',
+    ayuda: 'solo',
+    materialesEmoji: [
+      { emoji: '🎈', texto: '1 globo' },
+      { emoji: '📄', texto: 'Papel de seda de colores' },
+      { emoji: '📃', texto: 'Cartulina o papel grueso (para el cuerpo)' },
+      { emoji: '✏️', texto: 'Lápiz' },
+      { emoji: '✂️', texto: 'Tijeras' },
+      { emoji: '🩹', texto: 'Pegamento en barra' },
+      { emoji: '📏', texto: 'Celo (para fijar a la pared)' },
+    ],
+    aprendeCallout: {
+      concepto: 'Tu hijo ha creado un motor electrostático casero. Ha entendido:',
+      puntos: [
+        'Cargas eléctricas: los electrones se transfieren al frotar el globo contra el pelo',
+        'Atracción electrostática: cargas opuestas se atraen y mueven los tentáculos',
+        'Materiales conductores vs aislantes: por qué unos papeles funcionan mejor que otros',
+      ],
+    },
+    sabiasCallout: {
+      dato: 'La electricidad estática no es un juguete: las impresoras láser la usan para fijar el tóner al papel. Las fábricas de coches la usan para pintar la carrocería sin que quede ni una gota fuera de sitio. Y los filtros de las centrales eléctricas la usan para atrapar las partículas de humo antes de que salgan por la chimenea.',
+    },
+    contenidoEstructurado: {
+      intro: '<p>Un globo. Papel de seda. Tu pelo. Con eso tu hijo va a construir una medusa que mueve los tentáculos sola, sin pilas, sin cables, sin motores. Solo con la electricidad que genera frotando un globo contra su cabeza.</p><p>No es un truco. Es física. La misma fuerza que pega el papel al globo es la que hace saltar un rayo entre dos nubes. Todo en un proyecto de 30 minutos para niños a partir de 5 años.</p>',
+      pasos: [
+        { numero: 1, titulo: 'Dibuja y recorta el cuerpo de la medusa', texto: 'En una cartulina o papel grueso, dibuja el cuerpo de una medusa: una especie de cúpula o paraguas, como medio círculo con ondas en el borde inferior. Recórtalo con las tijeras. Puedes usar dos colores distintos (uno para el frente y otro para la parte trasera) y pegarlos juntos.', imagenDescripcion: 'Dibujo del cuerpo de medusa sobre cartulina de colores, recortando con tijeras.' },
+        { numero: 2, titulo: 'Fabrica los tentáculos', texto: 'Corta tiras finas de papel de seda de unos 15-20 cm de largo y 1 cm de ancho. Cuanto más finas, más ligeras y mejor se moverán. Haz al menos 8-10 tentáculos. Puedes usar papel de seda de distintos colores para que sea más vistosa.', imagenDescripcion: 'Tiras finas de papel de seda de colores, ya cortadas.' },
+        { numero: 3, titulo: 'Monta la medusa', texto: 'Pega los tentáculos por la parte trasera del cuerpo de la medusa (o entre las dos capas de cartulina si usaste dos colores). Los tentáculos deben colgar libremente hacia abajo, como una barba de papel. Si usaste una sola cartulina, pégalos con un poco de pegamento en barra en el borde inferior.', imagenDescripcion: 'Medusa montada con tentáculos de papel de seda colgando.' },
+        { numero: 4, titulo: 'Fíjala a la pared', texto: 'Con un trocito de celo, pega la medusa a una pared lisa. La parte superior (la cúpula) pegada a la pared, los tentáculos colgando libres. Debe quedar a la altura de tu hijo para que pueda manipular el globo cómodamente.', imagenDescripcion: 'Medusa pegada con celo a la pared, tentáculos colgando.' },
+        { numero: 5, titulo: 'Carga el globo y ¡a bailar!', texto: 'Infla el globo y frótalo enérgicamente contra tu pelo (o contra un jersey de lana) durante unos 10 segundos. Acerca el globo a los tentáculos de la medusa, sin tocarlos. Los tentáculos se levantan solos, atraídos por la electricidad estática del globo. Aleja el globo y vuelven a caer. Parece que la medusa respira.', imagenDescripcion: 'Globo acercándose a los tentáculos de la medusa, que se levantan hacia él.' },
+      ],
+      cienciaTitulo: 'Cómo funciona (para que se lo cuentes a tu hijo)',
+      cienciaTexto: '<p>Todas las cosas están hechas de átomos. Los átomos tienen unas partículas diminutas llamadas <strong>electrones</strong> que llevan carga negativa. Normalmente están repartidos de forma equilibrada.</p><p>Cuando frotas el globo contra tu pelo, le robas electrones. Tu pelo se los queda (por eso luego se te eriza). El globo se queda con carga negativa. Al acercarlo a los tentáculos de papel, los electrones del papel sienten la presencia del globo cargado y se apartan hacia el otro extremo del papel. Eso deja el extremo más cercano al globo con carga positiva.</p><p>Y ya sabes: cargas opuestas se atraen. Los tentáculos se levantan hacia el globo como por arte de magia. Pero no es magia. Es <strong>electricidad estática</strong>.</p>',
+      soluciones: [
+        { problema: 'Los tentáculos no se mueven', solucion: 'el globo no tiene suficiente carga. Frótalo más tiempo (15-20 segundos) y con más energía. El pelo seco funciona mejor que el húmedo. Si acabas de ducharte, usa un jersey de lana.' },
+        { problema: 'Se mueven muy poco', solucion: 'el papel de seda es demasiado grueso. Prueba con papel de seda más fino, papel de arroz, o incluso papel de cocina de una sola capa.' },
+        { problema: 'El efecto dura muy poco', solucion: 'normal. La carga se disipa rápido, sobre todo si hay humedad. Vuelve a frotar el globo y prueba en una habitación seca.' },
+        { problema: 'Los tentáculos se pegan al globo y no se sueltan', solucion: 'demasiada carga o el globo está demasiado cerca. Aleja un poco el globo. Si aun así se pegan, usa papel de seda más grueso o coloca el globo a más distancia.' },
+      ],
+      juegoTitulo: 'Conviértelo en un laboratorio de electricidad',
+      juegoTexto: '<p>Una vez que domines la medusa, experimenta:</p><ul><li>¿Qué pasa si usas papel de aluminio en lugar de papel de seda?</li><li>¿Funciona con un globo de agua en lugar de uno de aire?</li><li>¿Y si frotas el globo contra un cojín del sofá en lugar de contra tu pelo?</li><li>¿Cuántos tentáculos puedes mover a la vez? ¿Hay un límite?</li></ul><p>Que tu hijo pruebe distintos materiales y anote cuál funciona mejor. Que descubra él solo que los materiales ligeros y conductores responden mejor a la electricidad estática.</p>',
+      cta: '<p>Esta medusa eléctrica es una muestra de la física que esconden nuestros proyectos. En las cajas Tinkilabs cada mes construyes una máquina que funciona de verdad: lanzadores, engranajes, catapultas. Con madera de abedul y tus propias manos.</p><p>Si tu hijo alucina moviendo papel con un globo, imagina lo que sentirá cuando construya un lanzador de discos con tren de engranajes real.</p><p>[→ Ver qué trae la primera caja]</p>',
     },
   },
 ];

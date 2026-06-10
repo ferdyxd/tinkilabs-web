@@ -80,6 +80,7 @@ export function Navbar() {
   const isDarkPage = paginasOscuras.includes(pathname);
   const esLandingPublica = pathname === '/' && !autenticado;
 
+
   useEffect(() => {
     const cb = () => setScrolled(window.scrollY > 8);
     window.addEventListener('scroll', cb, { passive: true });
@@ -90,8 +91,8 @@ export function Navbar() {
     fetch('/api/auth/me')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        if (d) {
-          setUserName(d.name);
+        if (d?.autenticado || d?.name) {
+          setUserName(d.nombre || d.name);
           setAutenticado(true);
         }
       })
@@ -127,7 +128,7 @@ export function Navbar() {
   // Navbar con glass effect cuando es transparente
   const navBg = isDarkPage && !hasBg
     ? 'transparent'
-    : 'var(--color-background)';
+    : '#FFFFFF';
 
   const glassEffect = isDarkPage && !hasBg
     ? 'backdrop-blur-[6px] bg-white/[0.03]'
@@ -152,7 +153,7 @@ export function Navbar() {
       {/* ─── Navbar ─────────────────────────────────────── */}
       <nav
         ref={navRef}
-        className={`fixed top-0 z-50 w-full transition-all duration-300 ${glassEffect} ${navBorder}`}
+        className={`fixed top-0 z-50 w-full transition-shadow duration-500 ${glassEffect} ${navBorder} shadow-md shadow-black/[0.04]`}
         style={{
           background: navBg,
           color: navTextColor,
@@ -224,10 +225,22 @@ export function Navbar() {
 
                 <Link
                   href="/blog"
-                  onMouseEnter={() => setDropdown(null)}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-tinki-dark/65 transition-colors hover:text-tinki-dark hover:bg-neutral-50"
+                  onMouseEnter={() => openSection('blog')}
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    dropdown === 'blog' ? 'text-tinki-orange bg-tinki-orange/10' : 'text-tinki-dark/65 hover:text-tinki-dark hover:bg-neutral-50'
+                  }`}
                 >
                   Blog
+                </Link>
+
+                <Link
+                  href="/actividades"
+                  onMouseEnter={() => openSection('actividades')}
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    dropdown === 'actividades' ? 'text-tinki-orange bg-tinki-orange/10' : 'text-tinki-dark/65 hover:text-tinki-dark hover:bg-neutral-50'
+                  }`}
+                >
+                  Actividades
                 </Link>
 
                 <Link
@@ -266,7 +279,7 @@ export function Navbar() {
                 </Link>
 
                 <Link
-                  href={userName ? '/mi-cuenta' : '/acceso'}
+                  href={userName ? '/mi-cuenta' : '/login'}
                   className="rounded-md p-1.5 transition-colors hover:opacity-60"
                   style={{ color: navTextColor }}
                   title={userName || 'Acceder'}
@@ -346,6 +359,12 @@ export function Navbar() {
           </div>
 
           <div>
+            <Link href="/actividades" onClick={() => setOpen(false)}
+              className="block rounded-md px-3 py-2 text-[13px] font-medium transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
+              style={{ color: 'var(--color-primary)' }}
+            >
+              Actividades DIY 🔧
+            </Link>
             <Link href="/blog" onClick={() => setOpen(false)}
               className="block rounded-md px-3 py-2 text-[13px] font-medium transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
               style={{ color: 'var(--color-primary)' }}

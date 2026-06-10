@@ -52,7 +52,7 @@ interface MegaMenuProps {
 }
 
 export function MegaMenu({ seccion }: MegaMenuProps) {
-  if (!seccion) return null;
+  if (!seccion || seccion === 'blog' || seccion === 'actividades') return null;
 
   return (
     <div className="absolute left-0 right-0 top-full overflow-hidden border-b bg-white shadow-2xl shadow-black/5"

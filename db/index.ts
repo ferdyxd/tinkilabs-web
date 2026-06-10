@@ -1,18 +1,25 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-// En producción: DATABASE_URL apuntará a Supabase
-// En desarrollo: apunta a PostgreSQL local (localhost:5432)
-const connectionString = process.env.DATABASE_URL || 'postgresql://alby_admin:alby_admin@localhost:5432/supermarket';
+const connectionString = process.env.DATABASE_URL!;
 
-// Postgres.js con pool para serverless (Vercel)
+// Cliente para serverless (Vercel)
 const client = postgres(connectionString, {
   max: process.env.NODE_ENV === 'production' ? 5 : 1,
   idle_timeout: 20,
   connect_timeout: 10,
-  prepare: false, // necesario para Supabase en modo transaction
+  prepare: false,
 });
 
 export const db = drizzle(client, { schema });
+
+// Migración programática (para producción: corre en el build de Vercel)
+export async function runMigrations() {
+  const migrationClient = postgres(connectionString, { max: 1 });
+  await migrate(drizzle(migrationClient), { migrationsFolder: './db/migrations' });
+  await migrationClient.end();
+}
+
 export { schema };

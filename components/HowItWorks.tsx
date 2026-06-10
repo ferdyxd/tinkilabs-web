@@ -92,7 +92,7 @@ export function HowItWorks() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-white py-24 sm:py-32">
+    <section className="relative overflow-hidden bg-tinki-light py-24 sm:py-32">
       {/* Fondo: puntos de ingeniería */}
       <div className="pointer-events-none absolute inset-0 pattern-dots-orange" aria-hidden="true" />
 

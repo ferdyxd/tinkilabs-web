@@ -45,7 +45,7 @@ function MarqueeRow({ direction }: { direction: 'left' | 'right' }) {
 
 export function TestimonialMarquee() {
   return (
-    <section className="overflow-hidden bg-white py-20 sm:py-28">
+    <section className="overflow-hidden bg-tinki-light py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-6">
         {/* Cabecera */}
         <div className="mb-12 text-center">

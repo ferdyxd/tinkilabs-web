@@ -54,6 +54,8 @@ export const usuarios = pgTable('usuarios', {
   id: serial('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   nombre: varchar('nombre', { length: 255 }).notNull(),
+  apellido: varchar('apellido', { length: 255 }),
+  newsletter: boolean('newsletter').default(true),
   direccion: varchar('direccion', { length: 500 }),
   ciudad: varchar('ciudad', { length: 200 }),
   cp: varchar('cp', { length: 5 }),
@@ -180,4 +182,16 @@ export const sesiones = pgTable('sesiones', {
 }, (table) => [
   index('idx_sesiones_usuario').on(table.usuarioId),
   index('idx_sesiones_expira').on(table.expiraEn),
+]);
+
+export const ninos = pgTable('ninos', {
+  id: serial('id').primaryKey(),
+  usuarioId: integer('usuario_id')
+    .notNull()
+    .references(() => usuarios.id, { onDelete: 'cascade' }),
+  nombre: varchar('nombre', { length: 100 }).notNull(),
+  fechaNacimiento: date('fecha_nacimiento').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('idx_ninos_usuario').on(table.usuarioId),
 ]);
