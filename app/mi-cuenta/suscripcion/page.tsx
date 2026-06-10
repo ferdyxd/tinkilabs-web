@@ -5,8 +5,8 @@ import { SkeletonDashboard } from '@/components/Skeleton';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorToast, useErrorToast } from '@/components/ErrorToast';
 
-const LINEA_LABELS = { mini: 'Tinki Mini', maker: 'Tinki Maker', pro: 'Tinki Pro' };
-const LINEA_EDAD = { mini: '3-5 años', maker: '6-9 años', pro: '10-14 años' };
+const LINEA_LABELS: Record<string, string> = { mini: 'Tinki Mini', maker: 'Tinki Maker', pro: 'Tinki Pro' };
+const LINEA_EDAD: Record<string, string> = { mini: '3-5 años', maker: '6-9 años', pro: '10-14 años' };
 
 export default function SuscripcionPage() {
   const [datos, setDatos] = useState<any>(null);
