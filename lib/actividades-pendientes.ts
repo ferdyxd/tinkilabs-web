@@ -30,6 +30,7 @@ export const actividadesPendientes: BlogPost[] = [
       puntos: ['Densidad: el aceite flota sobre el agua porque es menos denso', 'Solubilidad: el colorante no se mezcla con el aceite, pero sí con el agua', 'Gravedad: la sal arrastra el colorante hacia abajo creando las explosiones de color'],
     },
     sabiasCallout: {
+      titular: '¿Sabías que…?',
       dato: 'Los fuegos artificiales reales funcionan con un principio parecido: diferentes sales metálicas producen distintos colores al quemarse. El cobre da verde, el estroncio da rojo, el sodio da amarillo.',
     },
     contenidoEstructurado: {

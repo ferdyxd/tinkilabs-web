@@ -52,7 +52,7 @@ export interface BlogPost {
   ayuda?: TipoAyuda;
   materialesEmoji?: { emoji: string; texto: string }[];
   aprendeCallout?: { concepto: string; puntos: string[] };
-  sabiasCallout?: { titular: string; dato: string };
+  sabiasCallout?: { titular?: string; dato: string };
   contenidoEstructurado?: ArticuloEstructurado;
 }
 
