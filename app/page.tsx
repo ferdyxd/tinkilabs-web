@@ -336,6 +336,8 @@ function HeroSection() {
 // Sección 2 — Qué es Tinkilabs (scroll scrubbing)
 // ═══════════════════════════════════════════════════════════════
 
+const TOTAL_FRAMES = 50;
+
 const STEPS = [
   {
     title: 'Una suscripción mensual.',
@@ -353,8 +355,7 @@ const STEPS = [
 
 function QueEsSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const videoDesktop = useRef<HTMLVideoElement>(null);
-  const videoMobile = useRef<HTMLVideoElement>(null);
+  const [currentFrame, setCurrentFrame] = useState(1);
   const [activeStep, setActiveStep] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -365,30 +366,7 @@ function QueEsSection() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Forzar carga del vídeo en móvil y preparar scrubbing
-  useEffect(() => {
-    const video = isMobile ? videoMobile.current : videoDesktop.current;
-    if (!video) return;
-
-    // Móvil ignora preload="auto" — forzamos carga
-    video.load();
-
-    function onLoaded() {
-      // Reproducir y pausar inmediatamente para mostrar el primer frame
-      video!.play().then(() => {
-        video!.pause();
-        video!.currentTime = 0;
-      }).catch(() => {});
-    }
-
-    if (video.readyState >= 2) {
-      onLoaded();
-    } else {
-      video.addEventListener('loadeddata', onLoaded, { once: true });
-    }
-  }, [isMobile]);
-
-  // Scroll scrubbing del vídeo
+  // Scroll scrubbing con secuencia de imágenes
   useEffect(() => {
     function onScroll() {
       if (!ref.current) return;
@@ -397,10 +375,7 @@ function QueEsSection() {
       const viewportH = window.innerHeight;
       const progress = Math.max(0, Math.min(1, -rect.top / (sectionHeight - viewportH)));
 
-      const video = isMobile ? videoMobile.current : videoDesktop.current;
-      if (video && video.readyState >= 2 && video.duration) {
-        video.currentTime = progress * video.duration;
-      }
+      setCurrentFrame(Math.floor(progress * (TOTAL_FRAMES - 1)) + 1);
 
       if (progress < 0.2) setActiveStep(0);
       else if (progress < 0.55) setActiveStep(1);
@@ -408,11 +383,13 @@ function QueEsSection() {
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [isMobile]);
+  }, []);
+
+  const frameSrc = (n: number) => `/images/sequence/frame-${String(n).padStart(2, '0')}.jpg`;
 
   return (
     <section id="que-es" ref={ref} className="relative bg-[#F5F5F7] md:h-[250vh]">
-      {/* Desktop: sticky + 2 columnas con video scrubbing */}
+      {/* Desktop: sticky + 2 columnas con imagen secuencial */}
       <div className="hidden md:flex sticky top-0 h-screen items-center">
         <div className="mx-auto grid w-full max-w-[1200px] grid-cols-2 items-center gap-12 px-6">
           <div className="relative py-24">
@@ -427,12 +404,9 @@ function QueEsSection() {
           </div>
           <div className="relative flex items-center justify-center">
             <div className="relative flex aspect-[9/16] w-full max-w-[360px] items-center justify-center overflow-hidden rounded-2xl bg-white">
-              <video
-                ref={videoDesktop}
-                src="/videos/hero.mp4"
-                preload="auto"
-                muted
-                playsInline
+              <img
+                src={frameSrc(currentFrame)}
+                alt="Tinkilabs caja"
                 className="h-full w-full object-cover"
               />
             </div>
@@ -440,16 +414,13 @@ function QueEsSection() {
         </div>
       </div>
 
-      {/* Móvil: video arriba, texto debajo */}
+      {/* Móvil: imagen arriba, texto debajo */}
       <div className="md:hidden px-5 py-20">
         <div className="mx-auto max-w-[400px]">
           <div className="flex aspect-[9/16] w-full items-center justify-center overflow-hidden rounded-2xl bg-white">
-            <video
-              ref={videoMobile}
-              src="/videos/hero.mp4"
-              preload="auto"
-              muted
-              playsInline
+            <img
+              src={frameSrc(currentFrame)}
+              alt="Tinkilabs caja"
               className="h-full w-full object-cover"
             />
           </div>
