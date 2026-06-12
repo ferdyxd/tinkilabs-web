@@ -365,6 +365,29 @@ function QueEsSection() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  // Forzar carga del vídeo en móvil y preparar scrubbing
+  useEffect(() => {
+    const video = isMobile ? videoMobile.current : videoDesktop.current;
+    if (!video) return;
+
+    // Móvil ignora preload="auto" — forzamos carga
+    video.load();
+
+    function onLoaded() {
+      // Reproducir y pausar inmediatamente para mostrar el primer frame
+      video!.play().then(() => {
+        video!.pause();
+        video!.currentTime = 0;
+      }).catch(() => {});
+    }
+
+    if (video.readyState >= 2) {
+      onLoaded();
+    } else {
+      video.addEventListener('loadeddata', onLoaded, { once: true });
+    }
+  }, [isMobile]);
+
   // Scroll scrubbing del vídeo
   useEffect(() => {
     function onScroll() {
