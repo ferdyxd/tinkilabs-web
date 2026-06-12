@@ -19,7 +19,7 @@ const suscripcionesCards = [
     subtitulo: 'Kits STEM mensuales de ingeniería real',
     link: '/suscribete',
     activo: true,
-    imagen: '/images/productos/01-launcher.jpg',
+    imagen: null,
     icono: '📦',
   },
   {

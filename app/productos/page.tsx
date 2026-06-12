@@ -209,6 +209,15 @@ const reserva: Producto[] = [
     referenciaUrl: 'https://www.youtube.com/watch?v=yiPgewWdvkg', referenciaLabel: 'Ver en YouTube', referenciaLabel_en: 'Watch on YouTube',
     imagen: '/images/productos/20-brazo-pinza.jpg',
   },
+  {
+    id: 21, nombre: 'Tinki Bazooka', nombre_en: 'Tinki Bazooka',
+    linea: 'Tinki Maker', edad: '6-9 años', edad_en: '6-9 years',
+    pvp: '24.90€',
+    mecanismo: 'Ballesta de mano con muelles de torsión, gatillo y proyectiles',
+    mecanismo_en: 'Handheld ballista with torsion springs, trigger and projectiles',
+    referenciaUrl: 'https://www.youtube.com/watch?v=G-amev5f_SI', referenciaLabel: 'Ver en YouTube', referenciaLabel_en: 'Watch on YouTube',
+    imagen: '/images/productos/21-bazooka.jpg',
+  },
 ];
 
 const especiales: Producto[] = [
@@ -433,7 +442,7 @@ export default function ProductosPage() {
         {tab === 'reserva' && (
           <div className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-4 animate-fade-in">
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-2xl font-bold text-tinki-orange">8</div>
+              <div className="text-2xl font-bold text-tinki-orange">9</div>
               <div className="mt-0.5 text-xs text-white/30">{tx.candidates}</div>
             </div>
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
