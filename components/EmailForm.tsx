@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { track } from '@vercel/analytics';
 
 interface EmailFormProps {
   variant?: 'light' | 'dark';
@@ -37,6 +38,10 @@ export function EmailForm({ variant = 'light', onSuccess }: EmailFormProps) {
         setStatus('success');
         setMessage(data.message || 'Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
         setEmail('');
+        track('waitlist_signup', {
+          source: document.referrer || 'direct',
+          location: window.location.pathname,
+        });
         onSuccess?.();
       } else {
         setStatus('error');
