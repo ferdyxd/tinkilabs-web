@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { CookieBanner } from '@/components/CookieBanner';
 import { OrganizationSchema } from '@/components/JsonLd';
 import './globals.css';
 
@@ -40,6 +41,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <CookieBanner />
         <Analytics />
       </body>
     </html>
