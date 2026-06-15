@@ -425,8 +425,8 @@ function QueEsSection() {
     <section
       id="que-es"
       ref={sectionRef}
-      className="relative bg-[#0A0A0F] text-white overflow-hidden"
-      style={{ height: '300vh' }}
+      className="relative bg-[#F5F5F7] overflow-hidden"
+      style={{ height: '250vh' }}
     >
       {/* ─── depth-0: fondo con patrón de ingeniería ─── */}
       <div className="sticky top-0 h-screen overflow-hidden" aria-hidden="true">
@@ -464,14 +464,14 @@ function QueEsSection() {
                     filter: isActive ? 'blur(0px)' : 'blur(0.5px)',
                   }}
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.08] text-lg mb-3">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#E8E8ED] text-lg mb-3">
                     {step.icon}
                   </span>
-                  <p className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold leading-[1.15] tracking-[-0.02em]">
+                  <p className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold leading-[1.15] tracking-[-0.02em] text-[#1D1D1F]">
                     {step.title}
                   </p>
                   <p
-                    className="mt-2 max-w-md text-[clamp(0.9rem,1.2vw,1.05rem)] leading-relaxed text-white/45"
+                    className="mt-2 max-w-md text-[clamp(0.9rem,1.2vw,1.05rem)] leading-relaxed text-[#1D1D1F]/65"
                     style={{ textWrap: 'pretty' as const }}
                   >
                     {step.body}
@@ -495,7 +495,7 @@ function QueEsSection() {
             aria-hidden="true"
           />
           {/* Borde sutil */}
-          <div className="absolute -inset-[1px] rounded-2xl ring-1 ring-white/[0.06]" aria-hidden="true" />
+          <div className="absolute -inset-[1px] rounded-2xl ring-1 ring-black/[0.06]" aria-hidden="true" />
           {/* Imagen secuencial — funciona en todos los dispositivos */}
           <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl shadow-black/50">
             <img
@@ -519,13 +519,13 @@ function QueEsSection() {
       {/* ─── depth-5: barra de progreso inferior ─── */}
       <div className="sticky top-0 h-screen pointer-events-none" aria-hidden="true">
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3">
-          <div className="h-[2px] w-[120px] md:w-[200px] overflow-hidden rounded-full bg-white/[0.06]">
+          <div className="h-[2px] w-[120px] md:w-[200px] overflow-hidden rounded-full bg-black/[0.06]">
             <div
               className="h-full rounded-full bg-tinki-orange/60 transition-[width] duration-75"
               style={{ width: `${progress * 100}%` }}
             />
           </div>
-          <span className="text-[11px] font-mono text-white/20 tabular-nums">
+          <span className="text-[11px] text-[#1D1D1F]/25 tabular-nums">
             {Math.round(progress * 100)}%
           </span>
         </div>
