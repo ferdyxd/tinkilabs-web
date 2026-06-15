@@ -4,9 +4,10 @@ import { useState } from 'react';
 
 interface EmailFormProps {
   variant?: 'light' | 'dark';
+  onSuccess?: () => void;
 }
 
-export function EmailForm({ variant = 'light' }: EmailFormProps) {
+export function EmailForm({ variant = 'light', onSuccess }: EmailFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -36,6 +37,7 @@ export function EmailForm({ variant = 'light' }: EmailFormProps) {
         setStatus('success');
         setMessage(data.message || 'Bienvenido a bordo! Te avisaremos en cuanto lancemos.');
         setEmail('');
+        onSuccess?.();
       } else {
         setStatus('error');
         setMessage(data.error || 'Ups, algo falló. Prueba de nuevo en un momento.');

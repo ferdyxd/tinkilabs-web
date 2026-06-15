@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'motion/react';
 import { EmailForm } from '@/components/EmailForm';
+import { trackScrollDepth, trackSectionView, trackCTAClick, trackWaitlistSubmit } from '@/lib/tracking';
 
 // ═══════════════════════════════════════════════════════════════
 // Sticky Sub-nav (estilo Mac Mini)
@@ -59,7 +60,7 @@ function StickyNav() {
         </div>
 
         <button
-          onClick={() => scrollTo('#como-empezar')}
+          onClick={() => { scrollTo('#como-empezar'); trackCTAClick('nav'); }}
           className="rounded-full bg-tinki-orange px-3.5 py-1.5 text-[11px] md:text-[12px] font-semibold text-white hover:bg-tinki-orange-dark transition-colors"
         >
           Lista de espera
@@ -70,23 +71,24 @@ function StickyNav() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Sección 1 — Hero
+// Sección 1 — Hero (epic-design: 4 capas de profundidad)
+// Técnicas: parallax + floating particles + glow reactive al ratón
+// + split-converge emoji slot machine + cinematic entrance
 // ═══════════════════════════════════════════════════════════════
 
 function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mounted, setMounted] = useState(false);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+  const [scrollY, setScrollY] = useState(0);
 
   // ─── Emoji slot machine ──────────────────────────────────
   const TECH_EMOJIS = ['🔧','🔨','⚙️','🔩','🪛','🪚','🔗','🧲','🛠️','⚡','🔌','💡','🏗️','🚀','🛰️','🤖','💻','🖥️','⌨️','🖱️','🕹️','💾','📡','🔬','🧬','🧪','📐','📏','🎛️','🧮','🧰','⏱️','🎯','🧩','🔋','⚛️','💥','🔭','🌀','🪵','🔲','🔳','🔶','🔷','💠'];
   const WORD = 'Tinkilabs';
-  const TOTAL_SHUFFLE_MS = 500;  // cuánto duran los emojis antes de empezar a fijar
-  const LOCK_STAGGER_MS = 100;   // stagger entre letra y letra al fijarse
-  const EMOJI_TICK_MS = 70;      // cada cuánto cambia cada emoji
-  const TITLE_DONE_MS = TOTAL_SHUFFLE_MS + WORD.length * LOCK_STAGGER_MS; // ~1.4s
+  const TOTAL_SHUFFLE_MS = 500;
+  const LOCK_STAGGER_MS = 100;
+  const EMOJI_TICK_MS = 70;
 
-  // Estado inicial: el primer emoji del array repetido, para que servidor y cliente coincidan
   const [emojiGrid, setEmojiGrid] = useState<string[]>(() => WORD.split('').map(() => TECH_EMOJIS[0]));
 
   useEffect(() => {
@@ -95,17 +97,15 @@ function HeroSection() {
     const shuffledUntil: number[] = Array(WORD.length).fill(0).map((_, i) =>
       TOTAL_SHUFFLE_MS + i * LOCK_STAGGER_MS
     );
-    let emojis = WORD.split('').map(() => TECH_EMOJIS[Math.floor(Math.random() * TECH_EMOJIS.length)]);
+    const emojis = WORD.split('').map(() => TECH_EMOJIS[Math.floor(Math.random() * TECH_EMOJIS.length)]);
     setEmojiGrid([...emojis]);
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - start;
       const display = WORD.split('').map((letter, i) => {
         if (elapsed < shuffledUntil[i]) {
-          // Aún en fase shuffle: cambiar emoji
           return TECH_EMOJIS[Math.floor(Math.random() * TECH_EMOJIS.length)];
         }
-        // Fase lock-in: mostrar letra real
         return letter;
       });
       setEmojiGrid(display);
@@ -114,16 +114,23 @@ function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
-  // Seguir el ratón para el parallax del glow
+  // ─── Ratón + scroll para parallax ─────────────────────────
   useEffect(() => {
     function onMove(e: MouseEvent) {
       setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
     }
+    function onScroll() {
+      setScrollY(window.scrollY);
+    }
     window.addEventListener('mousemove', onMove, { passive: true });
-    return () => window.removeEventListener('mousemove', onMove);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
-  // Canvas: partículas geométricas flotantes
+  // ─── Canvas: partículas geométricas flotantes ─────────────
   useEffect(() => {
     if (!mounted) return;
     const canvas = canvasRef.current;
@@ -132,6 +139,8 @@ function HeroSection() {
     if (!ctx) return;
 
     let animId: number;
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    const count = isMobile ? 30 : 60;
     const particles: Array<{ x: number; y: number; vx: number; vy: number; size: number; type: 'circle' | 'hex' | 'square'; opacity: number; rotation: number; rotSpeed: number }> = [];
 
     function resize() {
@@ -141,18 +150,17 @@ function HeroSection() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Crear partículas
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        size: Math.random() * 22 + 10,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        size: Math.random() * 18 + 8,
         type: (['circle', 'circle', 'circle', 'hex', 'square'] as const)[Math.floor(Math.random() * 5)],
-        opacity: Math.random() * 0.08 + 0.05,
+        opacity: Math.random() * 0.06 + 0.03,
         rotation: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.002,
+        rotSpeed: (Math.random() - 0.5) * 0.0015,
       });
     }
 
@@ -169,7 +177,6 @@ function HeroSection() {
 
     function draw() {
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-
       for (const p of particles) {
         ctx!.save();
         ctx!.translate(p.x, p.y);
@@ -178,7 +185,6 @@ function HeroSection() {
         ctx!.fillStyle = `rgba(255,107,53,${p.opacity * 1.5})`;
         ctx!.strokeStyle = `rgba(255,107,53,${p.opacity * 2})`;
         ctx!.lineWidth = 1;
-
         if (p.type === 'circle') {
           ctx!.beginPath();
           ctx!.arc(0, 0, p.size / 2, 0, Math.PI * 2);
@@ -190,42 +196,49 @@ function HeroSection() {
           ctx!.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
         }
         ctx!.restore();
-
-        // Mover
         p.x += p.vx;
         p.y += p.vy;
-
-        // Wrap around
         if (p.x < -20) p.x = canvas!.width + 20;
         if (p.x > canvas!.width + 20) p.x = -20;
         if (p.y < -20) p.y = canvas!.height + 20;
         if (p.y > canvas!.height + 20) p.y = -20;
       }
-
       animId = requestAnimationFrame(draw);
     }
-
     draw();
-
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
     };
   }, [mounted]);
 
+  const parallaxY = scrollY * 0.15;
+
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F5F5F7] px-5 pt-20 pb-24 md:px-6 md:pt-16"
+      className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-[#F5F5F7] px-5 pt-20 pb-24 md:px-6 md:pt-16"
     >
-      {/* Canvas de partículas */}
+      {/* ─── depth-0: fondo base ─── */}
+      <div className="absolute inset-0 bg-[#F5F5F7]" aria-hidden="true" />
+
+      {/* ─── depth-1: gradiente atmosférico (parallax sutil) ─── */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-60"
+        style={{
+          transform: `translateY(${parallaxY * 0.3}px)`,
+          background: `radial-gradient(ellipse at ${50 + (mouse.x - 0.5) * 15}% ${40 + (mouse.y - 0.5) * 12}%, rgba(255,107,53,0.08) 0%, transparent 60%)`,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ─── depth-2: partículas canvas ─── */}
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 z-0" aria-hidden="true" />
 
-      <div className="relative z-10 text-center">
-        {/* Título: emojis mutando hasta revelar Tinkilabs */}
-        <h1
-          className="text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1D1D1F]"
-        >
+      {/* ─── depth-4: contenido principal ─── */}
+      <div className="relative z-10 text-center" style={{ transform: `translateY(${-parallaxY * 0.5}px)` }}>
+        {/* Emoji slot machine → Tinkilabs */}
+        <h1 className="text-[clamp(2.2rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1D1D1F]">
           {emojiGrid.map((char, i) => {
             const isEmoji = char.length > 1;
             return (
@@ -242,25 +255,24 @@ function HeroSection() {
           })}
         </h1>
 
-        {/* Glow + Claim — aparece al terminar el título (~1.5s) */}
+        {/* Glow + Claim */}
         <motion.div
           className="relative mt-6 inline-block"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 1.5 }}
         >
-          {/* Glow pulsante */}
           <motion.div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[140px] w-[540px] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 transition-[background] duration-1000"
             style={{
-              background: `radial-gradient(ellipse at ${50 + (mouse.x - 0.5) * 8}% ${50 + (mouse.y - 0.5) * 8}%, rgba(255,107,53,0.35) 0%, rgba(255,107,53,0.12) 40%, transparent 70%)`,
+              background: `radial-gradient(ellipse at ${50 + (mouse.x - 0.5) * 10}% ${50 + (mouse.y - 0.5) * 10}%, rgba(255,107,53,0.35) 0%, rgba(255,107,53,0.12) 40%, transparent 70%)`,
             }}
             animate={{ opacity: [0.7, 1, 0.7] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
             aria-hidden="true"
           />
           <motion.p
-            className="relative text-[clamp(1.2rem,2.5vw,1.8rem)] font-semibold leading-relaxed text-[#1D1D1F]/85"
+            className="relative text-[clamp(1.1rem,2.5vw,1.8rem)] font-semibold leading-relaxed text-[#1D1D1F]/85"
             style={{ textWrap: 'balance' as const }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -270,19 +282,19 @@ function HeroSection() {
           </motion.p>
         </motion.div>
 
-        {/* Descripción — aparece ~1.9s */}
+        {/* Descripción */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1.9, ease: [0.22, 0.61, 0.36, 1] }}
-          className="mt-8 max-w-md text-[clamp(1rem,1.5vw,1.15rem)] leading-relaxed text-[#1D1D1F]/55"
+          className="mt-8 max-w-md text-[clamp(0.95rem,1.5vw,1.15rem)] leading-relaxed text-[#1D1D1F]/55"
           style={{ textWrap: 'balance' as const }}
         >
           Cajas de ingeniería por suscripción. Para niños y niñas de 6 a 9 años.
           Una máquina de verdad cada mes. Construida con sus manos.
         </motion.p>
 
-        {/* CTA — aparece ~2.3s */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -291,13 +303,13 @@ function HeroSection() {
         >
           <a
             href="#como-empezar"
+            onClick={() => trackCTAClick('hero')}
             className="inline-flex items-center gap-2 rounded-full bg-tinki-orange px-6 py-3.5 md:px-8 md:py-4 text-sm md:text-base font-semibold text-white shadow-md shadow-tinki-orange/20 transition-all hover:bg-tinki-orange-dark hover:shadow-lg active:scale-[0.97]"
           >
             Únete gratis a la lista de espera
           </a>
         </motion.div>
 
-        {/* Texto legal — aparece ~2.6s */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -308,18 +320,19 @@ function HeroSection() {
         </motion.p>
       </div>
 
-      {/* "¿Quieres saber más?" — aparece ~3.0s */}
+      {/* ─── depth-5: "¿Quieres saber más?" flotante ─── */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 3.0 }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer group"
+        className="absolute bottom-6 md:bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer group"
         onClick={() => {
+          trackCTAClick('hero_arrow');
           const el = document.querySelector('#que-es');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }}
       >
-        <span className="text-[15px] font-medium text-[#1D1D1F]/50 group-hover:text-tinki-orange transition-colors">
+        <span className="text-[13px] md:text-[15px] font-medium text-[#1D1D1F]/50 group-hover:text-tinki-orange transition-colors">
           ¿Quieres saber más?
         </span>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
@@ -333,105 +346,188 @@ function HeroSection() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Sección 2 — Qué es Tinkilabs (scroll scrubbing)
+// Sección 2 — Qué es Tinkilabs (epic-design scrub timeline)
+// Técnica: scrub timeline + sticky pin + depth layers
+// El vídeo avanza frame a frame según el scroll, como un
+// "scroll scrub" cinematográfico. Funciona en desktop y móvil.
 // ═══════════════════════════════════════════════════════════════
 
-const TOTAL_FRAMES = 50;
-
+const TOTAL_FRAMES = 151;
+const VIDEO_DURATION = 6.04; // segundos del MP4
 const STEPS = [
   {
     title: 'Una suscripción mensual.',
     body: 'Cada mes recibes una caja con una máquina de verdad por construir. Engranajes, muelles, mecanismos. No es un juguete: es ingeniería de la buena.',
+    icon: '📦',
+    range: [0, 0.35] as [number, number],
   },
   {
     title: 'Llega a tu casa.',
     body: 'Envío gratis a toda España peninsular. Sin salir de casa, sin horarios, sin prisas. Tú decides cuándo construir.',
+    icon: '🏠',
+    range: [0.35, 0.68] as [number, number],
   },
   {
     title: 'Construyes en familia.',
     body: 'Tú, tu hijo, una mesa llena de piezas y un momento que no se parece a nada más. Cuando termináis, la máquina funciona. Y la habéis construido juntos.',
+    icon: '🔧',
+    range: [0.68, 1] as [number, number],
   },
 ];
 
 function QueEsSection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [currentFrame, setCurrentFrame] = useState(1);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [progress, setProgress] = useState(0);
   const [activeStep, setActiveStep] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
+  // ─── Scroll scrubbing con requestAnimationFrame ────────────────
   useEffect(() => {
-    function check() { setIsMobile(window.innerWidth < 768); }
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
+    const video = videoRef.current;
+    if (!video || !videoReady) return;
 
-  // Scroll scrubbing con secuencia de imágenes
-  useEffect(() => {
+    let ticking = false;
+
+    function scrub() {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const sectionH = sectionRef.current.offsetHeight;
+      const viewH = window.innerHeight;
+      const p = Math.max(0, Math.min(1, -rect.top / (sectionH - viewH)));
+
+      setProgress(p);
+      video!.currentTime = p * VIDEO_DURATION;
+
+      const stepIdx = STEPS.findIndex((s) => p >= s.range[0] && p <= s.range[1]);
+      if (stepIdx !== -1 && stepIdx !== activeStep) setActiveStep(stepIdx);
+
+      ticking = false;
+    }
+
     function onScroll() {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
-      const sectionHeight = ref.current.offsetHeight;
-      const viewportH = window.innerHeight;
-      const progress = Math.max(0, Math.min(1, -rect.top / (sectionHeight - viewportH)));
-
-      setCurrentFrame(Math.floor(progress * (TOTAL_FRAMES - 1)) + 1);
-
-      if (progress < 0.2) setActiveStep(0);
-      else if (progress < 0.55) setActiveStep(1);
-      else setActiveStep(2);
+      if (!ticking) {
+        requestAnimationFrame(scrub);
+        ticking = true;
+      }
     }
     window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // inicial
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const frameSrc = (n: number) => `/images/sequence/frame-${String(n).padStart(2, '0')}.jpg`;
+  }, [videoReady, activeStep]);
 
   return (
-    <section id="que-es" ref={ref} className="relative bg-[#F5F5F7] md:h-[250vh]">
-      {/* Desktop: sticky + 2 columnas con imagen secuencial */}
-      <div className="hidden md:flex sticky top-0 h-screen items-center">
-        <div className="mx-auto grid w-full max-w-[1200px] grid-cols-2 items-center gap-12 px-6">
-          <div className="relative py-24">
-            <div className="space-y-16">
-              {STEPS.map((step, i) => (
-                <div key={i} className={`transition-all duration-500 ${activeStep === i ? 'opacity-100 translate-x-0' : 'opacity-20 translate-x-2'}`}>
-                  <p className="text-4xl font-extrabold tracking-[-0.02em] text-[#1D1D1F]">{step.title}</p>
-                  <p className="mt-3 max-w-md text-base leading-relaxed text-[#1D1D1F]/65" style={{ textWrap: 'pretty' as const }}>{step.body}</p>
+    <section
+      id="que-es"
+      ref={sectionRef}
+      className="relative bg-[#0A0A0F] text-white overflow-hidden"
+      style={{ height: '300vh' }}
+    >
+      {/* ─── depth-0: fondo con patrón de ingeniería ─── */}
+      <div className="sticky top-0 h-screen overflow-hidden" aria-hidden="true">
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, rgba(255,107,53,0.5) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
+        />
+        {/* glow atmosférico que sigue el progreso */}
+        <div
+          className="absolute -top-1/4 left-1/2 h-[120%] w-[600px] max-w-[80vw] -translate-x-1/2 rounded-full blur-[120px] transition-colors duration-1000"
+          style={{
+            background: `radial-gradient(ellipse at center, rgba(255,107,53,${0.08 + progress * 0.12}) 0%, transparent 70%)`,
+          }}
+        />
+      </div>
+
+      {/* ─── depth-3: contenido sticky principal ─── */}
+      <div className="sticky top-0 h-screen flex flex-col md:flex-row items-center justify-center gap-6 md:gap-16 px-5 md:px-8 lg:px-12">
+        {/* Columna izquierda: texto */}
+        <div className="relative z-10 flex flex-col justify-center w-full md:w-[420px] lg:w-[480px] py-8 md:py-0">
+          <div className="space-y-12 md:space-y-20">
+            {STEPS.map((step, i) => {
+              const isActive = activeStep === i;
+              return (
+                <div
+                  key={i}
+                  className="transition-all duration-600 ease-out"
+                  style={{
+                    opacity: isActive ? 1 : 0.18,
+                    transform: isActive ? 'translateX(0)' : 'translateX(12px)',
+                    filter: isActive ? 'blur(0px)' : 'blur(0.5px)',
+                  }}
+                >
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.08] text-lg mb-3">
+                    {step.icon}
+                  </span>
+                  <p className="text-[clamp(1.5rem,3vw,2.5rem)] font-extrabold leading-[1.15] tracking-[-0.02em]">
+                    {step.title}
+                  </p>
+                  <p
+                    className="mt-2 max-w-md text-[clamp(0.9rem,1.2vw,1.05rem)] leading-relaxed text-white/45"
+                    style={{ textWrap: 'pretty' as const }}
+                  >
+                    {step.body}
+                  </p>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-          <div className="relative flex items-center justify-center">
-            <div className="relative flex aspect-[9/16] w-full max-w-[360px] items-center justify-center overflow-hidden rounded-2xl bg-white">
-              <img
-                src={frameSrc(currentFrame)}
-                alt="Tinkilabs caja"
-                className="h-full w-full object-cover"
-              />
-            </div>
+        </div>
+
+        {/* Columna derecha: vídeo scrub timeline */}
+        <div className="relative z-10 flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px]">
+          {/* Marco decorativo — brilla según progreso */}
+          <div
+            className="absolute -inset-3 rounded-[28px] transition-opacity duration-700"
+            style={{
+              opacity: 0.25 + progress * 0.35,
+              background: `linear-gradient(135deg, rgba(255,107,53,0.5), transparent 40%, transparent 60%, rgba(255,107,53,0.3))`,
+              filter: 'blur(2px)',
+            }}
+            aria-hidden="true"
+          />
+          {/* Borde sutil */}
+          <div className="absolute -inset-[1px] rounded-2xl ring-1 ring-white/[0.06]" aria-hidden="true" />
+          {/* Vídeo */}
+          <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl shadow-black/50">
+            <video
+              ref={videoRef}
+              src="/images/sequence/scrub-video.mp4"
+              preload="auto"
+              muted
+              playsInline
+              disableRemotePlayback
+              onLoadedData={() => setVideoReady(true)}
+              className="h-full w-full object-cover"
+              style={{ willChange: videoReady ? 'transform' : 'auto' }}
+            />
+            {/* Overlay sutil para dar profundidad */}
+            <div
+              className="pointer-events-none absolute inset-0 transition-opacity duration-700"
+              style={{
+                background: 'linear-gradient(to top, rgba(10,10,15,0.5) 0%, transparent 20%, transparent 80%, rgba(10,10,15,0.3) 100%)',
+              }}
+              aria-hidden="true"
+            />
           </div>
         </div>
       </div>
 
-      {/* Móvil: imagen arriba, texto debajo */}
-      <div className="md:hidden px-5 py-20">
-        <div className="mx-auto max-w-[400px]">
-          <div className="flex aspect-[9/16] w-full items-center justify-center overflow-hidden rounded-2xl bg-white">
-            <img
-              src={frameSrc(currentFrame)}
-              alt="Tinkilabs caja"
-              className="h-full w-full object-cover"
+      {/* ─── depth-5: barra de progreso inferior ─── */}
+      <div className="sticky top-0 h-screen pointer-events-none" aria-hidden="true">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3">
+          <div className="h-[2px] w-[120px] md:w-[200px] overflow-hidden rounded-full bg-white/[0.06]">
+            <div
+              className="h-full rounded-full bg-tinki-orange/60 transition-[width] duration-75"
+              style={{ width: `${progress * 100}%` }}
             />
           </div>
-          <div className="mt-10 space-y-10">
-            {STEPS.map((step) => (
-              <div key={step.title}>
-                <p className="text-2xl font-extrabold tracking-[-0.02em] text-[#1D1D1F]">{step.title}</p>
-                <p className="mt-2 text-base leading-relaxed text-[#1D1D1F]/65" style={{ textWrap: 'pretty' as const }}>{step.body}</p>
-              </div>
-            ))}
-          </div>
+          <span className="text-[11px] font-mono text-white/20 tabular-nums">
+            {Math.round(progress * 100)}%
+          </span>
         </div>
       </div>
     </section>
@@ -507,7 +603,7 @@ function PorQueSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-12 md:mt-16 grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           {BENEFICIOS.map((b) => (
             <div key={b.titulo} className="group flex items-start gap-4 rounded-2xl p-5 transition-colors hover:bg-[#F5F5F7]">
@@ -538,7 +634,7 @@ function ComoEmpezarSection() {
   const inView = useInView(ref, { once: true, margin: '-10%' });
 
   return (
-    <section id="como-empezar" ref={ref} className="bg-tinki-orange px-5 py-20 md:px-6 md:py-28">
+    <section id="como-empezar" ref={ref} className="bg-tinki-orange px-5 py-20 md:px-6 md:py-32 safe-bottom">
       <div className="mx-auto max-w-[600px] text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -565,7 +661,7 @@ function ComoEmpezarSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mt-12"
         >
-          <EmailForm variant="dark" />
+          <EmailForm variant="dark" onSuccess={trackWaitlistSubmit} />
         </motion.div>
 
         <motion.p
@@ -596,7 +692,7 @@ function ComoEmpezarSection() {
 
 function Footer() {
   return (
-    <footer className="bg-[#F5F5F7] px-6 py-8">
+    <footer className="bg-[#F5F5F7] px-5 md:px-6 py-8 safe-bottom">
       <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 sm:flex-row">
         <p className="text-xs text-[#1D1D1F]/35">
           Tinkilabs &copy; 2026
@@ -616,6 +712,41 @@ function Footer() {
 // ═══════════════════════════════════════════════════════════════
 
 export default function LandingPage() {
+  // ─── Tracking: scroll depth ───────────────────────────────
+  useEffect(() => {
+    const fired = new Set<number>();
+    function onScroll() {
+      const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      for (const depth of [25, 50, 75, 100]) {
+        if (scrollPercent >= depth && !fired.has(depth)) {
+          fired.add(depth);
+          trackScrollDepth(depth);
+        }
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // ─── Tracking: section views ──────────────────────────────
+  useEffect(() => {
+    const fired = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !fired.has(entry.target.id)) {
+            fired.add(entry.target.id);
+            trackSectionView(entry.target.id);
+          }
+        }
+      },
+      { threshold: 0.3 }
+    );
+    document.querySelectorAll('section[id]').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // ─── Estilos ──────────────────────────────────────────────
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
