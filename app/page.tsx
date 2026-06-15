@@ -353,7 +353,6 @@ function HeroSection() {
 // ═══════════════════════════════════════════════════════════════
 
 const TOTAL_FRAMES = 151;
-const VIDEO_DURATION = 6.04; // segundos del MP4
 const STEPS = [
   {
     title: 'Una suscripción mensual.',
@@ -377,16 +376,19 @@ const STEPS = [
 
 function QueEsSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const [progress, setProgress] = useState(0);
   const [activeStep, setActiveStep] = useState(0);
-  const [videoReady, setVideoReady] = useState(false);
 
-  // ─── Scroll scrubbing con requestAnimationFrame ────────────────
+  // ─── Precargar frames ─────────────────────────────────────
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !videoReady) return;
+    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+      new Image().src = `/images/sequence/frame-${String(i).padStart(2, '0')}.jpg`;
+    }
+  }, []);
 
+  // ─── Scroll scrubbing con imágenes + rAF ──────────────────
+  useEffect(() => {
     let ticking = false;
 
     function scrub() {
@@ -397,7 +399,10 @@ function QueEsSection() {
       const p = Math.max(0, Math.min(1, -rect.top / (sectionH - viewH)));
 
       setProgress(p);
-      video!.currentTime = p * VIDEO_DURATION;
+      const frame = Math.floor(p * (TOTAL_FRAMES - 1)) + 1;
+      if (imgRef.current) {
+        imgRef.current.src = `/images/sequence/frame-${String(frame).padStart(2, '0')}.jpg`;
+      }
 
       const stepIdx = STEPS.findIndex((s) => p >= s.range[0] && p <= s.range[1]);
       if (stepIdx !== -1 && stepIdx !== activeStep) setActiveStep(stepIdx);
@@ -412,9 +417,9 @@ function QueEsSection() {
       }
     }
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // inicial
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
-  }, [videoReady, activeStep]);
+  }, [activeStep]);
 
   return (
     <section
@@ -491,18 +496,13 @@ function QueEsSection() {
           />
           {/* Borde sutil */}
           <div className="absolute -inset-[1px] rounded-2xl ring-1 ring-white/[0.06]" aria-hidden="true" />
-          {/* Vídeo */}
+          {/* Imagen secuencial — funciona en todos los dispositivos */}
           <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl shadow-black/50">
-            <video
-              ref={videoRef}
-              src="/images/sequence/scrub-video.mp4"
-              preload="auto"
-              muted
-              playsInline
-              disableRemotePlayback
-              onLoadedData={() => setVideoReady(true)}
+            <img
+              ref={imgRef}
+              src="/images/sequence/frame-01.jpg"
+              alt="Tinkilabs caja"
               className="h-full w-full object-cover"
-              style={{ willChange: videoReady ? 'transform' : 'auto' }}
             />
             {/* Overlay sutil para dar profundidad */}
             <div
