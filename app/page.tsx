@@ -383,7 +383,7 @@ function QueEsSection() {
   // ─── Precargar frames ─────────────────────────────────────
   useEffect(() => {
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      new Image().src = `/images/sequence/frame-${String(i).padStart(2, '0')}.jpg`;
+      new Image().src = `/images/sequence/frame-${String(i).padStart(2, '0')}.webp`;
     }
   }, []);
 
@@ -401,7 +401,7 @@ function QueEsSection() {
       setProgress(p);
       const frame = Math.floor(p * (TOTAL_FRAMES - 1)) + 1;
       if (imgRef.current) {
-        imgRef.current.src = `/images/sequence/frame-${String(frame).padStart(2, '0')}.jpg`;
+        imgRef.current.src = `/images/sequence/frame-${String(frame).padStart(2, '0')}.webp`;
       }
 
       const stepIdx = STEPS.findIndex((s) => p >= s.range[0] && p <= s.range[1]);
@@ -500,7 +500,7 @@ function QueEsSection() {
           <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl shadow-black/50">
             <img
               ref={imgRef}
-              src="/images/sequence/frame-01.jpg"
+              src="/images/sequence/frame-01.webp"
               alt="Tinkilabs caja"
               className="h-full w-full object-cover"
             />
