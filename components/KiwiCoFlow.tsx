@@ -253,28 +253,49 @@ export function KiwiCoFlow() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 lg:py-12">
 
-      {/* ── Indicador de progreso ── */}
-      <div className="flex items-center justify-center gap-2 mb-12">
-        {[1, 2, 3].map((n) => (
-          <div key={n} className="flex items-center gap-2">
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-black transition-all duration-300 ${
-                n <= seccionVisible
-                  ? 'bg-tinki-orange text-white'
-                  : 'bg-tinki-dark/5 text-tinki-dark/20'
-              }`}
-            >
-              {n < seccionVisible ? <CheckIcon /> : n}
-            </div>
-            {n < 3 && (
-              <div
-                className={`h-0.5 w-8 rounded transition-colors duration-300 ${
-                  n < seccionVisible ? 'bg-tinki-orange' : 'bg-tinki-dark/5'
+      {/* ── Barra de progreso sticky ── */}
+      <div className="sticky top-[58px] z-40 -mx-4 px-4 py-3 bg-tinki-light/95 backdrop-blur-sm border-b border-tinki-dark/5 mb-8">
+        <div className="flex items-center justify-between max-w-2xl mx-auto">
+          {[
+            { n: 1, label: 'Nombre' },
+            { n: 2, label: 'Plan' },
+            { n: 3, label: 'Envío y pago' },
+          ].map(({ n, label }, i) => (
+            <div key={n} className="flex items-center gap-2">
+              <button
+                onClick={() => n <= seccionVisible && irA(n)}
+                disabled={n > seccionVisible}
+                className={`flex items-center gap-2 transition-all duration-300 ${
+                  n > seccionVisible ? 'opacity-30 cursor-default' : 'cursor-pointer'
                 }`}
-              />
-            )}
-          </div>
-        ))}
+              >
+                <div
+                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition-all duration-300 ${
+                    n <= seccionVisible
+                      ? 'bg-tinki-orange text-white'
+                      : 'bg-tinki-dark/5 text-tinki-dark/20'
+                  }`}
+                >
+                  {n < seccionVisible ? <CheckIcon /> : n}
+                </div>
+                <span
+                  className={`hidden sm:inline text-xs font-bold transition-colors duration-300 ${
+                    n <= seccionVisible ? 'text-tinki-dark' : 'text-tinki-dark/20'
+                  }`}
+                >
+                  {label}
+                </span>
+              </button>
+              {i < 2 && (
+                <div
+                  className={`hidden sm:block h-0.5 w-6 rounded transition-colors duration-300 ${
+                    n < seccionVisible ? 'bg-tinki-orange' : 'bg-tinki-dark/5'
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ═══════════ SECCIÓN 1: Nombre ═══════════ */}
