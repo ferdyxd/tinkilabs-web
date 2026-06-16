@@ -398,6 +398,15 @@ html {
 /* ─── Accesibilidad: reduced motion ─── */
 
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
   .hero-word-left,
   .hero-word-right {
     transform: none;
@@ -405,19 +414,106 @@ html {
     transition: none;
   }
 
-  .float-loop {
-    animation: none;
-  }
-
+  .float-loop,
   .gear-decorative,
   .gear-decorative-reverse {
     animation: none;
   }
 
-  .how-card {
+  .how-card,
+  .card-stagger,
+  .step-reveal,
+  .plan-card {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .card-emoji,
+  .group:hover .card-emoji {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Epic-Design: Sistema de capas de profundidad
+   depth-0 = fondo lejano → depth-5 = primer plano
+   ═══════════════════════════════════════════════════════════════ */
+
+.depth-0 { z-index: 0; }
+.depth-1 { z-index: 1; }
+.depth-2 { z-index: 2; }
+.depth-3 { z-index: 3; }
+.depth-4 { z-index: 10; }
+.depth-5 { z-index: 20; }
+
+/* ─── Transiciones cinematográficas entre secciones ─── */
+
+@media (min-width: 768px) {
+  .cinematic-fade {
+    transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .cinematic-rise {
+    transform: translateY(40px);
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .cinematic-rise.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ─── Performance: content-visibility en secciones off-screen ─── */
+
+section[data-scene] {
+  content-visibility: auto;
+  contain-intrinsic-size: 100vh;
+}
+
+/* ─── Parallax suave ─── */
+
+.parallax-slow {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-slow {
+    will-change: auto;
+    transform: none;
+  }
+}
+
+/* ─── Utilidades responsive ─── */
+
+@layer utilities {
+  /* Container seguro para móvil (evita notch/island) */
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Altura de viewport dinámica (soluciona barra de navegación móvil) */
+  .h-screen-dynamic {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .min-h-screen-dynamic {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Balance de texto para títulos */
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
@@ -534,17 +630,43 @@ html {
   top: 5rem;
 }
 
-/* Extender reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  .card-stagger,
-  .step-reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+/* ═══════════════════════════════════════════════════════════════
+   Epic-Design: Scroll scrubbing video section
+   ═══════════════════════════════════════════════════════════════ */
 
-  .card-emoji,
-  .group:hover .card-emoji {
-    animation: none;
+/* Suavizado del vídeo durante scrubbing */
+.scrub-video {
+  /* Evita que el navegador intente reproducir el vídeo normalmente */
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Marco de progreso decorativo */
+.scrub-frame-glow {
+  transition: opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ─── Transiciones de pasos ─── */
+.scrub-step {
+  transition: opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+              filter 0.6s ease;
+}
+
+.scrub-step.active {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+.scrub-step.inactive {
+  opacity: 0.18;
+  filter: blur(0.5px);
+}
+
+@media (max-width: 767px) {
+  .scrub-step {
+    transition: opacity 0.4s ease,
+                transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 }

@@ -97,6 +97,45 @@ function GiftIcon() {
   );
 }
 
+function FlashlightIcon() {
+  return (
+    <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 10V6a6 6 0 0112 0v4" />
+      <rect x="6" y="10" width="12" height="8" rx="2" />
+      <line x1="10" y1="18" x2="14" y2="18" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+function LetterIcon() {
+  return (
+    <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="M22 4L12 13L2 4" />
+    </svg>
+  );
+}
+
+function TargetIcon() {
+  return (
+    <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  );
+}
+
+function BadgeIcon() {
+  return (
+    <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2L9 7H3l4.5 3.5L5 16l7-4 7 4-2.5-5.5L21 7h-6L12 2z" />
+      <circle cx="12" cy="10.5" r="2.5" />
+    </svg>
+  );
+}
+
 // ─── Quiz ──────────────────────────────────────────────────────────
 
 function Quiz() {
@@ -210,6 +249,14 @@ function TablaComparativa() {
     { label: 'Envío', valores: ['Gratis (península)', 'Gratis siempre', 'Gratis siempre'] },
     { label: 'Motorizado', valores: ['No', 'Algunos kits', 'Algunos kits'] },
     { label: 'Insignia', valores: ['-', 'Incluida', 'Incluida'] },
+    {
+      label: 'Botín incluido',
+      valores: [
+        'Plano Secreto UV + Chapa coleccionable',
+        'Plano UV + Carta Tinki + Reto Mensual + Chapa + Póster A3',
+        'Plano UV + Carta Tinki + Reto Mensual + Chapa + Póster A3',
+      ],
+    },
   ];
 
   return (
@@ -355,6 +402,81 @@ export default function CompararPage() {
             Comparativa detallada
           </h2>
           <TablaComparativa />
+        </div>
+      </section>
+
+      {/* ─── Sistema de recompensas ──────────────────────────────── */}
+      <section className="bg-white pb-16 sm:pb-20">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <span className="inline-block rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-tinki-orange">
+            Más que una caja
+          </span>
+          <h2 className="mt-4 text-2xl font-black tracking-tight text-tinki-dark sm:text-3xl">
+            Cada caja esconde un botín
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-tinki-dark/45">
+            Dentro de cada caja no solo hay piezas. Hay 4 sorpresas que convierten
+            cada mes en una aventura.
+          </p>
+
+          {/* 4 cartas de recompensa */}
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                Icon: FlashlightIcon,
+                titulo: 'Plano Secreto',
+                subtitulo: 'Tinta invisible UV',
+                texto: 'Ilumina el plano con la linterna UV y descubre el mecanismo oculto. El momento más compartido en redes.',
+              },
+              {
+                Icon: LetterIcon,
+                titulo: 'Carta de Tinki',
+                subtitulo: 'Escrita a mano',
+                texto: 'Cada mes Tinki te escribe una carta con una palabra secreta. 12 cartas, 12 pistas, un misterio.',
+              },
+              {
+                Icon: TargetIcon,
+                titulo: 'Reto Mensual',
+                subtitulo: 'Misión de ingeniería',
+                texto: 'Construye algo con materiales de casa, grábate y Tinki puede compartir tu vídeo con el mundo.',
+              },
+              {
+                Icon: BadgeIcon,
+                titulo: 'Chapa + Póster',
+                subtitulo: '12 huecos que llenar',
+                texto: 'Cada caja trae una chapa distinta. Llena los 12 huecos del póster y completa tu Guarida de Ingeniero.',
+              },
+            ].map(({ Icon, titulo, subtitulo, texto }) => (
+              <div
+                key={titulo}
+                className="group rounded-2xl border border-orange-100 bg-white p-5 text-left transition-colors transition-shadow duration-200 focus-within:ring-2 focus-within:ring-tinki-orange/30 hover:border-orange-200 hover:shadow-md"
+              >
+                <div className="text-tinki-orange">
+                  <Icon />
+                </div>
+                <h3 className="mt-3 font-bold text-tinki-dark">{titulo}</h3>
+                <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-tinki-orange">
+                  {subtitulo}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-tinki-dark/50">
+                  {texto}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Extra primera caja */}
+          <div className="mt-8 rounded-2xl border-2 border-orange-200 bg-orange-50/50 p-6 text-center">
+            <p className="inline-flex items-center gap-2 text-sm font-bold text-tinki-orange">
+              <GiftIcon /> Solo en tu primera caja
+            </p>
+            <p className="mt-2 text-lg font-black text-tinki-dark">
+              Parche Fundador · Póster A3 · Pasaporte colaborativo
+            </p>
+            <p className="mt-1 text-sm text-tinki-dark/50">
+              Porque los primeros 500 merecen algo especial.
+            </p>
+          </div>
         </div>
       </section>
 

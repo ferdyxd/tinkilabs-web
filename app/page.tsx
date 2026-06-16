@@ -425,33 +425,13 @@ function QueEsSection() {
     <section
       id="que-es"
       ref={sectionRef}
-      className="relative bg-[#F5F5F7] overflow-hidden"
+      className="relative bg-[#F5F5F7]"
       style={{ height: '250vh' }}
     >
-      {/* ─── depth-0: fondo con patrón de ingeniería ─── */}
-      <div className="sticky top-0 h-screen overflow-hidden" aria-hidden="true">
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle, rgba(255,107,53,0.5) 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-        {/* glow atmosférico que sigue el progreso */}
-        <div
-          className="absolute -top-1/4 left-1/2 h-[120%] w-[600px] max-w-[80vw] -translate-x-1/2 rounded-full blur-[120px] transition-colors duration-1000"
-          style={{
-            background: `radial-gradient(ellipse at center, rgba(255,107,53,${0.08 + progress * 0.12}) 0%, transparent 70%)`,
-          }}
-        />
-      </div>
-
-      {/* ─── depth-3: contenido sticky principal ─── */}
-      <div className="sticky top-0 h-screen flex flex-col md:flex-row items-center justify-center gap-6 md:gap-16 px-5 md:px-8 lg:px-12">
+      <div className="sticky top-0 h-screen flex items-start justify-center px-5 md:px-8 pt-12 md:pt-20">
         {/* Columna izquierda: texto */}
-        <div className="relative z-10 flex flex-col justify-center w-full md:w-[420px] lg:w-[480px] py-8 md:py-0">
-          <div className="space-y-12 md:space-y-20">
+        <div className="relative z-10 flex flex-col w-full md:w-[420px] lg:w-[480px]">
+          <div className="space-y-8 md:space-y-14">
             {STEPS.map((step, i) => {
               const isActive = activeStep === i;
               return (
@@ -482,20 +462,8 @@ function QueEsSection() {
           </div>
         </div>
 
-        {/* Columna derecha: vídeo scrub timeline */}
+        {/* Columna derecha: imagen secuencial */}
         <div className="relative z-10 flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px]">
-          {/* Marco decorativo — brilla según progreso */}
-          <div
-            className="absolute -inset-3 rounded-[28px] transition-opacity duration-700"
-            style={{
-              opacity: 0.25 + progress * 0.35,
-              background: `linear-gradient(135deg, rgba(255,107,53,0.5), transparent 40%, transparent 60%, rgba(255,107,53,0.3))`,
-              filter: 'blur(2px)',
-            }}
-            aria-hidden="true"
-          />
-          {/* Borde sutil */}
-          <div className="absolute -inset-[1px] rounded-2xl ring-1 ring-black/[0.06]" aria-hidden="true" />
           {/* Imagen secuencial — funciona en todos los dispositivos */}
           <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black shadow-2xl shadow-black/50">
             <img
