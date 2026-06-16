@@ -32,6 +32,7 @@ const PUBLIC_PATHS = [
   '/campamento',
   '/repuestos',
   '/concepto-b',
+  '/empezar',
 ];
 
 // Prefijos públicos
