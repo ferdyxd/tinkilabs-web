@@ -373,7 +373,7 @@ function Step0({
           onClick={() => onSelect('single')}
           className={`relative rounded-2xl border-2 p-4 text-left transition-colors transition-shadow duration-200 ${
             modo === 'single'
-              ? 'shadow-sm bg-white border-tinki-dark/20'
+              ? 'shadow-sm bg-orange-50/50 border-tinki-orange/60'
               : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
           }`}
         >
