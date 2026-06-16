@@ -54,7 +54,6 @@ const LINEAS = [
     slug: 'mini',
     nombre: 'Tinki Mini',
     edad: '3-5 años',
-    emoji: '🧸',
     bg: 'bg-amber-50',
     border: 'border-amber-300',
     text: 'text-amber-700',
@@ -71,7 +70,6 @@ const LINEAS = [
     slug: 'maker',
     nombre: 'Tinki Maker',
     edad: '6-9 años',
-    emoji: '🔧',
     bg: 'bg-orange-50',
     border: 'border-orange-300',
     text: 'text-orange-700',
@@ -88,7 +86,6 @@ const LINEAS = [
     slug: 'pro',
     nombre: 'Tinki Pro',
     edad: '10-14 años',
-    emoji: '🚀',
     bg: 'bg-red-50',
     border: 'border-red-300',
     text: 'text-red-700',
@@ -182,7 +179,11 @@ export function PurchaseWizard() {
     const isSingle = data.modo === 'single';
     return (
       <div className="text-center py-16 px-4 animate-fade-in">
-        <div className="text-7xl mb-6 animate-bounce" style={{ animationDuration: '600ms' }}>{isSingle ? '📦' : '🚀'}</div>
+        <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-500 mb-6">
+          <svg className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
         <h2 className="text-3xl font-black text-tinki-dark mb-3">
           {isSingle ? `¡${data.nombreNino}, tu caja está en camino!` : `¡${data.nombreNino}, bienvenido a Tinkilabs!`}
         </h2>
@@ -192,7 +193,7 @@ export function PurchaseWizard() {
               Tu <strong className="text-tinki-dark">{data.linea.nombre}</strong> sale en <strong className="text-tinki-orange">5-7 días</strong>. Envío gratis.
             </p>
             <p className="text-tinki-dark/30 mb-4">
-              Te avisaremos cuando llegue. Si te mola, te esperamos con un plan y te bonificamos la diferencia. 🦫
+              Si te mola, te esperamos con un plan y te bonificamos la diferencia.
             </p>
           </>
         ) : (
@@ -201,7 +202,7 @@ export function PurchaseWizard() {
               Tu primera caja <strong className="text-tinki-dark">{data.linea.nombre}</strong> sale el día <strong className="text-tinki-orange">5 del mes que viene</strong>.
             </p>
             <p className="text-tinki-dark/30 mb-8">
-              Te hemos enviado un email con todos los detalles. 🧰
+              Te hemos enviado un email con todos los detalles.
             </p>
           </>
         )}
@@ -218,12 +219,12 @@ export function PurchaseWizard() {
   // ─── Wizard ─────────────────────────────────────────────
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-4 lg:py-6">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Columna izquierda: wizard */}
         <div className="flex-1 min-w-0">
           {/* Barra de progreso */}
-          <div className="mb-10" role="progressbar" aria-valuenow={progresso} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso de suscripción">
+          <div className="mb-6" role="progressbar" aria-valuenow={progresso} aria-valuemin={0} aria-valuemax={100} aria-label="Progreso de suscripción">
             <div className="flex justify-between text-xs font-bold mb-2">
               {(data.modo === 'single'
                 ? ['¿Quién?', 'Envío', 'Pago']
@@ -328,31 +329,34 @@ function Step0({
   onNext: () => void;
 }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="text-center">
-        <h2 className="text-3xl font-black text-tinki-dark mb-2">¿Cómo quieres empezar?</h2>
-        <p className="text-tinki-dark/40">Elige tu camino. Siempre puedes cambiar de opinión.</p>
+        <h2 className="text-2xl font-black text-tinki-dark">¿Cómo quieres empezar?</h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* Caja única */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/* Suscripción — primero */}
         <button
           type="button"
-          onClick={() => onSelect('single')}
-          className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
-            modo === 'single'
-              ? 'shadow-md shadow-tinki-orange/15 bg-orange-50 border-tinki-orange'
+          onClick={() => onSelect('sub')}
+          className={`relative rounded-2xl border-2 p-4 text-left transition-colors transition-shadow duration-200 ${
+            modo === 'sub'
+              ? 'shadow-md shadow-tinki-orange/10 bg-orange-50 border-tinki-orange'
               : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
           }`}
         >
-          <div className="text-3xl mb-3">📦</div>
-          <h3 className="text-xl font-black text-tinki-dark mb-1">Una sola caja</h3>
-          <p className="text-4xl font-black text-tinki-dark tracking-tight mb-1">
-            27<span className="text-xl text-tinki-dark/30">€</span>
+          {modo === 'sub' && (
+            <span className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full text-[10px] font-black text-white bg-tinki-orange">
+              MEJOR PRECIO
+            </span>
+          )}
+          <p className="text-lg font-black text-tinki-dark">Suscripción</p>
+          <p className="text-3xl font-black text-tinki-dark tracking-tight mt-1">
+            desde 19,90<span className="text-lg text-tinki-dark/30">€/mes</span>
           </p>
-          <p className="text-xs text-tinki-dark/35 mb-4">Envío gratis. Sin compromiso.</p>
-          <ul className="space-y-1.5">
-            {['Pruébalo sin ataduras', 'Si te mola, te bonificamos el plan', 'Envío en 5-7 días'].map((item) => (
+          <p className="text-xs text-tinki-dark/35 mt-1">El mejor precio. Cancela cuando quieras.</p>
+          <ul className="space-y-1 mt-3">
+            {['1 caja nueva cada mes', 'Ahorra hasta 7,10€/mes vs caja única', 'Envío gratis siempre', 'Sin permanencia'].map((item) => (
               <li key={item} className="flex items-start gap-2 text-xs text-tinki-dark/50">
                 <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-tinki-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -363,26 +367,25 @@ function Step0({
           </ul>
         </button>
 
-        {/* Suscripción */}
+        {/* Caja única — segundo */}
         <button
           type="button"
-          onClick={() => onSelect('sub')}
-          className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
-            modo === 'sub'
-              ? 'shadow-md shadow-tinki-orange/15 bg-orange-50 border-tinki-orange'
+          onClick={() => onSelect('single')}
+          className={`relative rounded-2xl border-2 p-4 text-left transition-colors transition-shadow duration-200 ${
+            modo === 'single'
+              ? 'shadow-sm bg-white border-tinki-dark/20'
               : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
           }`}
         >
-          <div className="text-3xl mb-3">🔄</div>
-          <h3 className="text-xl font-black text-tinki-dark mb-1">Suscripción</h3>
-          <p className="text-sm text-tinki-dark/50 mb-1">
-            Desde <span className="font-bold text-tinki-dark">19,90€</span> /mes
+          <p className="text-lg font-bold text-tinki-dark/70">Una sola caja</p>
+          <p className="text-3xl font-bold text-tinki-dark/70 tracking-tight mt-1">
+            27<span className="text-lg text-tinki-dark/30">€</span>
           </p>
-          <p className="text-xs text-tinki-dark/35 mb-4">El mejor precio. Cancela cuando quieras.</p>
-          <ul className="space-y-1.5">
-            {['1 caja nueva cada mes', 'Mejor precio garantizado', 'Sin permanencia', 'Envío gratis siempre'].map((item) => (
+          <p className="text-xs text-tinki-dark/35 mt-1">Pruébalo sin ataduras.</p>
+          <ul className="space-y-1 mt-3">
+            {['Sin compromiso', 'Si te mola, te bonificamos el plan', 'Envío en 5-7 días'].map((item) => (
               <li key={item} className="flex items-start gap-2 text-xs text-tinki-dark/50">
-                <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-tinki-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-tinki-dark/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 {item}
@@ -393,17 +396,17 @@ function Step0({
       </div>
 
       {/* Mensaje de bonificación */}
-      <div className="bg-tinki-orange/5 border border-tinki-orange/15 rounded-2xl p-4 text-center">
-        <p className="text-sm text-tinki-dark/60">
-          💡 <strong>Si empiezas con 1 caja y luego te suscribes</strong>, te bonificamos la diferencia del plan que elijas. Como si hubieras empezado con suscripción desde el principio.
+      <div className="bg-tinki-orange/5 border border-tinki-orange/15 rounded-2xl p-3 text-center">
+        <p className="text-xs text-tinki-dark/55">
+          Si empiezas con 1 caja y luego te suscribes, te bonificamos la diferencia del plan que elijas. Como si hubieras empezado con suscripción desde el principio.
         </p>
       </div>
 
       <button
         onClick={onNext}
-        className="w-full py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none"
+        className="w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none"
       >
-        {modo === 'single' ? 'Quiero una caja →' : 'Quiero suscribirme →'}
+        {modo === 'sub' ? 'Quiero suscribirme →' : 'Quiero una caja →'}
       </button>
     </div>
   );
@@ -429,15 +432,14 @@ function Step1({
   onNext: () => void;
 }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="text-center">
-        <h2 className="text-3xl font-black text-tinki-dark mb-2">¿Para quién es?</h2>
-        <p className="text-tinki-dark/40">Cuéntanos un poco sobre el constructor.</p>
+        <h2 className="text-2xl font-black text-tinki-dark">¿Para quién es?</h2>
       </div>
 
       {/* Nombre */}
       <div>
-        <label className="block text-sm font-bold text-tinki-dark/50 mb-2">
+        <label className="block text-sm font-bold text-tinki-dark/50 mb-1.5">
           Nombre del peque
         </label>
         <input
@@ -445,7 +447,7 @@ function Step1({
           value={nombreNino}
           onChange={(e) => onNombre(e.target.value)}
           placeholder="Lucas"
-          className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-4 text-xl font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+          className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3.5 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
         />
       </div>
 
@@ -468,15 +470,14 @@ function Step1({
                   role="radio"
                   aria-checked={sel}
                   onClick={() => onLinea(l)}
-                  className={`relative rounded-2xl border-2 p-4 text-left transition-all flex items-center gap-4 ${
+                  className={`relative rounded-2xl border-2 p-3 text-left transition-all flex items-center gap-3 ${
                     sel
                       ? 'border-tinki-orange shadow-md shadow-tinki-orange/15 bg-orange-50'
                       : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
                   }`}
                 >
-                  <span className="text-3xl flex-shrink-0">{l.emoji}</span>
                   <div>
-                    <span className="block text-base font-black text-tinki-dark">{l.nombre}</span>
+                    <span className="block text-sm font-black text-tinki-dark">{l.nombre}</span>
                     <span className="block text-xs text-tinki-dark/40">{l.edad}</span>
                   </div>
                   {sel && (
@@ -495,10 +496,7 @@ function Step1({
           >
             {/* Cabecera */}
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{linea.emoji}</span>
-                <span className="font-black text-tinki-dark text-lg">{linea.nombre}</span>
-              </div>
+              <span className="font-black text-tinki-dark text-lg">{linea.nombre}</span>
               <span className="text-xs font-bold text-tinki-dark/30">{linea.edad}</span>
             </div>
 
@@ -533,14 +531,14 @@ function Step1({
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="px-6 py-5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
+          className="px-5 py-3.5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
         >
           ← Atrás
         </button>
         <button
           onClick={onNext}
           disabled={!nombreNino.trim()}
-          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="flex-1 py-3.5 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
           Siguiente: elegir plan →
         </button>
@@ -565,10 +563,9 @@ function Step2({
   onNext: () => void;
 }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="text-center">
-        <h2 className="text-3xl font-black text-tinki-dark mb-2">Elige tu ritmo</h2>
-        <p className="text-tinki-dark/40">Cuanto más tiempo, más ahorras. Y sin permanencia.</p>
+        <h2 className="text-2xl font-black text-tinki-dark">Elige tu ritmo</h2>
       </div>
 
       {/* Cards de planes */}
@@ -657,14 +654,14 @@ function Step2({
       {/* Comparativa rápida */}
       <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
         <span className="text-sm text-emerald-700">
-          🌱 Todos los planes incluyen <strong>envío gratis</strong> y <strong>sin permanencia</strong> más allá del periodo elegido. Si no te convence, cancelas al terminar.
+          Todos los planes incluyen <strong>envío gratis</strong> y <strong>sin permanencia</strong> más allá del periodo elegido. Si no te convence, cancelas al terminar.
         </span>
       </div>
 
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="px-6 py-5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
+          className="px-5 py-3.5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
         >
           ← Atrás
         </button>
@@ -704,10 +701,9 @@ function Step3({
 }) {
   const valido = direccion.trim() && ciudad.trim() && cp.trim() && /^\d{5}$/.test(cp.trim()) && email.includes('@');
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="text-center">
-        <h2 className="text-3xl font-black text-tinki-dark mb-2">¿Dónde lo enviamos?</h2>
-        <p className="text-tinki-dark/40">La primera caja sale en 5-7 días. Envío gratis siempre.</p>
+        <h2 className="text-2xl font-black text-tinki-dark">¿Dónde lo enviamos?</h2>
       </div>
 
       <div className="space-y-4">
@@ -718,7 +714,7 @@ function Step3({
             value={email}
             onChange={(e) => onChange({ email: e.target.value })}
             placeholder="tunombre@email.com"
-            className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+            className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
           />
           <p className="text-xs text-tinki-dark/25 mt-1">Te enviaremos la confirmación y los avisos de envío aquí.</p>
         </div>
@@ -729,7 +725,7 @@ function Step3({
             value={direccion}
             onChange={(e) => onChange({ direccion: e.target.value })}
             placeholder="Calle Mayor, 12, 3º B"
-            className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+            className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
           />
         </div>
 
@@ -775,7 +771,7 @@ function Step3({
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="px-6 py-5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
+          className="px-5 py-3.5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
         >
           ← Atrás
         </button>
@@ -814,10 +810,9 @@ function Step4({
   const puedePagar = necesitaCompromiso ? compromisoAceptado : true;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div className="text-center">
-        <h2 className="text-3xl font-black text-tinki-dark mb-2">Todo listo</h2>
-        <p className="text-tinki-dark/40">Revisa tu pedido y paga para que empiece la aventura.</p>
+        <h2 className="text-2xl font-black text-tinki-dark">Todo listo</h2>
       </div>
 
       {/* Resumen */}
@@ -833,7 +828,7 @@ function Step4({
         <div className="flex justify-between text-sm">
           <span className="text-tinki-dark/40">Línea</span>
           <span className="font-bold text-tinki-dark">
-            {data.linea.emoji} {data.linea.nombre} ({data.linea.edad})
+            {data.linea.nombre} ({data.linea.edad})
           </span>
         </div>
         {data.modo === 'sub' && (
@@ -877,7 +872,7 @@ function Step4({
             {/* Bonificación por upgrade desde caja única */}
             <div className="mt-3 rounded-xl bg-tinki-orange/5 border border-tinki-orange/15 p-3">
               <p className="text-xs text-tinki-dark/50 leading-relaxed">
-                🦫 <strong>¿Vienes de una caja única?</strong> Si ya compraste una caja suelta y ahora te suscribes, tu primera renovación incluye una bonificación de <strong>{(27 - data.plan.precioMes).toFixed(2).replace('.', ',')}€</strong> (la diferencia con tu caja única). El total será el mismo que si hubieras empezado con suscripción.
+                <strong>¿Vienes de una caja única?</strong> Si ya compraste una caja suelta y ahora te suscribes, tu primera renovación incluye una bonificación de <strong>{(27 - data.plan.precioMes).toFixed(2).replace('.', ',')}€</strong> (la diferencia con tu caja única). El total será el mismo que si hubieras empezado con suscripción.
               </p>
             </div>
           </>
@@ -923,14 +918,14 @@ function Step4({
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="px-6 py-5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
+          className="px-5 py-3.5 border-2 border-tinki-dark/5 text-tinki-dark/50 font-bold rounded-2xl hover:border-tinki-dark/15 transition-colors"
         >
           ←
         </button>
         <button
           onClick={onSubmit}
           disabled={loading || !puedePagar}
-          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="flex-1 py-3.5 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 ease-out active:scale-[0.98] active:shadow-none disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
