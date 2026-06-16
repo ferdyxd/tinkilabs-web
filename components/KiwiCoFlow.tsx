@@ -14,6 +14,7 @@ interface PlanInfo {
   precioMes: number;
   precioTotal: number;
   ahorroVsSingle: string;
+  ahorroTotal: string;
   popular?: boolean;
   badge?: string;
 }
@@ -27,6 +28,7 @@ const PLANES: PlanInfo[] = [
     precioMes: 19.9,
     precioTotal: 238.8,
     ahorroVsSingle: '7,10',
+    ahorroTotal: '85,20',
     badge: 'Mejor precio',
   },
   {
@@ -37,6 +39,7 @@ const PLANES: PlanInfo[] = [
     precioMes: 20.9,
     precioTotal: 125.4,
     ahorroVsSingle: '6,10',
+    ahorroTotal: '36,60',
     popular: true,
     badge: 'El favorito',
   },
@@ -48,6 +51,7 @@ const PLANES: PlanInfo[] = [
     precioMes: 22.9,
     precioTotal: 68.7,
     ahorroVsSingle: '4,10',
+    ahorroTotal: '12,30',
     badge: 'Para probar',
   },
   {
@@ -58,6 +62,7 @@ const PLANES: PlanInfo[] = [
     precioMes: PRECIO_SINGLE,
     precioTotal: PRECIO_SINGLE,
     ahorroVsSingle: '0',
+    ahorroTotal: '0',
     badge: 'Sin ataduras',
   },
 ];
@@ -395,7 +400,7 @@ export function KiwiCoFlow() {
                         />
                       </div>
                       <span className="text-sm font-black text-emerald-600 whitespace-nowrap">
-                        Ahorras {p.ahorroVsSingle}€/mes
+                        Ahorras {p.ahorroVsSingle}€/mes ({p.ahorroTotal}€ en total)
                       </span>
                     </div>
                   )}
@@ -583,7 +588,7 @@ export function KiwiCoFlow() {
               {!isSingle && (
                 <div className="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-center">
                   <span className="text-sm font-black text-emerald-700">
-                    Ahorras {data.plan.ahorroVsSingle}€/mes vs caja única
+                    Ahorras {data.plan.ahorroVsSingle}€/mes vs caja única ({data.plan.ahorroTotal}€ en total)
                   </span>
                 </div>
               )}
