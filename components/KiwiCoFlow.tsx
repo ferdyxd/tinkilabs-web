@@ -119,6 +119,7 @@ export function KiwiCoFlow() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const s1Ref = useRef<HTMLDivElement>(null);
   const s2Ref = useRef<HTMLDivElement>(null);
@@ -143,6 +144,31 @@ export function KiwiCoFlow() {
       const ref = n === 2 ? s2Ref : n === 3 ? s3Ref : s1Ref;
       ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 120);
+  };
+
+  const validarPaso1 = (): boolean => {
+    const errs: Record<string, string> = {};
+    if (data.nombre.trim().length < 2) errs.nombre = 'Escribe el nombre del peque';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const validarPaso3 = (): boolean => {
+    const errs: Record<string, string> = {};
+    if (!data.email.includes('@')) errs.email = 'Un email válido, por favor';
+    if (data.direccion.trim().length === 0) errs.direccion = 'Indícanos la dirección de envío';
+    if (data.ciudad.trim().length === 0) errs.ciudad = '¿En qué ciudad vives?';
+    if (!/^\d{5}$/.test(data.cp.trim())) errs.cp = 'Código postal (5 dígitos)';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const limpiarError = (campo: string) => {
+    if (errors[campo]) {
+      const nuevos = { ...errors };
+      delete nuevos[campo];
+      setErrors(nuevos);
+    }
   };
 
   const handleSubmit = async () => {
@@ -265,11 +291,18 @@ export function KiwiCoFlow() {
               <input
                 type="text"
                 value={data.nombre}
-                onChange={(e) => update({ nombre: e.target.value })}
+                onChange={(e) => { update({ nombre: e.target.value }); limpiarError('nombre'); }}
                 placeholder="Lucas"
                 autoFocus
-                className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+                className={`w-full rounded-2xl border-2 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
+                  errors.nombre
+                    ? 'border-red-400 focus:ring-red-400'
+                    : 'border-tinki-dark/5 focus:ring-tinki-orange'
+                }`}
               />
+              {errors.nombre && (
+                <p className="mt-1.5 text-sm font-bold text-red-500">{errors.nombre}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-bold text-tinki-dark/50 mb-1.5">
@@ -287,9 +320,8 @@ export function KiwiCoFlow() {
 
           {seccionVisible === 1 && (
             <button
-              onClick={() => nombreValido && irA(2)}
-              disabled={!nombreValido}
-              className="mt-8 w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+              onClick={() => validarPaso1() && irA(2)}
+              className="mt-8 w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98]"
             >
               Continuar →
             </button>
@@ -413,21 +445,35 @@ export function KiwiCoFlow() {
               <input
                 type="email"
                 value={data.email}
-                onChange={(e) => update({ email: e.target.value })}
+                onChange={(e) => { update({ email: e.target.value }); limpiarError('email'); }}
                 placeholder="tu@email.com"
                 inputMode="email"
-                className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+                className={`w-full rounded-2xl border-2 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
+                  errors.email
+                    ? 'border-red-400 focus:ring-red-400'
+                    : 'border-tinki-dark/5 focus:ring-tinki-orange'
+                }`}
               />
+              {errors.email && (
+                <p className="mt-1.5 text-sm font-bold text-red-500">{errors.email}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-bold text-tinki-dark/50 mb-1.5">Dirección *</label>
               <input
                 type="text"
                 value={data.direccion}
-                onChange={(e) => update({ direccion: e.target.value })}
+                onChange={(e) => { update({ direccion: e.target.value }); limpiarError('direccion'); }}
                 placeholder="Calle Mayor, 12, 3º B"
-                className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+                className={`w-full rounded-2xl border-2 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
+                  errors.direccion
+                    ? 'border-red-400 focus:ring-red-400'
+                    : 'border-tinki-dark/5 focus:ring-tinki-orange'
+                }`}
               />
+              {errors.direccion && (
+                <p className="mt-1.5 text-sm font-bold text-red-500">{errors.direccion}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -435,22 +481,36 @@ export function KiwiCoFlow() {
                 <input
                   type="text"
                   value={data.ciudad}
-                  onChange={(e) => update({ ciudad: e.target.value })}
+                  onChange={(e) => { update({ ciudad: e.target.value }); limpiarError('ciudad'); }}
                   placeholder="Madrid"
-                  className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+                  className={`w-full rounded-2xl border-2 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
+                    errors.ciudad
+                      ? 'border-red-400 focus:ring-red-400'
+                      : 'border-tinki-dark/5 focus:ring-tinki-orange'
+                  }`}
                 />
+                {errors.ciudad && (
+                  <p className="mt-1.5 text-sm font-bold text-red-500">{errors.ciudad}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-bold text-tinki-dark/50 mb-1.5">Código postal *</label>
                 <input
                   type="text"
                   value={data.cp}
-                  onChange={(e) => update({ cp: e.target.value.replace(/\D/g, '').slice(0, 5) })}
+                  onChange={(e) => { update({ cp: e.target.value.replace(/\D/g, '').slice(0, 5) }); limpiarError('cp'); }}
                   placeholder="28001"
                   inputMode="numeric"
                   maxLength={5}
-                  className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+                  className={`w-full rounded-2xl border-2 px-5 py-3.5 text-base font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
+                    errors.cp
+                      ? 'border-red-400 focus:ring-red-400'
+                      : 'border-tinki-dark/5 focus:ring-tinki-orange'
+                  }`}
                 />
+                {errors.cp && (
+                  <p className="mt-1.5 text-sm font-bold text-red-500">{errors.cp}</p>
+                )}
               </div>
             </div>
             <div>
@@ -541,8 +601,8 @@ export function KiwiCoFlow() {
             )}
 
             <button
-              onClick={handleSubmit}
-              disabled={loading || !puedePagar}
+              onClick={() => validarPaso3() && handleSubmit()}
+              disabled={loading}
               className="w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {loading ? (
