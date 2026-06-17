@@ -20,32 +20,23 @@ const PRECIO_BASE_MES = 24.90;
 
 const PLANES: PlanInfo[] = [
   {
-    slug: 'trimestral',
-    nombre: '3 meses',
-    meses: 3,
-    precioMes: 22.90,
-    precioTotal: 68.70,
-    ahorro: 12.30,
-    badge: 'Para probar',
-  },
-  {
-    slug: 'semestral',
-    nombre: '6 meses',
-    meses: 6,
-    precioMes: 20.90,
-    precioTotal: 125.40,
-    ahorro: 36.60,
-    popular: true,
-    badge: '1 caja gratis',
-  },
-  {
     slug: 'anual',
     nombre: '12 meses',
     meses: 12,
     precioMes: 19.90,
     precioTotal: 238.80,
     ahorro: 85.20,
-    badge: '+2 cajas gratis',
+    popular: true,
+    badge: 'Mejor precio',
+  },
+  {
+    slug: 'trimestral',
+    nombre: '3 meses',
+    meses: 3,
+    precioMes: 22.90,
+    precioTotal: 68.70,
+    ahorro: 12.30,
+    badge: 'El tranquilo',
   },
 ];
 
@@ -116,7 +107,7 @@ interface FormData {
   telefono: string;
 }
 
-export function PurchaseWizard() {
+export function PurchaseWizard({ onComplete }: { onComplete?: () => void }) {
   const [step, setStep] = useState<Step>(0);
   const [data, setData] = useState<FormData>({
     modo: 'sub',
@@ -166,6 +157,7 @@ export function PurchaseWizard() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Error');
       setDone(true);
+      onComplete?.();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -566,10 +558,11 @@ function Step2({
     <div className="space-y-5">
       <div className="text-center">
         <h2 className="text-2xl font-black text-tinki-dark">Elige tu ritmo</h2>
+        <p className="text-sm text-tinki-dark/35 mt-1">Selecciona una opción para continuar</p>
       </div>
 
       {/* Cards de planes */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {PLANES.map((p) => {
           const selected = plan.slug === p.slug;
           return (
@@ -579,7 +572,7 @@ function Step2({
               role="radio"
               aria-checked={selected}
               onClick={() => onPlan(p)}
-              className={`relative w-full rounded-2xl border-2 p-5 text-left transition-all ${
+              className={`relative w-full rounded-2xl border-2 p-4 md:p-5 text-left transition-all ${
                 selected
                   ? 'border-tinki-orange shadow-md shadow-tinki-orange/15 bg-orange-50'
                   : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
@@ -596,55 +589,61 @@ function Step2({
                 </span>
               )}
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-lg font-black text-tinki-dark">{p.nombre}</span>
-                  <span className="text-sm text-tinki-dark/30 ml-2">
-                    {p.meses === 1 ? '1 caja al mes' : `${p.meses} cajas (1 al mes)`}
-                  </span>
+              {/* Radio + contenido en línea — sin absolute */}
+              <div className="flex items-start gap-3 md:gap-4">
+                {/* Radio custom — ahora en el flujo normal */}
+                <div
+                  className={`flex-shrink-0 w-5 h-5 mt-1 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    selected ? 'border-tinki-orange bg-tinki-orange' : 'border-tinki-dark/15'
+                  }`}
+                >
+                  {selected && <div className="w-2 h-2 rounded-full bg-white" />}
                 </div>
 
-                <div className="text-right">
-                  {/* Precio por mes grande */}
-                  <div className="flex items-baseline gap-0.5 justify-end">
-                    <span className="text-4xl font-black text-tinki-dark tracking-tight">
-                      {p.precioMes.toFixed(2).replace('.', ',')}
-                    </span>
-                    <span className="text-xl font-bold text-tinki-dark/30">€</span>
-                    <span className="text-sm text-tinki-dark/25">/mes</span>
+                {/* Contenido de la card */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                    <div className="flex flex-wrap items-baseline gap-x-2">
+                      <span className="text-lg font-black text-tinki-dark">{p.nombre}</span>
+                      <span className="text-sm text-tinki-dark/30">
+                        {p.meses === 1 ? '1 caja al mes' : `${p.meses} cajas (1 al mes)`}
+                      </span>
+                    </div>
+
+                    <div className="text-left sm:text-right">
+                      {/* Precio por mes grande */}
+                      <div className="flex items-baseline gap-0.5 sm:justify-end">
+                        <span className="text-3xl sm:text-4xl font-black text-tinki-dark tracking-tight">
+                          {p.precioMes.toFixed(2).replace('.', ',')}
+                        </span>
+                        <span className="text-lg sm:text-xl font-bold text-tinki-dark/30">€</span>
+                        <span className="text-sm text-tinki-dark/25">/mes</span>
+                      </div>
+
+                      {/* Total */}
+                      {p.meses > 1 && (
+                        <span className="text-xs text-tinki-dark/30">
+                          {p.precioTotal.toFixed(2).replace('.', ',')}€ total
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Total */}
-                  {p.meses > 1 && (
-                    <span className="text-xs text-tinki-dark/30">
-                      {p.precioTotal.toFixed(2).replace('.', ',')}€ total
-                    </span>
+                  {/* Barra de ahorro */}
+                  {p.ahorro > 0 && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-tinki-dark/5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                          style={{ width: `${Math.round((p.ahorro / 85.20) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs sm:text-sm font-black text-emerald-600 whitespace-nowrap">
+                        Ahorras {p.ahorro.toFixed(0).replace('.', ',')}€
+                      </span>
+                    </div>
                   )}
                 </div>
-              </div>
-
-              {/* Barra de ahorro */}
-              {p.ahorro > 0 && (
-                <div className="mt-3 flex items-center gap-2">
-                  <div className="flex-1 h-2 bg-tinki-dark/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                      style={{ width: `${Math.round((p.ahorro / 85.20) * 100)}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-black text-emerald-600 whitespace-nowrap">
-                    Ahorras {p.ahorro.toFixed(0).replace('.', ',')}€
-                  </span>
-                </div>
-              )}
-
-              {/* Radio custom */}
-              <div
-                className={`absolute top-5 left-5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                  selected ? 'border-tinki-orange bg-tinki-orange' : 'border-tinki-dark/15'
-                }`}
-              >
-                {selected && <div className="w-2 h-2 rounded-full bg-white" />}
               </div>
             </button>
           );
@@ -667,7 +666,8 @@ function Step2({
         </button>
         <button
           onClick={onNext}
-          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:opacity-90 transition-all active:scale-[0.98]"
+          disabled={!plan}
+          className="flex-1 py-5 bg-tinki-orange text-white font-black text-xl rounded-2xl hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100"
         >
           Siguiente: envío →
         </button>
@@ -805,7 +805,7 @@ function Step4({
   onSubmit: () => void;
 }) {
   const [compromisoAceptado, setCompromisoAceptado] = useState(false);
-  const necesitaCompromiso = data.modo === 'sub' && data.plan.meses > 1;
+  const necesitaCompromiso = data.modo === 'sub' && data.plan && data.plan.meses > 1;
 
   const puedePagar = necesitaCompromiso ? compromisoAceptado : true;
 
@@ -831,7 +831,7 @@ function Step4({
             {data.linea.nombre} ({data.linea.edad})
           </span>
         </div>
-        {data.modo === 'sub' && (
+        {data.modo === 'sub' && data.plan && (
           <div className="flex justify-between text-sm">
             <span className="text-tinki-dark/40">Plan</span>
             <span className="font-bold text-tinki-dark">
@@ -860,7 +860,7 @@ function Step4({
             </div>
             <p className="text-xs text-tinki-dark/25 text-right">Envío gratis. Sin compromiso.</p>
           </>
-        ) : (
+        ) : data.plan ? (
           <>
             <div className="flex justify-between text-lg font-black text-tinki-dark">
               <span>Primer pago</span>
@@ -876,7 +876,7 @@ function Step4({
               </p>
             </div>
           </>
-        )}
+        ) : null}
       </div>
 
       {/* Compromiso (solo trimestral/anual) */}
@@ -937,8 +937,10 @@ function Step4({
             </span>
           ) : data.modo === 'single' ? (
             'Pagar 27,00€'
-          ) : (
+          ) : data.plan ? (
             `Pagar ${data.plan.precioTotal.toFixed(2).replace('.', ',')}€`
+          ) : (
+            'Pagar'
           )}
         </button>
       </div>

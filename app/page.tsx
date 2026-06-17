@@ -738,6 +738,7 @@ export default function LandingPage() {
     <main className="bg-white text-[#1D1D1F] antialiased">
       <StickyNav />
       <HeroSection />
+
       <PorQueSection />
       <QueEsSection />
       <ComoEmpezarSection />

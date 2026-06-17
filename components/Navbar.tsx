@@ -14,7 +14,6 @@ const suscripciones = [
 ];
 
 const comprarMas = [
-  { nombre: 'Certificados de Regalo', link: '/regalo' },
   { nombre: 'Merch y Extras', link: '/tienda' },
   { nombre: 'Repuestos', link: '/repuestos' },
 ];
@@ -342,6 +341,16 @@ export function Navbar() {
                   )}
                 </div>
               ))}
+              <Link href="/regalo" onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-neutral-100 dark:hover:bg-white/5"
+                style={{ borderColor: 'var(--color-border)' }}
+              >
+                <span className="text-xl">🎁</span>
+                <div>
+                  <p className="text-[13px] font-semibold">Certificados de Regalo</p>
+                  <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>El mejor regalo para un pequeño ingeniero</p>
+                </div>
+              </Link>
             </div>
           </div>
 

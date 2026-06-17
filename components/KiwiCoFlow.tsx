@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 // ─── Datos ──────────────────────────────────────────────────────
 
@@ -23,36 +23,25 @@ const PLANES: PlanInfo[] = [
   {
     slug: 'anual',
     nombre: '12 meses',
-    descripcion: '1 caja al mes',
+    descripcion: '1 caja al mes · prepago',
     meses: 12,
     precioMes: 19.9,
     precioTotal: 238.8,
     ahorroVsSingle: '7,10',
     ahorroTotal: '85,20',
-    badge: 'Mejor precio',
-  },
-  {
-    slug: 'semestral',
-    nombre: '6 meses',
-    descripcion: '1 caja al mes',
-    meses: 6,
-    precioMes: 20.9,
-    precioTotal: 125.4,
-    ahorroVsSingle: '6,10',
-    ahorroTotal: '36,60',
     popular: true,
-    badge: 'El favorito',
+    badge: 'Mejor precio',
   },
   {
     slug: 'trimestral',
     nombre: '3 meses',
-    descripcion: '1 caja al mes',
+    descripcion: '1 caja al mes · prepago',
     meses: 3,
     precioMes: 22.9,
     precioTotal: 68.7,
     ahorroVsSingle: '4,10',
     ahorroTotal: '12,30',
-    badge: 'Para probar',
+    badge: 'El tranquilo',
   },
   {
     slug: 'single',
@@ -143,13 +132,15 @@ export function KiwiCoFlow() {
   const puedePagar = nombreValido && envioValido;
   const isSingle = data.plan.slug === 'single';
 
-  const irA = (n: number) => {
-    setSeccionVisible(n);
-    setTimeout(() => {
-      const ref = n === 2 ? s2Ref : n === 3 ? s3Ref : s1Ref;
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 120);
-  };
+  const irA = (n: number) => setSeccionVisible(n);
+
+  // Auto-scroll cuando una nueva sección aparece
+  useEffect(() => {
+    const ref = seccionVisible === 2 ? s2Ref : seccionVisible === 3 ? s3Ref : null;
+    if (ref) {
+      setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    }
+  }, [seccionVisible]);
 
   const validarPaso1 = (): boolean => {
     const errs: Record<string, string> = {};
@@ -254,53 +245,61 @@ export function KiwiCoFlow() {
     <div className="max-w-2xl mx-auto px-4 py-8 lg:py-12">
 
       {/* ── Barra de progreso sticky ── */}
-      <div className="sticky top-[58px] z-40 -mx-4 px-4 py-3 bg-tinki-light/95 backdrop-blur-sm border-b border-tinki-dark/5 mb-8">
-        <div className="flex items-center justify-between max-w-2xl mx-auto">
-          {[
-            { n: 1, label: 'Nombre' },
-            { n: 2, label: 'Plan' },
-            { n: 3, label: 'Envío y pago' },
-          ].map(({ n, label }, i) => (
-            <div key={n} className="flex items-center gap-2">
-              <button
-                onClick={() => n <= seccionVisible && irA(n)}
-                disabled={n > seccionVisible}
-                className={`flex items-center gap-2 transition-all duration-300 ${
-                  n > seccionVisible ? 'opacity-30 cursor-default' : 'cursor-pointer'
-                }`}
-              >
-                <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition-all duration-300 ${
-                    n <= seccionVisible
-                      ? 'bg-tinki-orange text-white'
-                      : 'bg-tinki-dark/5 text-tinki-dark/20'
+      <div className="sticky top-[58px] z-40 -mx-4 px-4 py-4 bg-tinki-light/95 backdrop-blur-sm border-b border-tinki-dark/5 mb-8">
+        <div className="max-w-2xl mx-auto">
+          {/* Barra continua que se va llenando */}
+          <div className="h-2 bg-tinki-dark/5 rounded-full overflow-hidden mb-3">
+            <div
+              className="h-full bg-tinki-orange rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${((seccionVisible - 1) / 2) * 100}%` }}
+            />
+          </div>
+          {/* Etiquetas de pasos */}
+          <div className="flex items-center justify-between">
+            {[
+              { n: 1, label: 'Nombre' },
+              { n: 2, label: 'Plan' },
+              { n: 3, label: 'Envío y pago' },
+            ].map(({ n, label }) => {
+              const active = n <= seccionVisible;
+              const done = n < seccionVisible;
+              return (
+                <button
+                  key={n}
+                  onClick={() => n <= seccionVisible && irA(n)}
+                  disabled={n > seccionVisible}
+                  className={`flex items-center gap-2 transition-all duration-300 ${
+                    n > seccionVisible ? 'opacity-30 cursor-default' : 'cursor-pointer'
                   }`}
                 >
-                  {n < seccionVisible ? <CheckIcon /> : n}
-                </div>
-                <span
-                  className={`hidden sm:inline text-xs font-bold transition-colors duration-300 ${
-                    n <= seccionVisible ? 'text-tinki-dark' : 'text-tinki-dark/20'
-                  }`}
-                >
-                  {label}
-                </span>
-              </button>
-              {i < 2 && (
-                <div
-                  className={`hidden sm:block h-0.5 w-6 rounded transition-colors duration-300 ${
-                    n < seccionVisible ? 'bg-tinki-orange' : 'bg-tinki-dark/5'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
+                  <div
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition-all duration-300 ${
+                      done
+                        ? 'bg-emerald-500 text-white'
+                        : active
+                        ? 'bg-tinki-orange text-white'
+                        : 'bg-tinki-dark/5 text-tinki-dark/20'
+                    }`}
+                  >
+                    {done ? <CheckIcon /> : n}
+                  </div>
+                  <span
+                    className={`hidden sm:inline text-xs font-bold transition-colors duration-300 ${
+                      active ? 'text-tinki-dark' : 'text-tinki-dark/20'
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* ═══════════ SECCIÓN 1: Nombre ═══════════ */}
       <div ref={s1Ref} className="scroll-mt-24">
-        <section className={`transition-all duration-500 ${seccionVisible >= 1 ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+        <section>
           <p className="text-xs font-bold text-tinki-dark/30 uppercase tracking-[0.2em] mb-3">Paso 1 de 3</p>
           <h2 className="text-3xl font-black text-tinki-dark mb-2">
             {nombreValido && seccionVisible > 1 ? `¡Genial, ${data.nombre}!` : '¿Para quién es la caja?'}
@@ -312,7 +311,7 @@ export function KiwiCoFlow() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-tinki-dark/50 mb-1.5">
-                Nombre del peque *
+                Nombre del niño *
               </label>
               <input
                 type="text"
@@ -332,15 +331,22 @@ export function KiwiCoFlow() {
             </div>
             <div>
               <label className="block text-sm font-bold text-tinki-dark/50 mb-1.5">
-                Apellido <span className="font-normal text-tinki-dark/20">(opcional)</span>
+                Apellido *
               </label>
               <input
                 type="text"
                 value={data.apellido}
-                onChange={(e) => update({ apellido: e.target.value })}
+                onChange={(e) => { update({ apellido: e.target.value }); limpiarError('apellido'); }}
                 placeholder="García"
-                className="w-full rounded-2xl border-2 border-tinki-dark/5 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:ring-tinki-orange focus:border-transparent transition-shadow bg-white"
+                className={`w-full rounded-2xl border-2 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
+                  errors.apellido
+                    ? 'border-red-400 focus:ring-red-400'
+                    : 'border-tinki-dark/5 focus:ring-tinki-orange'
+                }`}
               />
+              {errors.apellido && (
+                <p className="mt-1.5 text-sm font-bold text-red-500">{errors.apellido}</p>
+              )}
             </div>
           </div>
 
@@ -356,8 +362,9 @@ export function KiwiCoFlow() {
       </div>
 
       {/* ═══════════ SECCIÓN 2: Plan ═══════════ */}
-      <div ref={s2Ref} className="scroll-mt-24 mt-16 pt-8 border-t border-tinki-dark/5">
-        <section className={`transition-all duration-500 ${seccionVisible >= 2 ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+      {seccionVisible >= 2 && (
+      <div ref={s2Ref} className="scroll-mt-24 mt-16 pt-8 border-t border-tinki-dark/5 animate-fade-in">
+        <section>
           <p className="text-xs font-bold text-tinki-dark/30 uppercase tracking-[0.2em] mb-3">Paso 2 de 3</p>
           <h2 className="text-3xl font-black text-tinki-dark mb-2">Elige tu plan</h2>
           <p className="text-tinki-dark/40 mb-8">
@@ -366,7 +373,7 @@ export function KiwiCoFlow() {
 
           <div className="space-y-3">
             {PLANES.map((p) => {
-              const sel = data.plan.slug === p.slug;
+              const sel = data.plan?.slug === p.slug;
               return (
                 <button
                   key={p.slug}
@@ -375,7 +382,7 @@ export function KiwiCoFlow() {
                     update({ plan: p });
                     setTimeout(() => irA(3), 200);
                   }}
-                  className={`relative w-full rounded-2xl border-2 p-5 text-left transition-all ${
+                  className={`relative w-full rounded-2xl border-2 p-4 md:p-5 text-left transition-all ${
                     sel
                       ? 'border-tinki-orange shadow-md shadow-tinki-orange/10 bg-orange-50'
                       : 'border-tinki-dark/5 bg-white hover:border-tinki-dark/15'
@@ -391,47 +398,53 @@ export function KiwiCoFlow() {
                     </span>
                   )}
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-black text-tinki-dark">{p.nombre}</p>
-                      <p className="text-sm text-tinki-dark/35">{p.descripcion}</p>
+                  {/* Radio + contenido en línea — sin absolute */}
+                  <div className="flex items-start gap-3 md:gap-4">
+                    {/* Radio custom — en el flujo normal */}
+                    <div
+                      className={`flex-shrink-0 w-5 h-5 mt-1 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        sel ? 'border-tinki-orange bg-tinki-orange' : 'border-tinki-dark/15'
+                      }`}
+                    >
+                      {sel && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-baseline gap-0.5 justify-end">
-                        <span className="text-3xl font-black text-tinki-dark tracking-tight">
-                          {p.precioMes.toFixed(2).replace('.', ',')}
-                        </span>
-                        <span className="text-base text-tinki-dark/30">€</span>
-                        <span className="text-sm text-tinki-dark/25">/mes</span>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                        <div>
+                          <p className="text-lg font-black text-tinki-dark">{p.nombre}</p>
+                          <p className="text-sm text-tinki-dark/35">{p.descripcion}</p>
+                        </div>
+                        <div className="text-left sm:text-right">
+                          <div className="flex items-baseline gap-0.5 sm:justify-end">
+                            <span className="text-2xl sm:text-3xl font-black text-tinki-dark tracking-tight">
+                              {p.precioMes.toFixed(2).replace('.', ',')}
+                            </span>
+                            <span className="text-base text-tinki-dark/30">€</span>
+                            <span className="text-sm text-tinki-dark/25">/mes</span>
+                          </div>
+                          {p.meses > 1 && (
+                            <span className="text-xs text-tinki-dark/30">
+                              {p.precioTotal.toFixed(2).replace('.', ',')}€ total
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      {p.meses > 1 && (
-                        <span className="text-xs text-tinki-dark/30">
-                          {p.precioTotal.toFixed(2).replace('.', ',')}€ total
-                        </span>
+
+                      {p.slug !== 'single' && (
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="flex-1 h-1.5 bg-tinki-dark/5 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                              style={{ width: `${Math.round((p.meses / 12) * 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-xs sm:text-sm font-black text-emerald-600 whitespace-nowrap">
+                            Ahorras {p.ahorroVsSingle}€/mes ({p.ahorroTotal}€ en total)
+                          </span>
+                        </div>
                       )}
                     </div>
-                  </div>
-
-                  {p.slug !== 'single' && (
-                    <div className="mt-3 flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-tinki-dark/5 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                          style={{ width: `${Math.round((p.meses / 12) * 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-black text-emerald-600 whitespace-nowrap">
-                        Ahorras {p.ahorroVsSingle}€/mes ({p.ahorroTotal}€ en total)
-                      </span>
-                    </div>
-                  )}
-
-                  <div
-                    className={`absolute top-5 left-5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      sel ? 'border-tinki-orange bg-tinki-orange' : 'border-tinki-dark/15'
-                    }`}
-                  >
-                    {sel && <div className="w-2 h-2 rounded-full bg-white" />}
                   </div>
                 </button>
               );
@@ -457,10 +470,12 @@ export function KiwiCoFlow() {
           )}
         </section>
       </div>
+      )}
 
       {/* ═══════════ SECCIÓN 3: Envío + Pago ═══════════ */}
-      <div ref={s3Ref} className="scroll-mt-24 mt-16 pt-8 border-t border-tinki-dark/5">
-        <section className={`transition-all duration-500 ${seccionVisible >= 3 ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+      {seccionVisible >= 3 && (
+      <div ref={s3Ref} className="scroll-mt-24 mt-16 pt-8 border-t border-tinki-dark/5 animate-fade-in">
+        <section>
           <p className="text-xs font-bold text-tinki-dark/30 uppercase tracking-[0.2em] mb-3">Paso 3 de 3</p>
           <h2 className="text-3xl font-black text-tinki-dark mb-2">Envio y pago</h2>
           <p className="text-tinki-dark/40 mb-8">Envío gratis a toda España peninsular.</p>
@@ -570,7 +585,7 @@ export function KiwiCoFlow() {
               </div>
               <div className="flex justify-between">
                 <span className="text-tinki-dark/40">Plan</span>
-                <span className="font-bold text-tinki-dark">{data.plan.nombre}</span>
+                <span className="font-bold text-tinki-dark">{data.plan?.nombre ?? '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-tinki-dark/40">Envío</span>
@@ -588,32 +603,36 @@ export function KiwiCoFlow() {
 
             <hr className="border-tinki-dark/5" />
 
-            <div>
-              <div className="flex items-baseline justify-between">
-                <span className="text-sm text-tinki-dark/40">
-                  {isSingle ? 'Pago único' : `Precio por mes (${data.plan.meses} meses)`}
-                </span>
-                <span className="text-3xl font-black text-tinki-dark tracking-tight">
-                  {data.plan.precioMes.toFixed(2).replace('.', ',')}
-                  <span className="text-base text-tinki-dark/30">€</span>
-                </span>
+            {data.plan ? (
+              <div>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-sm text-tinki-dark/40">
+                    {isSingle ? 'Pago único' : `Precio por mes (${data.plan.meses} meses)`}
+                  </span>
+                  <span className="text-3xl font-black text-tinki-dark tracking-tight">
+                    {data.plan.precioMes.toFixed(2).replace('.', ',')}
+                    <span className="text-base text-tinki-dark/30">€</span>
+                  </span>
+                </div>
+                {!isSingle && (
+                  <div className="flex justify-between mt-1 text-sm">
+                    <span className="text-tinki-dark/40">Total</span>
+                    <span className="font-bold text-tinki-dark">
+                      {data.plan.precioTotal.toFixed(2).replace('.', ',')}€
+                    </span>
+                  </div>
+                )}
+                {!isSingle && (
+                  <div className="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-center">
+                    <span className="text-sm font-black text-emerald-700">
+                      Ahorras {data.plan.ahorroVsSingle}€/mes vs caja única ({data.plan.ahorroTotal}€ en total)
+                    </span>
+                  </div>
+                )}
               </div>
-              {!isSingle && (
-                <div className="flex justify-between mt-1 text-sm">
-                  <span className="text-tinki-dark/40">Total</span>
-                  <span className="font-bold text-tinki-dark">
-                    {data.plan.precioTotal.toFixed(2).replace('.', ',')}€
-                  </span>
-                </div>
-              )}
-              {!isSingle && (
-                <div className="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-center">
-                  <span className="text-sm font-black text-emerald-700">
-                    Ahorras {data.plan.ahorroVsSingle}€/mes vs caja única ({data.plan.ahorroTotal}€ en total)
-                  </span>
-                </div>
-              )}
-            </div>
+            ) : (
+              <div className="text-center py-4 text-tinki-dark/30 text-sm">Selecciona un plan en el paso 2</div>
+            )}
 
             <div className="flex items-center justify-center gap-4 text-xs text-tinki-dark/30 pt-1">
               <span className="inline-flex items-center gap-1"><ShieldIcon /> Pago seguro</span>
@@ -628,7 +647,7 @@ export function KiwiCoFlow() {
 
             <button
               onClick={() => validarPaso3() && handleSubmit()}
-              disabled={loading}
+              disabled={loading || !data.plan}
               className="w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {loading ? (
@@ -639,13 +658,16 @@ export function KiwiCoFlow() {
                   </svg>
                   Procesando...
                 </span>
-              ) : (
+              ) : data.plan ? (
                 `Pagar ${data.plan.precioTotal.toFixed(2).replace('.', ',')}€`
+              ) : (
+                'Selecciona un plan'
               )}
             </button>
           </div>
         </section>
       </div>
+      )}
 
       <div className="h-16" />
     </div>
