@@ -40,10 +40,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;1,400&family=Gugi&display=swap" rel="stylesheet" />
       </head>
-      <body
-        className="min-h-screen bg-tinki-white font-sans text-tinki-brown antialiased"
-        style={{ fontFamily: "'Exo 2', sans-serif" }}
-      >
+      <body className="min-h-screen bg-tinki-white font-sans text-tinki-brown antialiased">
         <a href="#main-content" className="skip-link">Saltar al contenido</a>
         <OrganizationSchema />
         <Navbar />

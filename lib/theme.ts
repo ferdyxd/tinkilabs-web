@@ -202,9 +202,7 @@ export function generateCSSVariables(): string {
     --color-accent: ${p.accent};
     --color-success: ${p.success};
     --color-error: ${p.error};
-    --font-sans: ${typography.fontSans.join(', ')};
     --font-mono: ${typography.fontMono.join(', ')};
-    --font-display: ${typography.fontDisplay.join(', ')};
     --radius-sm: ${shapes.radius.sm};
     --radius-md: ${shapes.radius.md};
     --radius-lg: ${shapes.radius.lg};
