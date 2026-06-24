@@ -32,8 +32,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Exo 2', 'sans-serif'],
-        display: ['Gugi', 'Exo 2', 'sans-serif'],
+        sans: ['var(--font-exo2)', 'sans-serif'],
+        display: ['var(--font-gugi)', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       borderRadius: {

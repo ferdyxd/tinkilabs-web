@@ -120,9 +120,9 @@ export const palette = palettes[activePalette];
 
 export const typography = {
   // Exo 2 — cuerpo, subtítulos, instrucciones (Google Fonts, 6 pesos)
-  fontSans: ['Exo 2', 'sans-serif'],
+  fontSans: ['var(--font-exo2)', 'sans-serif'],
   // Gugi — wordmark, hero headlines, accent callouts (Google Fonts, Regular)
-  fontDisplay: ['Gugi', 'Exo 2', 'sans-serif'],
+  fontDisplay: ['var(--font-gugi)', 'sans-serif'],
   fontMono: ['JetBrains Mono', 'Fira Code', 'monospace'],
 
   weights: {
