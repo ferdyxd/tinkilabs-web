@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Forzar Exo 2 en todo el sitio — Google Fonts CDN */
+@layer base {
+  html {
+    font-family: 'Exo 2', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Exo 2', sans-serif;
+  }
+}
+
 /* ============================================================
    Variables de diseño — Brand Guide Lyana v2 (42pp)
    Fuente canónica: brand/decisiones-marca.md
@@ -26,7 +36,7 @@
   --color-success: #2ECC71;
   --color-error: #EF4444;
 
-  /* ─── Tipografía — cargada vía next/font/google (fallback si no carga) ─── */
+  /* ─── Tipografía — Google Fonts CDN (Exo 2 + Gugi) ─── */
   --font-sans: 'Exo 2', sans-serif;
   --font-display: 'Gugi', 'Exo 2', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
