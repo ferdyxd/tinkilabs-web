@@ -73,11 +73,11 @@ export default function Home() {
           <div className="float-loop relative">
             <div className="relative">
               <Image
-                src="/images/logo_tinki.png"
+                src="/images/brand/wordmarks/wordmark-naranja.svg"
                 alt="Tinkilabs"
-                width={240}
-                height={240}
-                className="h-auto w-[200px] sm:w-[240px]"
+                width={280}
+                height={56}
+                className="h-auto w-[220px] sm:w-[280px]"
                 priority
               />
             </div>

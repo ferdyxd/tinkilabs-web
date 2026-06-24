@@ -16,14 +16,7 @@ const pasos: Paso[] = [
     descripcion:
       'Elige tu línea Mini, Maker o Pro. Recibirás una caja diferente cada mes, sin permanencia.',
     icono: (
-      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        {/* Sobre */}
-        <rect x="6" y="14" width="36" height="24" rx="2" />
-        <path d="M6 14l18 12L42 14" />
-        {/* Chispa de suscripción */}
-        <circle cx="36" cy="12" r="6" fill="currentColor" stroke="none" opacity="0.2" />
-        <path d="M36 7v10M31 12h10" strokeWidth="3" />
-      </svg>
+      <img src="/images/brand/icons/rocket.svg" alt="" width="40" height="40" className="text-tinki-orange" />
     ),
   },
   {
@@ -32,15 +25,7 @@ const pasos: Paso[] = [
     descripcion:
       'Cada mes llega a tu buzón una caja con piezas de madera, engranajes y un proyecto nuevo.',
     icono: (
-      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        {/* Caja */}
-        <rect x="8" y="16" width="32" height="26" rx="2" />
-        <path d="M8 16l16-10 16 10" />
-        {/* Línea de cierre */}
-        <line x1="24" y1="16" x2="24" y2="42" strokeDasharray="3 3" opacity="0.5" />
-        {/* Cinta */}
-        <path d="M16 16v-4a4 4 0 014-4h8a4 4 0 014 4v4" strokeWidth="1.5" />
-      </svg>
+      <img src="/images/brand/icons/gear.svg" alt="" width="40" height="40" className="text-tinki-orange" />
     ),
   },
   {
@@ -49,20 +34,7 @@ const pasos: Paso[] = [
     descripcion:
       'Monta pieza a pieza. Sin pantallas. Solo física real y la sensación de decir "lo he hecho yo".',
     icono: (
-      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        {/* Engranaje */}
-        <circle cx="24" cy="24" r="10" strokeWidth="2.5" />
-        <circle cx="24" cy="24" r="4" fill="currentColor" opacity="0.3" />
-        {/* Dientes */}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => {
-          const rad = (a * Math.PI) / 180;
-          const x = 24 + 14 * Math.cos(rad);
-          const y = 24 + 14 * Math.sin(rad);
-          return <line key={a} x1={x - 2} y1={y - 2} x2={x + 2} y2={y + 2} strokeWidth="3" />;
-        })}
-        {/* Destello */}
-        <path d="M34 14l-4 4M14 34l4-4" opacity="0.5" />
-      </svg>
+      <img src="/images/brand/icons/wrench.svg" alt="" width="40" height="40" className="text-tinki-orange" />
     ),
   },
 ];

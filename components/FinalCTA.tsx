@@ -51,8 +51,12 @@ export function FinalCTA() {
         className="cta-section relative z-10 mx-auto max-w-xl px-6 text-center"
       >
         {/* Tinki */}
-        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-tinki-orange/10 text-3xl sm:h-20 sm:w-20 sm:text-4xl">
-          🔩
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-tinki-orange/10 sm:h-20 sm:w-20">
+          <img
+            src="/images/brand/icons/tinki-head.svg"
+            alt="Tinki"
+            className="h-10 w-10 sm:h-12 sm:w-12"
+          />
         </div>
 
         <h2 className="text-3xl font-black tracking-tight text-tinki-dark sm:text-5xl">

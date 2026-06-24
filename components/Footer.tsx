@@ -136,8 +136,12 @@ export function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row" style={{ borderColor: 'var(--color-border)' }}>
-          <Link href="/" className="text-sm font-bold tracking-tight transition-colors hover:opacity-70" style={{ color: 'var(--color-text)' }}>
-            Tinkilabs
+          <Link href="/" className="transition-colors hover:opacity-70">
+            <img
+              src="/images/brand/wordmarks/wordmark-naranja.svg"
+              alt="Tinkilabs"
+              className="h-6 w-auto"
+            />
           </Link>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
             Imagina. Construye. Alucina. &middot; Hecho con mimo en España

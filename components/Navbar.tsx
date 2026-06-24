@@ -167,17 +167,25 @@ export function Navbar() {
               <div className="flex-1" />
               <Link
                 href="/"
-                className="flex items-center gap-2 text-base font-bold tracking-tight transition-colors hover:opacity-70"
+                className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
                 style={{ color: navTextColor }}
               >
                 <Image
-                  src="/images/logotinkiweb.png"
+                  src="/images/brand/icons/tinki-navbar.svg"
                   alt="Tinki"
-                  width={28}
-                  height={28}
-                  className="h-7 w-7"
+                  width={52}
+                  height={52}
+                  className="h-[52px] w-[52px] flex-shrink-0"
+                  priority
                 />
-                Tinkilabs
+                <Image
+                  src="/images/brand/wordmarks/wordmark-naranja.png"
+                  alt="Tinkilabs"
+                  width={130}
+                  height={26}
+                  className="h-[26px] w-auto"
+                  priority
+                />
               </Link>
               <div className="flex-1 flex justify-end">
                 <Link
@@ -257,13 +265,13 @@ export function Navbar() {
               <div className="flex-1 lg:flex-none lg:mx-auto text-center lg:text-left">
                 <Link href="/" className="flex items-center justify-center lg:justify-start gap-2 text-base font-bold tracking-tight transition-colors hover:opacity-70" style={{ color: navTextColor }}>
                   <Image
-                    src="/images/logotinkiweb.png"
-                    alt="Tinki"
-                    width={28}
+                    src="/images/brand/wordmarks/wordmark-naranja.svg"
+                    alt="Tinkilabs"
+                    width={130}
                     height={28}
-                    className="h-7 w-7"
+                    className="h-7 w-auto"
+                    priority
                   />
-                  Tinkilabs
                 </Link>
               </div>
 

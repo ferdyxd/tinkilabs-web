@@ -137,11 +137,11 @@ export default function NuestroLogoPage() {
           <div className="mt-8">
             <div className="inline-flex items-center gap-3 rounded-2xl border border-orange-200 bg-white px-6 py-4 shadow-sm">
               <Image
-                src="/images/logotinkiweb.png"
-                alt="Tinki"
-                width={48}
-                height={48}
-                className="h-12 w-12"
+                src="/images/brand/wordmarks/wordmark-naranja.svg"
+                alt="Tinkilabs"
+                width={180}
+                height={36}
+                className="h-9 w-auto"
               />
               <div className="text-left">
                 <p className="text-lg font-black text-tinki-dark">Tinki</p>

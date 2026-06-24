@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 // ⚠️ Los valores aquí deben coincidir con lib/theme.ts (paleta "tinkilabs").
+// Fuente canónica: Brand Guide - Tinkilabs.pdf (Lyana v2, 42pp).
 // Para cambiar de paleta, editar ambos ficheros o usar CSS vars (data-theme).
 
 const config: Config = {
@@ -13,17 +14,27 @@ const config: Config = {
     extend: {
       colors: {
         tinki: {
+          // Paleta oficial — Brand Guide Lyana v2 (2026-06-23)
           orange: '#FF6B35',
-          dark: '#08080F',
-          light: '#F3EFE9',
           'orange-light': '#FF8C5A',
           'orange-dark': '#E55A2B',
+          green: '#2ECC71',
+          'green-light': '#58D68D',
+          'green-dark': '#27AE60',
+          brown: '#4B260E',
+          'brown-light': '#6B3820',
+          white: '#EDF8FB',
+          wood: '#BF946C',
+          'wood-light': '#D4B896',
+          // ─── Backward compat (deprecated, migrar a nombres nuevos) ───
+          dark: '#4B260E',   // → tinki-brown
+          light: '#EDF8FB',  // → tinki-white
         },
       },
       fontFamily: {
-        sans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Exo 2', 'sans-serif'],
+        display: ['var(--font-display)', 'Gugi', 'Exo 2', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-        display: ['Geist Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         sm: '0.5rem',

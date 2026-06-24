@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
+import NextImage from 'next/image';
 import { motion, useInView } from 'motion/react';
 import { EmailForm } from '@/components/EmailForm';
 import { trackScrollDepth, trackSectionView, trackCTAClick, trackWaitlistSubmit } from '@/lib/tracking';
@@ -82,8 +83,8 @@ function HeroSection() {
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
   const [scrollY, setScrollY] = useState(0);
 
-  // ─── Emoji slot machine ──────────────────────────────────
-  const TECH_EMOJIS = ['🔧','🔨','⚙️','🔩','🪛','🪚','🔗','🧲','🛠️','⚡','🔌','💡','🏗️','🚀','🛰️','🤖','💻','🖥️','⌨️','🖱️','🕹️','💾','📡','🔬','🧬','🧪','📐','📏','🎛️','🧮','🧰','⏱️','🎯','🧩','🔋','⚛️','💥','🔭','🌀','🪵','🔲','🔳','🔶','🔷','💠'];
+  // ─── Emoji slot machine → Tinkilabs ──────────────────────
+  const TECH_EMOJIS = ['🔧','🔨','⚙️','🔩','🪛','🪚','🔗','🧲','🛠️','⚡','🔌','💡','🏗️','🚀','🛰️','🤖','💻','🖥️','⌨️','🖱️','🕹️','💾','📡','🔬','🧬','🧪','📐','📏','🎛️','🧮','🧰','⏱️','🎯','🧩','🔋','⚛️','💥','🔭','🌀','🪵'];
   const WORD = 'Tinkilabs';
   const TOTAL_SHUFFLE_MS = 500;
   const LOCK_STAGGER_MS = 100;
@@ -255,6 +256,22 @@ function HeroSection() {
           })}
         </h1>
 
+        {/* Tinki mascot */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.0, ease: [0.22, 0.61, 0.36, 1] }}
+        >
+          <NextImage
+            src="/images/brand/icons/tinki-hero.svg"
+            alt="Tinkilabs"
+            width={160}
+            height={160}
+            className="mx-auto h-auto w-[120px] sm:w-[160px] mt-4"
+            priority
+          />
+        </motion.div>
+
         {/* Glow + Claim */}
         <motion.div
           className="relative mt-6 inline-block"
@@ -373,6 +390,12 @@ const STEPS = [
     range: [0.68, 1] as [number, number],
   },
 ];
+
+// ─── Iconos de Liyana para feature cards ───
+const STEP_ICONS: Record<string, string> = {
+  '🔧': '/images/brand/icons/wrench.svg',
+  '🏠': '/images/brand/icons/target.svg',
+};
 
 function QueEsSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -540,6 +563,11 @@ const BENEFICIOS = [
   },
 ];
 
+// ─── Mapa de iconos: emoji → SVG de Liyana ───
+const ICON_SVG_MAP: Record<string, string> = {
+  '🔧': '/images/brand/icons/wrench.svg',
+};
+
 function PorQueSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-10%' });
@@ -575,8 +603,12 @@ function PorQueSection() {
         >
           {BENEFICIOS.map((b) => (
             <div key={b.titulo} className="group flex items-start gap-4 rounded-2xl p-5 transition-colors hover:bg-[#F5F5F7]">
-              <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#F5F5F7] text-xl transition-colors group-hover:bg-tinki-orange/10">
-                {b.icono}
+              <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[#F5F5F7] transition-colors group-hover:bg-tinki-orange/10">
+                {ICON_SVG_MAP[b.icono] ? (
+                  <img src={ICON_SVG_MAP[b.icono]} alt="" className="h-5 w-5" />
+                ) : (
+                  <span className="text-xl">{b.icono}</span>
+                )}
               </span>
               <div className="min-w-0">
                 <h3 className="text-[15px] font-bold leading-snug text-[#1D1D1F]">{b.titulo}</h3>
@@ -609,9 +641,13 @@ function ComoEmpezarSection() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          {/* Tinki placeholder */}
-          <div className="mb-8 inline-flex h-24 w-24 items-center justify-center rounded-full bg-white/20 text-5xl backdrop-blur-sm">
-            🦫
+          {/* Tinki */}
+          <div className="mb-8 inline-flex h-24 w-24 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+            <img
+              src="/images/brand/icons/tinki-head.svg"
+              alt="Tinki"
+              className="h-14 w-14"
+            />
           </div>
 
           <blockquote className="text-[clamp(1.5rem,3vw,2rem)] font-extrabold leading-tight text-white"

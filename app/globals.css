@@ -1,26 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;1,400&family=Gugi&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================
-   Variables de diseño (desde lib/theme.ts)
+   Variables de diseño — Brand Guide Lyana v2 (42pp)
+   Fuente canónica: brand/decisiones-marca.md
    ============================================================ */
 
 :root {
+  /* ─── Paleta oficial 5 colores ─── */
   --color-primary: #FF6B35;
   --color-primary-light: #FF8C5A;
   --color-primary-dark: #E55A2B;
-  --color-background: #F3EFE9;
-  --color-background-alt: #08080F;
+  --color-secondary: #2ECC71;
+  --color-secondary-light: #58D68D;
+  --color-secondary-dark: #27AE60;
+  --color-background: #EDF8FB;
+  --color-background-alt: #4B260E;
   --color-surface: #FFFFFF;
-  --color-text: #1A1A2E;
+  --color-text: #4B260E;
   --color-text-muted: #6B7280;
-  --color-border: rgba(255,255,255,0.05);
-  --color-success: #10B981;
+  --color-border: rgba(75, 38, 14, 0.08);
+  --color-accent: #BF946C;
+  --color-accent-light: #D4B896;
+  --color-success: #2ECC71;
   --color-error: #EF4444;
-  --font-sans: 'Inter', 'Geist Sans', system-ui, sans-serif;
+
+  /* ─── Tipografía — sans + display cargadas vía next/font/google ─── */
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --font-display: 'Geist Sans', 'Inter', system-ui, sans-serif;
+
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
@@ -116,10 +126,13 @@ html {
     @apply bg-gradient-to-br from-tinki-orange to-tinki-orange-dark;
   }
   .gradient-dark {
-    @apply bg-gradient-to-b from-tinki-dark to-[#0F0F23];
+    @apply bg-gradient-to-b from-tinki-brown to-tinki-brown-light;
   }
   .gradient-text {
     @apply bg-gradient-to-r from-tinki-orange to-tinki-orange-light bg-clip-text text-transparent;
+  }
+  .gradient-green {
+    @apply bg-gradient-to-br from-tinki-green to-tinki-green-dark;
   }
 }
 

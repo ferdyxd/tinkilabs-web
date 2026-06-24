@@ -1,43 +1,58 @@
 // ============================================================
 // TINKILABS — Fichero central de diseño (Single Source of Truth)
 // ============================================================
+// Fuente canónica: Brand Guide - Tinkilabs.pdf (Lyana, v2, 42pp)
+// Última actualización: 2026-06-23
 // Para cambiar la apariencia de la web, editar SOLO este fichero.
 // Afecta a: Tailwind, CSS global, componentes, tipografía, etc.
 // ============================================================
 
 // ─── Paletas de color ────────────────────────────────────────
-// Cambia "nombre" para alternar entre paletas
 
 export type PaletteName = 'tinkilabs' | 'ocean' | 'forest' | 'sunset';
 
 interface Palette {
   name: string;
-  primary: string;       // Color principal (botones, links, acentos)
-  primaryLight: string;  // Versión clara (hover, badges)
-  primaryDark: string;   // Versión oscura (active, hover fuerte)
-  background: string;    // Fondo principal
-  backgroundAlt: string; // Fondo secundario (cards, secciones)
-  surface: string;       // Superficie elevada (cards, modales)
-  text: string;          // Texto principal
-  textMuted: string;     // Texto secundario
-  border: string;        // Bordes sutiles
-  success: string;       // Éxito / confirmación
-  error: string;         // Error / denegación
+  primary: string;
+  primaryLight: string;
+  primaryDark: string;
+  secondary: string;
+  secondaryLight: string;
+  secondaryDark: string;
+  background: string;
+  backgroundAlt: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  border: string;
+  success: string;
+  error: string;
+  accent: string;
 }
 
 export const palettes: Record<PaletteName, Palette> = {
   tinkilabs: {
-    name: 'Tinkilabs',
+    name: 'Tinkilabs (Lyana v2)',
+    // ─── Tinki Orange — primario, energía, CTAs
     primary: '#FF6B35',
     primaryLight: '#FF8C5A',
     primaryDark: '#E55A2B',
-    background: '#FAFAFA',
-    backgroundAlt: '#08080F',
+    // ─── Engineer Green — secundario, badges, eco, acentos técnicos
+    secondary: '#2ECC71',
+    secondaryLight: '#58D68D',
+    secondaryDark: '#27AE60',
+    // ─── Timber Brown — texto principal, ancla, contraste
+    text: '#4B260E',
+    // ─── Pure White — fondo principal, lienzo de legibilidad
+    background: '#EDF8FB',
     surface: '#FFFFFF',
-    text: '#1A1A2E',
+    // ─── Fondo oscuro / alternativo → Timber Brown
+    backgroundAlt: '#4B260E',
     textMuted: '#6B7280',
-    border: 'rgba(255,255,255,0.05)',
-    success: '#10B981',
+    // ─── Birch Wood — acento editorial, madera clara
+    accent: '#BF946C',
+    border: 'rgba(75,38,14,0.08)',
+    success: '#2ECC71',
     error: '#EF4444',
   },
   ocean: {
@@ -45,6 +60,9 @@ export const palettes: Record<PaletteName, Palette> = {
     primary: '#0EA5E9',
     primaryLight: '#38BDF8',
     primaryDark: '#0284C7',
+    secondary: '#22D3EE',
+    secondaryLight: '#67E8F9',
+    secondaryDark: '#06B6D4',
     background: '#F8FAFC',
     backgroundAlt: '#0F172A',
     surface: '#FFFFFF',
@@ -53,12 +71,16 @@ export const palettes: Record<PaletteName, Palette> = {
     border: 'rgba(148,163,184,0.15)',
     success: '#10B981',
     error: '#EF4444',
+    accent: '#F59E0B',
   },
   forest: {
     name: 'Forest',
     primary: '#22C55E',
     primaryLight: '#4ADE80',
     primaryDark: '#16A34A',
+    secondary: '#10B981',
+    secondaryLight: '#34D399',
+    secondaryDark: '#059669',
     background: '#F5F5F0',
     backgroundAlt: '#1A2E1A',
     surface: '#FFFFFF',
@@ -67,12 +89,16 @@ export const palettes: Record<PaletteName, Palette> = {
     border: 'rgba(34,197,94,0.1)',
     success: '#22C55E',
     error: '#EF4444',
+    accent: '#F59E0B',
   },
   sunset: {
     name: 'Sunset',
     primary: '#F59E0B',
     primaryLight: '#FBBF24',
     primaryDark: '#D97706',
+    secondary: '#EF4444',
+    secondaryLight: '#F87171',
+    secondaryDark: '#DC2626',
     background: '#FFFBEB',
     backgroundAlt: '#1C1917',
     surface: '#FFFFFF',
@@ -81,6 +107,7 @@ export const palettes: Record<PaletteName, Palette> = {
     border: 'rgba(245,158,11,0.1)',
     success: '#10B981',
     error: '#EF4444',
+    accent: '#A78BFA',
   },
 };
 
@@ -89,15 +116,17 @@ export const palettes: Record<PaletteName, Palette> = {
 export const activePalette: PaletteName = 'tinkilabs';
 export const palette = palettes[activePalette];
 
-// ─── Tipografía ─────────────────────────────────────────────
+// ─── Tipografía (Brand Guide Lyana v2) ───────────────────────
 
 export const typography = {
-  fontSans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'],
+  // Exo 2 — cuerpo, subtítulos, instrucciones (Google Fonts, 6 pesos)
+  fontSans: ['Exo 2', 'sans-serif'],
+  // Gugi — wordmark, hero headlines, accent callouts (Google Fonts, Regular)
+  fontDisplay: ['Gugi', 'Exo 2', 'sans-serif'],
   fontMono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-  fontDisplay: ['Geist Sans', 'Inter', 'system-ui', 'sans-serif'],
 
-  // Pesos
   weights: {
+    extralight: 200,
     light: 300,
     normal: 400,
     medium: 500,
@@ -106,17 +135,16 @@ export const typography = {
     extrabold: 800,
   },
 
-  // Escala tipográfica (rem)
   scale: {
-    xs: '0.75rem',    // 12px
-    sm: '0.875rem',   // 14px
-    base: '1rem',     // 16px
-    lg: '1.125rem',   // 18px
-    xl: '1.25rem',    // 20px
-    '2xl': '1.5rem',  // 24px
-    '3xl': '1.875rem',// 30px
-    '4xl': '2.25rem', // 36px
-    '5xl': '3rem',    // 48px
+    xs: '0.75rem',
+    sm: '0.875rem',
+    base: '1rem',
+    lg: '1.125rem',
+    xl: '1.25rem',
+    '2xl': '1.5rem',
+    '3xl': '1.875rem',
+    '4xl': '2.25rem',
+    '5xl': '3rem',
   },
 };
 
@@ -162,12 +190,16 @@ export function generateCSSVariables(): string {
     --color-primary: ${p.primary};
     --color-primary-light: ${p.primaryLight};
     --color-primary-dark: ${p.primaryDark};
+    --color-secondary: ${p.secondary};
+    --color-secondary-light: ${p.secondaryLight};
+    --color-secondary-dark: ${p.secondaryDark};
     --color-background: ${p.background};
     --color-background-alt: ${p.backgroundAlt};
     --color-surface: ${p.surface};
     --color-text: ${p.text};
     --color-text-muted: ${p.textMuted};
     --color-border: ${p.border};
+    --color-accent: ${p.accent};
     --color-success: ${p.success};
     --color-error: ${p.error};
     --font-sans: ${typography.fontSans.join(', ')};
