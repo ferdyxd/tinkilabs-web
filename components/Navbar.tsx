@@ -167,23 +167,14 @@ export function Navbar() {
               <div className="flex-1" />
               <Link
                 href="/"
-                className="flex items-center gap-2.5 transition-opacity hover:opacity-70"
-                style={{ color: navTextColor }}
+                className="transition-opacity hover:opacity-70"
               >
                 <Image
                   src="/images/brand/icons/tinki-navbar.svg"
-                  alt="Tinki"
+                  alt="Tinkilabs"
                   width={52}
                   height={52}
                   className="h-[52px] w-[52px] flex-shrink-0"
-                  priority
-                />
-                <Image
-                  src="/images/brand/wordmarks/wordmark-naranja.png"
-                  alt="Tinkilabs"
-                  width={130}
-                  height={26}
-                  className="h-[26px] w-auto"
                   priority
                 />
               </Link>

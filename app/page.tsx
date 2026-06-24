@@ -85,7 +85,7 @@ function HeroSection() {
 
   // ─── Emoji slot machine → Tinkilabs ──────────────────────
   const TECH_EMOJIS = ['🔧','🔨','⚙️','🔩','🪛','🪚','🔗','🧲','🛠️','⚡','🔌','💡','🏗️','🚀','🛰️','🤖','💻','🖥️','⌨️','🖱️','🕹️','💾','📡','🔬','🧬','🧪','📐','📏','🎛️','🧮','🧰','⏱️','🎯','🧩','🔋','⚛️','💥','🔭','🌀','🪵'];
-  const WORD = 'Tinkilabs';
+  const WORD = 'TINKILABS';
   const TOTAL_SHUFFLE_MS = 500;
   const LOCK_STAGGER_MS = 100;
   const EMOJI_TICK_MS = 70;
@@ -239,7 +239,7 @@ function HeroSection() {
       {/* ─── depth-4: contenido principal ─── */}
       <div className="relative z-10 text-center" style={{ transform: `translateY(${-parallaxY * 0.5}px)` }}>
         {/* Emoji slot machine → Tinkilabs */}
-        <h1 className="text-[clamp(2.2rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1D1D1F]">
+        <h1 className="text-[clamp(2.2rem,7vw,5.5rem)] font-display font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1D1D1F]">
           {emojiGrid.map((char, i) => {
             const isEmoji = char.length > 1;
             return (
