@@ -88,9 +88,7 @@ function TruckIcon() {
 // ─── Componente principal ────────────────────────────────────────
 
 interface FormData {
-  nombre: string;
-  apellido: string;
-  plan: PlanInfo;
+  plan: PlanInfo | null;
   email: string;
   direccion: string;
   ciudad: string;
@@ -99,10 +97,10 @@ interface FormData {
 }
 
 export function KiwiCoFlow() {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
   const [data, setData] = useState<FormData>({
-    nombre: '',
-    apellido: '',
-    plan: PLANES[1],
+    plan: null,
     email: '',
     direccion: '',
     ciudad: '',
@@ -121,7 +119,7 @@ export function KiwiCoFlow() {
 
   const update = (partial: Partial<FormData>) => setData((d) => ({ ...d, ...partial }));
 
-  const nombreValido = data.nombre.trim().length > 1;
+  const nombreValido = nombre.trim().length > 1 && apellido.trim().length > 1;
 
   const envioValido =
     data.email.includes('@') &&
@@ -129,8 +127,8 @@ export function KiwiCoFlow() {
     data.ciudad.trim().length > 0 &&
     /^\d{5}$/.test(data.cp.trim());
 
-  const puedePagar = nombreValido && envioValido;
-  const isSingle = data.plan.slug === 'single';
+  const puedePagar = nombreValido && envioValido && data.plan !== null;
+  const isSingle = data.plan?.slug === 'single';
 
   const irA = (n: number) => setSeccionVisible(n);
 
@@ -144,7 +142,8 @@ export function KiwiCoFlow() {
 
   const validarPaso1 = (): boolean => {
     const errs: Record<string, string> = {};
-    if (data.nombre.trim().length < 2) errs.nombre = 'Escribe el nombre del peque';
+    if (nombre.trim().length < 2) errs.nombre = 'Escribe el nombre del niño';
+    if (apellido.trim().length < 2) errs.apellido = 'Escribe el apellido del niño';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -177,9 +176,9 @@ export function KiwiCoFlow() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           modo: isSingle ? 'single' : 'sub',
-          nombreNino: data.nombre,
+          nombreNino: nombre,
           linea: 'maker',
-          plan: isSingle ? 'single' : data.plan.slug,
+          plan: isSingle ? 'single' : data.plan?.slug ?? '',
           email: data.email,
           direccion: data.direccion,
           ciudad: data.ciudad,
@@ -208,7 +207,7 @@ export function KiwiCoFlow() {
           </svg>
         </div>
         <h2 className="text-3xl font-black text-tinki-dark mb-3">
-          {isSingle ? `¡${data.nombre}, tu caja está en camino!` : `¡${data.nombre}, bienvenido a Tinkilabs!`}
+          {isSingle ? `¡${nombre}, tu caja está en camino!` : `¡${nombre}, bienvenido a Tinkilabs!`}
         </h2>
         {isSingle ? (
           <>
@@ -251,7 +250,7 @@ export function KiwiCoFlow() {
           <div className="h-2 bg-tinki-dark/5 rounded-full overflow-hidden mb-3">
             <div
               className="h-full bg-tinki-orange rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${((seccionVisible - 1) / 2) * 100}%` }}
+              style={{ width: `${seccionVisible >= 3 ? 75 : seccionVisible >= 2 ? 35 : 0}%` }}
             />
           </div>
           {/* Etiquetas de pasos */}
@@ -302,7 +301,7 @@ export function KiwiCoFlow() {
         <section>
           <p className="text-xs font-bold text-tinki-dark/30 uppercase tracking-[0.2em] mb-3">Paso 1 de 3</p>
           <h2 className="text-3xl font-black text-tinki-dark mb-2">
-            {nombreValido && seccionVisible > 1 ? `¡Genial, ${data.nombre}!` : '¿Para quién es la caja?'}
+            {nombreValido && seccionVisible > 1 ? `¡Genial, ${nombre}!` : '¿Para quién es la caja?'}
           </h2>
           <p className="text-tinki-dark/40 mb-8">
             Así personalizaremos sus envíos. Tinki le llamará por su nombre en cada carta.
@@ -315,10 +314,10 @@ export function KiwiCoFlow() {
               </label>
               <input
                 type="text"
-                value={data.nombre}
-                onChange={(e) => { update({ nombre: e.target.value }); limpiarError('nombre'); }}
+                value={nombre}
+                onChange={(e) => { setNombre(e.target.value); limpiarError('nombre'); }}
                 placeholder="Lucas"
-                autoFocus
+                autoComplete="given-name"
                 className={`w-full rounded-2xl border-2 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
                   errors.nombre
                     ? 'border-red-400 focus:ring-red-400'
@@ -335,9 +334,10 @@ export function KiwiCoFlow() {
               </label>
               <input
                 type="text"
-                value={data.apellido}
-                onChange={(e) => { update({ apellido: e.target.value }); limpiarError('apellido'); }}
+                value={apellido}
+                onChange={(e) => { setApellido(e.target.value); limpiarError('apellido'); }}
                 placeholder="García"
+                autoComplete="family-name"
                 className={`w-full rounded-2xl border-2 px-5 py-4 text-lg font-bold text-tinki-dark placeholder:text-tinki-dark/15 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow bg-white ${
                   errors.apellido
                     ? 'border-red-400 focus:ring-red-400'
@@ -353,7 +353,8 @@ export function KiwiCoFlow() {
           {seccionVisible === 1 && (
             <button
               onClick={() => validarPaso1() && irA(2)}
-              className="mt-8 w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98]"
+              disabled={!nombreValido}
+              className="mt-8 w-full py-4 bg-tinki-orange text-white font-black text-lg rounded-2xl hover:shadow-lg hover:shadow-tinki-orange/25 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
             >
               Continuar →
             </button>
@@ -576,7 +577,7 @@ export function KiwiCoFlow() {
               <div className="flex justify-between">
                 <span className="text-tinki-dark/40">Para</span>
                 <span className="font-bold text-tinki-dark">
-                  {data.nombre} {data.apellido}
+                  {nombre} {apellido}
                 </span>
               </div>
               <div className="flex justify-between">

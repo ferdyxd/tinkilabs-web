@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface FooterLink {
   nombre: string;
@@ -66,6 +67,7 @@ const footerProducto: Record<string, FooterLink[]> = {
 };
 
 export function Footer() {
+  const pathname = usePathname();
   const [autenticado, setAutenticado] = useState(false);
 
   useEffect(() => {
@@ -78,6 +80,9 @@ export function Footer() {
   const secciones = autenticado
     ? { ...footerProducto, ...footerPublico }
     : footerPublico;
+
+  // Landings autónomas (concepto-c): traen su propio pie de página.
+  if (['/concepto-c', '/concepto-d'].includes(pathname)) return null;
 
   return (
     <footer className="border-t" style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}>

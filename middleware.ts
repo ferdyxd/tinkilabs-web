@@ -32,6 +32,8 @@ const PUBLIC_PATHS = [
   '/campamento',
   '/repuestos',
   '/concepto-b',
+  '/concepto-c',
+  '/concepto-d',
   '/empezar',
 ];
 
@@ -51,6 +53,7 @@ const PUBLIC_PREFIXES = [
   '/envios',
   '/favicon.ico',
   '/icon.png',
+  '/icon.svg',
   '/robots.txt',
   '/sitemap.xml',
 ];

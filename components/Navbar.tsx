@@ -78,6 +78,8 @@ export function Navbar() {
   const paginasOscuras = ['/concepto-b', '/productos'];
   const isDarkPage = paginasOscuras.includes(pathname);
   const esLandingPublica = pathname === '/' && !autenticado;
+  // Landings autónomas: traen su propia navegación, la global sobra.
+  const rutasSinNavbar = ['/concepto-c', '/concepto-d'];
 
 
   useEffect(() => {
@@ -138,6 +140,9 @@ export function Navbar() {
     : 'border-b border-[var(--color-border)]';
 
   const navTextColor = isDarkPage && !hasBg ? '#ffffff' : 'var(--color-text)';
+
+  // Landings autónomas (concepto-c): traen su propia navegación.
+  if (rutasSinNavbar.includes(pathname)) return null;
 
   return (
     <>
